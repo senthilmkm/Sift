@@ -1,4 +1,4 @@
-﻿module.exports = {
+module.exports = {
   isAvailableAsync: jest.fn().mockResolvedValue(true),
   shareAsync: jest.fn().mockResolvedValue(true),
   composeAsync: jest.fn().mockResolvedValue({ status: 'sent' }),
@@ -13,5 +13,15 @@
   },
   Linking: {
     openURL: jest.fn().mockResolvedValue(true),
+  },
+  Paths: {
+    cache: 'file:///mock_cache',
+  },
+  File: class {
+    constructor(dir, name) {
+      this.uri = `${dir}/${name}`;
+    }
+    create() {}
+    write() {}
   },
 };

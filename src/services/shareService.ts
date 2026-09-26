@@ -1,4 +1,6 @@
 import { Share, Alert } from 'react-native';
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { SiftItem } from '../models/types';
 import { getItems } from '../database/db';
 
@@ -45,10 +47,22 @@ export async function exportAllTasksToExcel(): Promise<void> {
       csvContent += `${sanitizeCSVField('Informational')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'N/A')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'School Flyer')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
     });
 
-    await Share.share({
-      message: csvContent,
-      title: 'Sift_Tasks_Export.csv',
-    });
+    const file = new File(Paths.cache, 'Sift_Tasks_Export.csv');
+    file.create();
+    file.write(csvContent);
+
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(file.uri, {
+        mimeType: 'text/csv',
+        dialogTitle: 'Export Sift Tasks to Excel',
+        UTI: 'public.comma-separated-values-text',
+      });
+    } else {
+      await Share.share({
+        message: csvContent,
+        title: 'Sift_Tasks_Export.csv',
+      });
+    }
   } catch (err) {
     console.error('Failed to export tasks to Excel:', err);
   }

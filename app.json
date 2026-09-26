@@ -28,6 +28,7 @@
       "expo-updates",
       "expo-sqlite",
       "expo-notifications",
+      "expo-file-system",
       [
         "expo-camera",
         {
