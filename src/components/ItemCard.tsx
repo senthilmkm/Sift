@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SiftItem } from '../models/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -58,7 +58,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     if (!text) return null;
     const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/[^\s]*)/g;
     const parts = text.split(urlRegex);
-    const matches = text.match(urlRegex) || [];
+    const matches: string[] = text.match(urlRegex) || [];
 
     if (matches.length === 0) {
       return <Text style={style}>{text}</Text>;
