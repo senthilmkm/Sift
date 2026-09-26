@@ -149,11 +149,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             ) : null}
           </View>
 
-          {item.notes ? (
-            <View style={{ marginTop: 2 }}>
-              {renderTextWithLinks(`📝 Notes: ${item.notes}`, styles.notesText)}
-            </View>
-          ) : null}
+
         </View>
 
         <View style={styles.actionsRow}>
