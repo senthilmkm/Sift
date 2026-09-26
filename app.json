@@ -19,10 +19,13 @@
         "NSCameraUsageDescription": "Sift requires camera access to photograph paper school flyers and notices on your fridge.",
         "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",
         "NSCalendarsUsageDescription": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar.",
-        "NSMicrophoneUsageDescription": "Sift does not record audio."
+        "NSMicrophoneUsageDescription": "Sift does not record audio.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
-        "com.apple.security.application-groups": ["group.com.sift.app"]
+        "com.apple.security.application-groups": [
+          "group.com.sift.app"
+        ]
       }
     },
     "plugins": [
@@ -43,6 +46,11 @@
           "photosPermission": "Sift requires photo library access to select flyer photos and PDF notices."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f812c76c-2572-4bb2-bcf8-a7aa3f5b97d8"
+      }
+    }
   }
 }
