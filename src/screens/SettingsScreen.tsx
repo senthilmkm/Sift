@@ -112,7 +112,20 @@ export const SettingsScreen: React.FC = () => {
       {/* Notifications & Reminders Card */}
       <View style={styles.sectionCard}>
         <View style={styles.headerRowToggle}>
-          <Text style={styles.sectionHeaderNoMargin}>Reminders & Notifications</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionHeaderNoMargin}>Reminders & Notifications</Text>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'Reminders & Permissions Info',
+                  'Sift uses native iOS permissions to set reminders and add flyer events to your iPhone Calendar.\n\nIf permission was previously denied, you can re-enable it anytime in iPhone Settings ➔ Sift.'
+                )
+              }
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+            </TouchableOpacity>
+          </View>
           <Switch
             value={prefs.enableNotifications}
             onValueChange={handleToggleNotifications}

@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SiftItem, ItemTab } from '../models/types';
+import { addItemsToPhoneCalendar } from '../services/calendarService';
 import { Ionicons } from '@expo/vector-icons';
 
 interface EditItemModalProps {
@@ -37,6 +38,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
     onClose();
   };
 
+  const handleSyncSingleToCalendar = async () => {
+    await addItemsToPhoneCalendar([{ title: title || item.title, due_date: dueAt || item.due_at, source_snippet: item.source_snippet }]);
+  };
+
   return (
     <Modal visible={visible} animationType="fade" transparent={true}>
       <View style={styles.overlay}>
@@ -57,7 +62,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             placeholderTextColor="#64748b"
           />
 
-          <Text style={styles.label}>Due Date (YYYY-MM-DD)</Text>
+          <View style={styles.labelRow}>
+            <Text style={styles.label}>Due Date (YYYY-MM-DD)</Text>
+            <TouchableOpacity onPress={handleSyncSingleToCalendar} style={styles.calLink}>
+              <Ionicons name="calendar-outline" size={12} color="#0284c7" />
+              <Text style={styles.calLinkText}>Sync to Calendar</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.rowInput}>
             <Ionicons name="calendar-outline" size={18} color="#818cf8" style={{ marginRight: 6 }} />
             <TextInput
@@ -86,7 +97,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
               onPress={() => setTab('actionable')}
             >
               <Text style={[styles.tabChipText, tab === 'actionable' && styles.activeTabText]}>
-                📋 Actionable
+                ⚡ Actionable
               </Text>
             </TouchableOpacity>
 
@@ -139,6 +150,27 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: '800',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  calLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(2, 132, 199, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  calLinkText: {
+    color: '#38bdf8',
+    fontSize: 11,
+    fontWeight: '700',
+    marginLeft: 4,
   },
   label: {
     color: '#cbd5e1',

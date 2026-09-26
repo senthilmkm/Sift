@@ -269,15 +269,32 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
             <Text style={styles.saveBtnText}>Save Confirmed Items ({candidates.length})</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.calendarBtn} onPress={() => addItemsToPhoneCalendar(candidates)}>
-            <Ionicons name="calendar-outline" size={18} color="#fff" />
-            <Text style={styles.calendarBtnText}>Add All Dates to iPhone Calendar</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 4 }}>
+            <Text style={{ color: '#94a3b8', fontSize: 13, fontWeight: '600' }}>Optional Quick Tools</Text>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'Quick Tools Information',
+                  '• Sync to Calendar: Saves flyer due dates directly to your native iPhone Calendar app with a 24-hour advance reminder alarm.\n\n• Share to Class: Generates a formatted text summary ready to post in your class WhatsApp, iMessage, or email group.'
+                )
+              }
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="information-circle-outline" size={18} color="#38bdf8" />
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
-            <Ionicons name="share-social-outline" size={18} color="#fff" />
-            <Text style={styles.shareGroupBtnText}>Share Summary to Class Group Chat</Text>
-          </TouchableOpacity>
+          <View style={styles.secondaryToolsRow}>
+            <TouchableOpacity style={styles.calendarBtn} onPress={() => addItemsToPhoneCalendar(candidates)}>
+              <Ionicons name="calendar-outline" size={15} color="#38bdf8" />
+              <Text style={styles.calendarBtnText}>Sync to Calendar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
+              <Ionicons name="share-social-outline" size={15} color="#c084fc" />
+              <Text style={styles.shareGroupBtnText}>Share to Class</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
 
@@ -405,7 +422,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: '#10b981',
-    paddingVertical: 14,
+    paddingVertical: 15,
     borderRadius: 99,
     alignItems: 'center',
     marginTop: 16,
@@ -415,34 +432,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  secondaryToolsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+  },
   calendarBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0284c7',
-    paddingVertical: 14,
-    borderRadius: 99,
-    marginTop: 10,
+    backgroundColor: '#0f172a',
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#0284c7',
   },
   calendarBtnText: {
-    color: '#ffffff',
-    fontSize: 15,
+    color: '#38bdf8',
+    fontSize: 12,
     fontWeight: '700',
-    marginLeft: 8,
+    marginLeft: 6,
   },
   shareGroupBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6366f1',
-    paddingVertical: 14,
-    borderRadius: 99,
-    marginTop: 10,
+    backgroundColor: '#0f172a',
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#8b5cf6',
   },
   shareGroupBtnText: {
-    color: '#ffffff',
-    fontSize: 15,
+    color: '#c084fc',
+    fontSize: 12,
     fontWeight: '700',
-    marginLeft: 8,
+    marginLeft: 6,
   },
 });

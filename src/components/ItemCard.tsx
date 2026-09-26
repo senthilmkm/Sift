@@ -112,10 +112,21 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           {renderTextWithLinks(item.title, [styles.titleText, isDone && styles.strikethroughText])}
 
           <View style={styles.dueRow}>
-            {validDueDate ? (
-              <Text style={styles.dueText}>
-                📅 Due: {validDueDate}
-              </Text>
+                        {validDueDate ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    Alert.alert(
+                      'iPhone Calendar Sync',
+                      'Tapping "Sync" saves this event to your native iPhone Calendar app with an automated 24-hour advance alert so you never miss a deadline.'
+                    )
+                  }
+                  style={{ paddingLeft: 4 }}
+                >
+                  <Ionicons name="information-circle-outline" size={14} color="#818cf8" />
+                </TouchableOpacity>
+              </View>
             ) : null}
 
             {badgeLabel ? (
