@@ -1,10 +1,10 @@
 {
   "version": "1.0.0",
   "paywallTitle": "Unlock Unlimited Sift Pro",
-  "paywallSubtitle": "Scan unlimited flyers with Gemini 2.5 AI & never miss a school deadline again.",
+  "paywallSubtitle": "Scan unlimited flyers with Gemini 2.5 AI & never miss a important deadline again.",
   "promotionalBanner": {
     "enabled": true,
-    "bannerText": "⚡ Back to School Special - 50% OFF Annual Pass",
+    "bannerText": "⚡ Limited Time Special - 50% OFF Annual Pass",
     "badge": "BEST VALUE",
     "expiresAt": "2026-10-31T23:59:59Z"
   },
@@ -28,7 +28,7 @@
       "trialDays": 7,
       "promoMessage": "7 days free, then $4.99/month",
       "features": [
-        "Unlimited Gemini AI Flyer Scans",
+        "Unlimited Gemini AI Document Scans",
         "Single-Tap Urgent Alarms",
         "Export Tasks to Excel CSV Format",
         "Share Task Details via Native Share Sheet"

@@ -46,7 +46,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
             </View>
           </View>
 
-          {pricingData.plans.map((plan) => (
+          {pricingData.plans.filter((plan) => plan.enabled !== false).map((plan) => (
             <TouchableOpacity
               key={plan.id}
               style={[styles.planCard, plan.isPopular && styles.popularPlanCard]}
