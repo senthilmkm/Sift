@@ -98,13 +98,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             placeholderTextColor="#64748b"
           />
 
-          <View style={styles.labelRow}>
-            <Text style={styles.label}>Due Date (YYYY-MM-DD)</Text>
-            <TouchableOpacity onPress={handleSyncSingleToCalendar} style={styles.calLink}>
-              <Ionicons name="calendar-outline" size={12} color="#0284c7" />
-              <Text style={styles.calLinkText}>Add to iPhone Calendar</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.label}>Due Date (YYYY-MM-DD)</Text>
           <View style={styles.rowInput}>
             <Ionicons name="calendar-outline" size={18} color="#818cf8" style={{ marginRight: 6 }} />
             <TextInput
