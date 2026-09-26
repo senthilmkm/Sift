@@ -138,28 +138,26 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 <View style={styles.titleContainer}>
           {renderTextWithLinks(item.title, [styles.titleText, isDone && styles.strikethroughText])}
 
-          <View style={styles.dueRow}>
+                    <View style={styles.dueRow}>
             {validDueDate ? (
               <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
             ) : null}
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 3 }}>
-              {item.doc_filename ? (
-                <View style={styles.groupBadge}>
-                  <Text style={styles.groupBadgeText} numberOfLines={1}>📄 {item.doc_filename}</Text>
-                </View>
-              ) : null}
+            {item.doc_filename ? (
+              <View style={styles.groupBadge}>
+                <Text style={styles.groupBadgeText} numberOfLines={1}>📄 {item.doc_filename}</Text>
+              </View>
+            ) : null}
 
-              {linkInfo ? (
-                <TouchableOpacity
-                  style={styles.linkBadge}
-                  onPress={() => Linking.openURL(linkInfo.url)}
-                >
-                  <Ionicons name="open-outline" size={11} color="#38bdf8" />
-                  <Text style={styles.linkBadgeText} numberOfLines={1}>🔗 {linkInfo.domain}</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
+            {linkInfo ? (
+              <TouchableOpacity
+                style={styles.linkBadge}
+                onPress={() => Linking.openURL(linkInfo.url)}
+              >
+                <Ionicons name="open-outline" size={11} color="#38bdf8" />
+                <Text style={styles.linkBadgeText} numberOfLines={1}>🔗 {linkInfo.domain}</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
 
@@ -220,9 +218,10 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#1e293b',
     borderRadius: 12,
-    padding: 14,
-    marginVertical: 6,
-    marginHorizontal: 12,
+    padding: 10,
+    paddingHorizontal: 12,
+    marginVertical: 5,
+    marginHorizontal: 10,
     borderWidth: 1.5,
     borderColor: '#334155',
   },
@@ -243,7 +242,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkboxTouch: {
-    marginRight: 10,
+    marginRight: 6,
+    marginLeft: -4,
   },
   titleContainer: {
     flex: 1,
