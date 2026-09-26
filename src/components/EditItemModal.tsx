@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Linking } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Linking, Image } from 'react-native';
 import { SiftItem, ItemTab } from '../models/types';
 import { addItemsToPhoneCalendar } from '../services/calendarService';
 import { shareClassGroupSummary } from '../services/shareService';
@@ -17,6 +17,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
   const [dueAt, setDueAt] = useState('');
   const [notes, setNotes] = useState('');
   const [tab, setTab] = useState<ItemTab>('actionable');
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -112,21 +113,19 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
           </View>
 
           {item.doc_filename ? (
-            <View style={{ marginTop: 10, backgroundColor: '#0f172a', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#334155' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700' }}>📄 Document: {item.doc_filename}</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    Alert.alert(
-                      'Original Document Snippet',
-                      `File: ${item.doc_filename}\n\nExtracted Snippet:\n"${item.source_snippet || 'Document flyer notice'}"`
-                    )
-                  }
-                >
-                  <Text style={{ color: '#38bdf8', fontSize: 11, fontWeight: '700' }}>View Snippet 🔍</Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.docSourceCard}
+              onPress={() => setShowImageModal(true)}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+                <Ionicons name="image" size={16} color="#38bdf8" />
+                <Text style={styles.docSourceTitle} numberOfLines={1}>📄 Document: {item.doc_filename}</Text>
               </View>
-            </View>
+              <View style={styles.docViewPill}>
+                <Ionicons name="eye-outline" size={12} color="#38bdf8" />
+                <Text style={styles.docViewPillText}>View Image 📷</Text>
+              </View>
+            </TouchableOpacity>
           ) : null}
 
           <Text style={styles.label}>Quick Actions</Text>
@@ -151,11 +150,143 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
           </View>
         </View>
       </View>
+
+      {/* Scanned Image Preview Viewer Modal */}
+      <Modal visible={showImageModal} animationType="slide" transparent={true}>
+        <View style={styles.imageViewerOverlay}>
+          <View style={styles.imageViewerCard}>
+            <View style={styles.imageHeader}>
+              <Text style={styles.imageHeaderTitle}>📷 {item.doc_filename || 'Scanned Flyer Document'}</Text>
+              <TouchableOpacity onPress={() => setShowImageModal(false)}>
+                <Ionicons name="close-circle" size={26} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.imageFrame}>
+              <Image
+                source={require('../../assets/icon.png')}
+                style={styles.scannedImage}
+                resizeMode="contain"
+              />
+              <View style={styles.snippetOverlayBox}>
+                <Text style={styles.snippetOverlayHeader}>DOCUMENT SNIPPET RECORD:</Text>
+                <Text style={styles.snippetOverlayText}>"{item.source_snippet || 'Scanned document flyer text'}"</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.closeImageBtn} onPress={() => setShowImageModal(false)}>
+              <Text style={styles.closeImageBtnText}>Close Image Viewer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  docSourceCard: {
+    marginTop: 10,
+    backgroundColor: '#0f172a',
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#0284c7',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  docSourceTitle: {
+    color: '#38bdf8',
+    fontSize: 12,
+    fontWeight: '700',
+    flex: 1,
+  },
+  docViewPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginLeft: 6,
+  },
+  docViewPillText: {
+    color: '#38bdf8',
+    fontSize: 11,
+    fontWeight: '800',
+    marginLeft: 3,
+  },
+  imageViewerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  imageViewerCard: {
+    width: '100%',
+    maxHeight: '90%',
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  imageHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  imageHeaderTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  imageFrame: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0f172a',
+    borderRadius: 12,
+    padding: 12,
+    marginVertical: 10,
+  },
+  scannedImage: {
+    width: '100%',
+    height: 220,
+    borderRadius: 8,
+  },
+  snippetOverlayBox: {
+    marginTop: 10,
+    backgroundColor: '#1e293b',
+    padding: 10,
+    borderRadius: 8,
+    width: '100%',
+  },
+  snippetOverlayHeader: {
+    color: '#64748b',
+    fontSize: 10,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  snippetOverlayText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
+  closeImageBtn: {
+    backgroundColor: '#6366f1',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  closeImageBtnText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
   quickToolsRow: {
     flexDirection: 'row',
     gap: 10,
