@@ -169,12 +169,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </View>
       </View>
 
-      {item.source_snippet ? (
-        <View style={styles.snippetBox}>
-          <Text style={styles.snippetLabel}>Source Snippet:</Text>
-          {renderTextWithLinks(`"${item.source_snippet}"`, styles.snippetText)}
-        </View>
-      ) : null}
+
 
       {item.tab === 'informational' && onPromoteActionable && (
         <TouchableOpacity
