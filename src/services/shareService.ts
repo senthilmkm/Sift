@@ -18,18 +18,39 @@ export async function shareTaskDetails(item: SiftItem): Promise<void> {
 }
 
 export async function shareClassGroupSummary(
-  items: { title: string; due_date?: string | null; tab?: string }[],
+  items: { title: string; due_date?: string | null; notes?: string | null; source_snippet?: string | null; doc_filename?: string | null; tab?: string }[],
   flyerName: string = 'School Flyer'
 ): Promise<void> {
   if (items.length === 0) return;
 
-  let msg = `📋 *${flyerName} Summary:*\n`;
+  let msg = `📢 *${flyerName} Summary:*
+
+`;
   items.forEach((item) => {
     const dueStr = item.due_date ? ` (Due: ${item.due_date})` : '';
-    msg += `• ${item.title}${dueStr}\n`;
+    msg += `• *${item.title}*${dueStr}
+`;
+    if (item.notes && item.notes.trim()) {
+      msg += `  📝 Notes: ${item.notes.trim()}
+`;
+    }
+
+    const fullText = `${item.notes || ''} ${item.source_snippet || ''}`;
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/[^\s]*)/g;
+    const urls = Array.from(new Set(fullText.match(urlRegex) || []));
+    if (urls.length > 0) {
+      msg += `  🔗 Links: ${urls.join(', ')}
+`;
+    }
+    if (item.doc_filename) {
+      msg += `  📄 Source: ${item.doc_filename}
+`;
+    }
+    msg += `
+`;
   });
 
-  msg += `\n⚡ *Summarized in 5s with Sift iOS:* https://senthilmkm.github.io/Sift/index.html`;
+  msg += `✨ *Summarized in 5s with Sift iOS:* https://senthilmkm.github.io/Sift/index.html`;
 
   try {
     await Share.share({
@@ -40,7 +61,6 @@ export async function shareClassGroupSummary(
     console.error('Error sharing class summary:', error);
   }
 }
-
 function sanitizeCSVField(val: string | null | undefined): string {
   if (!val) return '""';
   const clean = val.replace(/"/g, '""').replace(/\r?\n/g, ' ');

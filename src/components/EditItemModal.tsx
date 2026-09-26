@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Linking } from 'react-native';
 import { SiftItem, ItemTab } from '../models/types';
 import { addItemsToPhoneCalendar } from '../services/calendarService';
 import { shareClassGroupSummary } from '../services/shareService';
@@ -27,6 +27,37 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
     }
   }, [item]);
 
+  const renderTextWithLinks = (text: string, style: any) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/[^\s]*)/g;
+    const parts = text.split(urlRegex);
+    const matches: string[] = text.match(urlRegex) || [];
+
+    if (matches.length === 0) {
+      return <Text style={style}>{text}</Text>;
+    }
+
+    return (
+      <Text style={style}>
+        {parts.map((part, i) => {
+          if (matches.includes(part)) {
+            const fullUrl = part.startsWith('http') ? part : `https://${part}`;
+            return (
+              <Text
+                key={i}
+                style={{ color: '#38bdf8', textDecorationLine: 'underline', fontWeight: '700' }}
+                onPress={() => Linking.openURL(fullUrl)}
+              >
+                {part} 🔗
+              </Text>
+            );
+          }
+          return <Text key={i}>{part}</Text>;
+        })}
+      </Text>
+    );
+  };
+
   if (!item) return null;
 
   const handleSave = () => {
@@ -44,7 +75,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
   };
 
   const handleShareSingleToClass = async () => {
-    await shareClassGroupSummary([{ title: title || item.title, due_date: dueAt || item.due_at }], 'Sift Flyer Item');
+    await shareClassGroupSummary([{ title: title || item.title, due_date: dueAt || item.due_at, notes: notes || item.notes, source_snippet: item.source_snippet, doc_filename: item.doc_filename }], 'Sift Flyer Item');
   };
 
   return (
@@ -71,7 +102,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             <Text style={styles.label}>Due Date (YYYY-MM-DD)</Text>
             <TouchableOpacity onPress={handleSyncSingleToCalendar} style={styles.calLink}>
               <Ionicons name="calendar-outline" size={12} color="#0284c7" />
-              <Text style={styles.calLinkText}>Sync to Calendar</Text>
+              <Text style={styles.calLinkText}>Add to iPhone Calendar</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.rowInput}>
@@ -94,6 +125,19 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             placeholderTextColor="#64748b"
             multiline
           />
+          {notes ? (
+            <View style={{ marginTop: 4, backgroundColor: '#0f172a', padding: 8, borderRadius: 6 }}>
+              <Text style={{ color: '#64748b', fontSize: 10, fontWeight: '700' }}>INTERACTIVE PREVIEW & LINKS:</Text>
+              {renderTextWithLinks(notes, { color: '#cbd5e1', fontSize: 12, marginTop: 2 })}
+            </View>
+          ) : null}
+
+          {item.source_snippet ? (
+            <View style={{ marginTop: 8, backgroundColor: '#0f172a', padding: 8, borderRadius: 6 }}>
+              <Text style={{ color: '#64748b', fontSize: 10, fontWeight: '700' }}>ORIGINAL FLYER SNIPPET:</Text>
+              {renderTextWithLinks(`"${item.source_snippet}"`, { color: '#cbd5e1', fontSize: 12, fontStyle: 'italic', marginTop: 2 })}
+            </View>
+          ) : null}
 
           <Text style={styles.label}>Tab Category</Text>
           <View style={styles.tabToggleRow}>
@@ -120,7 +164,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
           <View style={styles.quickToolsRow}>
             <TouchableOpacity style={styles.calLink} onPress={handleSyncSingleToCalendar}>
               <Ionicons name="calendar-outline" size={14} color="#38bdf8" />
-              <Text style={styles.calLinkText}>📅 Add to Calendar</Text>
+              <Text style={styles.calLinkText}>📅 Add to iPhone Calendar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.shareLink} onPress={handleShareSingleToClass}>
