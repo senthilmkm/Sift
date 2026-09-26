@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support & FAQs — Sift iOS App</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; padding: 2rem 5%; max-width: 900px; margin: 0 auto; }
+    .nav { margin-bottom: 2rem; }
+    .nav a { color: #818cf8; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    .nav a:hover { text-decoration: underline; }
+    h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #fff; }
+    p.lead { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; }
+    .faq-card { background: var(--card-bg); border: 1px solid #334155; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.25rem; }
+    .faq-card h3 { color: #fff; font-size: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .faq-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .file-badge-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+    .file-badge { background: #312e81; color: #a5b4fc; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-family: monospace; font-weight: 700; border: 1px solid #4338ca; }
+    ul { margin-left: 1.5rem; color: var(--text-muted); font-size: 0.95rem; }
+    li { margin-bottom: 0.3rem; }
+    .contact-box { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #4f46e5; border-radius: 1rem; padding: 2rem; text-align: center; margin-top: 3rem; }
+    .contact-box h2 { color: #fff; margin-bottom: 0.5rem; }
+    .contact-btn { display: inline-block; background: var(--primary); color: #fff; padding: 0.75rem 1.5rem; border-radius: 99px; text-decoration: none; font-weight: 700; margin-top: 1rem; }
+    footer { text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #334155; color: var(--text-muted); font-size: 0.85rem; }
+    footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">← Back to Sift Home</a>
+  </div>
+
+  <h1>Support Hub & Frequently Asked Questions</h1>
+  <p class="lead">Need help with Sift? Find answers to common questions about document scanning, file formats, notification alarms, and subscriptions below.</p>
+
+  <!-- FAQ 1: Supported File Extensions -->
+  <div class="faq-card">
+    <h3>📄 What file extensions and document types are supported by Sift?</h3>
+    <p>Sift accepts almost all document and image formats sent in school newsletters, email attachments, or web portals via the iOS Share Sheet and Camera scan:</p>
+    <div class="file-badge-grid">
+      <span class="file-badge">.PDF</span>
+      <span class="file-badge">.JPG</span>
+      <span class="file-badge">.JPEG</span>
+      <span class="file-badge">.PNG</span>
+      <span class="file-badge">.HEIC</span>
+      <span class="file-badge">.HEIF</span>
+      <span class="file-badge">.WEBP</span>
+      <span class="file-badge">.DOCX</span>
+      <span class="file-badge">.DOC</span>
+      <span class="file-badge">.XLSX</span>
+      <span class="file-badge">.XLS</span>
+      <span class="file-badge">.TXT</span>
+      <span class="file-badge">.RTF</span>
+    </div>
+  </div>
+
+  <!-- FAQ 2: iOS Share Sheet -->
+  <div class="faq-card">
+    <h3>📥 How do I share an email attachment from Gmail or Mail into Sift?</h3>
+    <p>Open any PDF or flyer attachment in Gmail, Apple Mail, or Files ➔ tap the iOS <strong>Share</strong> button ➔ select <strong>Sift</strong>. Sift will open automatically and extract your actionable items with Gemini AI!</p>
+    <p><em>Pro Tip:</em> Scroll to the far right of your share icons, tap <strong>More (...)</strong>, tap <strong>Edit</strong>, and tap <strong>+</strong> next to Sift to pin Sift as your <strong>#1 Favorite Share Target</strong>.</p>
+  </div>
+
+  <!-- FAQ 3: Photographing Flyers -->
+  <div class="faq-card">
+    <h3>📷 How do I scan paper flyers on my fridge?</h3>
+    <p>Tap the center <strong>📷 Quick Scan</strong> button in Sift ➔ choose <strong>Take Photo</strong> ➔ snap a picture of your paper flyer. Gemini AI sifts through the document and presents your 15-second tap-to-confirm screen.</p>
+  </div>
+
+  <!-- FAQ 4: Reminders & Urgent Alarms -->
+  <div class="faq-card">
+    <h3>⏰ How do I customize reminder times or set urgent alarms?</h3>
+    <p>In <strong>⚙️ Settings ➔ Reminders & Notifications</strong>, use the interactive vertical scroll wheel to set your preferred default reminder time (e.g. 7:30 PM Night Before or 8:00 AM Same Day). For high-importance deadlines, tap the <strong>⚡ Lightning Bolt</strong> icon on any task card to enable a high-priority urgent alarm.</p>
+  </div>
+
+  <!-- FAQ 5: Editing Items -->
+  <div class="faq-card">
+    <h3>✏️ Can I edit the due date or title after saving an item?</h3>
+    <p>Yes! Tap the pencil ✏️ edit icon on any task card in the Actionable or Informational tab to open the <strong>Edit Item Modal</strong>. You can update the title, due date, personal notes, or switch between Actionable and Informational tabs.</p>
+  </div>
+
+  <!-- FAQ 6: Auto Data Retention & Reset -->
+  <div class="faq-card">
+    <h3>🧹 How does auto-data retention work?</h3>
+    <p>Under <strong>⚙️ Settings ➔ Auto Data Retention & Deletion</strong>, choose how long completed items are kept (1w, 2w, 4w, 90d, 180d, or Never). Sift automatically cleans up old records to keep your phone clutter-free.</p>
+  </div>
+
+  <!-- FAQ 7: Subscriptions -->
+  <div class="faq-card">
+    <h3>💳 How do subscriptions & payments work?</h3>
+    <p>Sift offers 5 free document scans per month. Sift Pro unlocks unlimited Gemini AI document scans, urgent alarms, spouse email sharing, and CSV/PDF export. Managed safely via your Apple ID in iOS Settings.</p>
+  </div>
+
+  <!-- Direct Contact Box -->
+  <div class="contact-box">
+    <h2>Still Have Questions?</h2>
+    <p style="color: #cbd5e1;">Our support team is here to help you get the most out of Sift.</p>
+    <a href="mailto:senthil930@gmail.com" class="contact-btn">✉️ Contact Support (senthil930@gmail.com)</a>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="support.html">Support Hub</a> |
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+    <p style="margin-top: 1rem;">© 2026 Sift iOS. Support Contact: senthil930@gmail.com</p>
+  </footer>
+</body>
+</html>

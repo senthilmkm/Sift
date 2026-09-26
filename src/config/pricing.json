@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "paywallTitle": "Unlock Unlimited Sift Pro",
+  "paywallSubtitle": "Scan unlimited flyers with Gemini 2.5 AI & never miss a school deadline again.",
+  "promotionalBanner": {
+    "enabled": true,
+    "bannerText": "⚡ Back to School Special - 50% OFF Annual Pass",
+    "badge": "BEST VALUE",
+    "expiresAt": "2026-10-31T23:59:59Z"
+  },
+  "freeTier": {
+    "enabled": true,
+    "freeScansPerMonth": 5,
+    "hasUrgentAlarms": true,
+    "hasExport": false
+  },
+  "plans": [
+    {
+      "id": "sift_monthly_499",
+      "productId": "com.sift.app.monthly499",
+      "name": "Monthly Pro",
+      "price": "$4.99",
+      "priceMicros": 4990000,
+      "currency": "USD",
+      "billingPeriod": "monthly",
+      "enabled": true,
+      "isPopular": false,
+      "trialDays": 7,
+      "promoMessage": "7 days free, then $4.99/month",
+      "features": [
+        "Unlimited Gemini AI Flyer Scans",
+        "Single-Tap Urgent Alarms",
+        "Export Tasks to Excel CSV Format",
+        "Share Task Details via Native Share Sheet"
+      ]
+    },
+    {
+      "id": "sift_annual_2999",
+      "productId": "com.sift.app.annual2999",
+      "name": "Annual Pass",
+      "price": "$29.99",
+      "equivalentMonthlyPrice": "$2.50/mo",
+      "priceMicros": 29990000,
+      "currency": "USD",
+      "billingPeriod": "annual",
+      "enabled": true,
+      "isPopular": true,
+      "discountPercentage": 50,
+      "trialDays": 7,
+      "promoMessage": "Save 50% ($2.50/mo billed annually)",
+      "features": [
+        "Everything in Monthly",
+        "Save 50% vs Monthly billing",
+        "Priority Gemini AI Processing",
+        "Export Tasks to Excel CSV Format"
+      ]
+    },
+    {
+      "id": "sift_lifetime_4999",
+      "productId": "com.sift.app.lifetime4999",
+      "name": "Lifetime Pass",
+      "price": "$49.99",
+      "priceMicros": 49990000,
+      "currency": "USD",
+      "billingPeriod": "one_time",
+      "enabled": false,
+      "isPopular": false,
+      "trialDays": 0,
+      "promoMessage": "Pay once, unlock forever",
+      "features": [
+        "Lifetime access to all future updates",
+        "No monthly recurring fees",
+        "All Pro Features Included"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Sift iOS App</title>
+  <meta name="description" content="Sift Privacy Policy - Learn how Sift protects your data, handles AI image scanning with Google Gemini, and prioritizes local storage.">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-purple: #c084fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.7; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
+    .logo { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .logo span { background: linear-gradient(135deg, #818cf8, var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; transition: color 0.2s; }
+    nav a:hover { color: #fff; }
+    .container { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
+    .header-box { margin-bottom: 2.5rem; border-bottom: 1px solid #334155; padding-bottom: 1.5rem; }
+    h1 { font-size: 2.5rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+    .effective-date { color: var(--accent-purple); font-weight: 600; font-size: 0.95rem; }
+    .content-card { background: var(--card-bg); padding: 2.5rem; border-radius: 1.25rem; border: 1px solid #334155; margin-bottom: 2rem; }
+    h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-top: 1.8rem; margin-bottom: 0.75rem; border-left: 4px solid var(--primary); padding-left: 0.75rem; }
+    h2:first-of-type { margin-top: 0; }
+    p { color: var(--text-muted); margin-bottom: 1rem; font-size: 1rem; }
+    ul { color: var(--text-muted); margin-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.5rem; }
+    strong { color: #f1f5f9; }
+    a { color: #818cf8; text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    .highlight-box { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 0.75rem; padding: 1.25rem; margin: 1.5rem 0; }
+    .highlight-box p { margin-bottom: 0; color: #e2e8f0; font-size: 0.95rem; }
+    footer { text-align: center; padding: 3rem 1rem; border-top: 1px solid #334155; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+    footer nav { margin-bottom: 1rem; }
+    footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">⚡ <span>Sift</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="support.html">Support & FAQs</a>
+      <a href="privacy.html" style="color: #fff;">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="header-box">
+      <h1>Privacy Policy</h1>
+      <p class="effective-date">Effective Date: September 26, 2026 | Version 1.2</p>
+    </div>
+
+    <div class="content-card">
+      <h2>1. Overview & Core Philosophy</h2>
+      <p>Sift ("we", "our", or "us") is dedicated to simplifying family organization while safeguarding user privacy. Sift is designed to scan school flyers, event notices, newsletters, and shared PDF documents to extract actionable deadlines, fees, and event reminders. We believe your personal documents belong solely to you.</p>
+
+      <h2>2. Data Collection & iOS Permissions</h2>
+      <p>Sift requests minimal iOS permissions required to deliver document scanning and reminder alerts:</p>
+      <ul>
+        <li><strong>Camera Access:</strong> Used exclusively when you take a photo of a physical paper flyer or newsletter within the app.</li>
+        <li><strong>Photo Library Access:</strong> Used when you import existing photos or documents from your iOS Camera Roll.</li>
+        <li><strong>Notifications Permission:</strong> Used to deliver localized background push notifications and urgent alarms for approaching due dates.</li>
+      </ul>
+      <p>We do not track your location, gather contact lists, sell personal data, or utilize cross-site advertising trackers.</p>
+
+      <h2>3. Artificial Intelligence & Processing (Google Gemini API)</h2>
+      <p>To extract task titles, dates, links, and actionable details from complex multi-page flyers or images, Sift utilizes <strong>Google Gemini 2.5 Flash API</strong> via our secure Cloudflare Worker Proxy server.</p>
+      <div class="highlight-box">
+        <p><strong>🔒 Zero Data Retention & AI Disclaimers:</strong></p>
+        <ul>
+          <li>Image data transmitted to the Gemini API is processed transiently in server memory to extract text and JSON structured data.</li>
+          <li>Your document photos and PDFs are <strong>NEVER</strong> used to train Google or third-party AI models.</li>
+          <li>No scanned images or parsed text are retained on cloud databases or external servers.</li>
+        </ul>
+      </div>
+
+      <h2>4. On-Device SQLite Local Storage</h2>
+      <p>All extracted task items, titles, due dates, custom notes, archived items, and app settings are stored locally on your iOS device using SQLite database storage. Your data remains on your phone and is backed up only according to your personal iOS iCloud device backup settings.</p>
+
+      <h2>5. AI Accuracy & Human-in-the-Loop Review</h2>
+      <p>Artificial Intelligence algorithms (including Optical Character Recognition and Natural Language Understanding) parse document context with high accuracy. However, AI models may occasionally misread handwritten text, low-resolution flyers, or complex layout formatting. Sift incorporates a mandatory <strong>15-Second Confirmation & Edit Screen</strong>, allowing you to review, edit, or correct extracted titles and due dates before committing items to your task database.</p>
+
+      <h2>6. Children's Privacy (COPPA Compliance)</h2>
+      <p>Sift is designed for parents, guardians, students, and educators. We do not knowingly collect, request, or harvest personally identifiable information from children under the age of 13. Scanned flyers are processed strictly for local task organization.</p>
+
+      <h2>7. Data Control & Deletion</h2>
+      <p>You maintain 100% control over your stored data. You can edit, archive, or permanently delete tasks at any time within the app. You may also execute a full app data wipe at any time via <strong>Settings &gt; Reset App Data</strong>.</p>
+
+      <h2>8. Contact & Support</h2>
+      <p>If you have any questions or privacy concerns regarding Sift, please contact our support team:</p>
+      <p>Email: <a href="mailto:senthil930@gmail.com">senthil930@gmail.com</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="support.html">Support & FAQs</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+    <p>© 2026 Sift iOS. All rights reserved. Contact: <a href="mailto:senthil930@gmail.com">senthil930@gmail.com</a></p>
+  </footer>
+</body>
+</html>

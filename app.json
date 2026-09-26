@@ -1,25 +1,45 @@
 {
   "expo": {
     "name": "Sift",
-    "slug": "Sift",
+    "slug": "sift",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
     "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sift.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Sift requires camera access to photograph paper school flyers and notices on your fridge.",
+        "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",
+        "NSMicrophoneUsageDescription": "Sift does not record audio."
       },
-      "predictiveBackGestureEnabled": false
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.sift.app"]
+      }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "plugins": [
+      "expo-updates",
+      "expo-sqlite",
+      "expo-notifications",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Sift requires camera access to photograph paper school flyers and notices on your fridge."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sift requires photo library access to select flyer photos and PDF notices."
+        }
+      ]
+    ]
   }
 }
