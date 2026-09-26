@@ -5,6 +5,7 @@ import { getUserPreferences, updateUserPreferences, autoDeleteOldItems, resetDat
 import { UserPreferences, AutoDeletePeriod } from '../models/types';
 import { TimeRollerPicker } from '../components/TimeRollerPicker';
 import { sendTestNotification, checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
+import { exportAllTasksToExcel } from '../services/shareService';
 import { PaywallModal } from '../components/PaywallModal';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -145,6 +146,16 @@ export const SettingsScreen: React.FC = () => {
             Notifications are currently disabled. Toggle ON to receive deadline reminders.
           </Text>
         )}
+      </View>
+
+      {/* Data Export Section */}
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionHeader}>Data Export</Text>
+        <Text style={styles.subText}>Export your Actionable & Informational tasks to Excel:</Text>
+        <TouchableOpacity style={styles.exportBtn} onPress={exportAllTasksToExcel}>
+          <Ionicons name="stats-chart" size={18} color="#fff" />
+          <Text style={styles.exportBtnText}>EXPORT ALL TASKS TO EXCEL (.CSV)</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Auto Data Retention Section */}
@@ -311,6 +322,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     marginLeft: 6,
+  },
+  exportBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 4,
+  },
+  exportBtnText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '800',
+    marginLeft: 8,
   },
   subText: {
     color: '#94a3b8',
