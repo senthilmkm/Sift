@@ -111,6 +111,24 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             </TouchableOpacity>
           </View>
 
+          {item.doc_filename ? (
+            <View style={{ marginTop: 10, backgroundColor: '#0f172a', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#334155' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700' }}>📄 Source File: {item.doc_filename}</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    Alert.alert(
+                      'Original Document Snippet',
+                      `File: ${item.doc_filename}\n\nExtracted Snippet:\n"${item.source_snippet || 'Document flyer notice'}"`
+                    )
+                  }
+                >
+                  <Text style={{ color: '#38bdf8', fontSize: 11, fontWeight: '700' }}>View Snippet 🔍</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : null}
+
           <Text style={styles.label}>Quick Actions</Text>
           <View style={styles.quickToolsRow}>
             <TouchableOpacity style={styles.calLink} onPress={handleSyncSingleToCalendar}>
