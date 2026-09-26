@@ -275,7 +275,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
               onPress={() =>
                 Alert.alert(
                   'Quick Tools Information',
-                  '• Add to iPhone Calendar: Saves flyer due dates directly to your native iPhone Calendar app with a 24-hour advance reminder alarm.\n\n• Share to Class Group: Generates a formatted text summary ready to post in your class WhatsApp, iMessage, or email group.'
+                  '• Add to iPhone Calendar: Saves flyer due dates directly to your native iPhone Calendar app with a 24-hour advance reminder alarm.\n\n• Share to Class Group: Generates a formatted text summary ready to post in your team, family, WhatsApp, or group chat.'
                 )
               }
               style={{ paddingLeft: 6 }}
@@ -292,7 +292,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
             <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
               <Ionicons name="share-social-outline" size={15} color="#c084fc" />
-              <Text style={styles.shareGroupBtnText}>📱 Share to Class Group</Text>
+              <Text style={styles.shareGroupBtnText}>📱 Share Summary / Group</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

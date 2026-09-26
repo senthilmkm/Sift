@@ -19,7 +19,7 @@ export async function shareTaskDetails(item: SiftItem): Promise<void> {
 
 export async function shareClassGroupSummary(
   items: { title: string; due_date?: string | null; notes?: string | null; source_snippet?: string | null; doc_filename?: string | null; tab?: string }[],
-  flyerName: string = 'School Flyer'
+  flyerName: string = 'Document Notice'
 ): Promise<void> {
   if (items.length === 0) return;
 
@@ -82,13 +82,13 @@ export async function exportAllTasksToExcel(): Promise<void> {
     let csvContent = `=== SECTION 1: ACTIONABLE TASKS (${actionable.length}) ===\n`;
     csvContent += `Tab,Title,Due Date,Status,Urgent,Flyer Document,Source Snippet,Notes\n`;
     actionable.forEach((item) => {
-      csvContent += `${sanitizeCSVField('Actionable')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'No Due Date')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'School Flyer')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
+      csvContent += `${sanitizeCSVField('Actionable')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'No Due Date')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
     });
 
     csvContent += `\n=== SECTION 2: INFORMATIONAL REFERENCE NOTES (${informational.length}) ===\n`;
     csvContent += `Tab,Title,Due Date,Status,Urgent,Flyer Document,Source Snippet,Notes\n`;
     informational.forEach((item) => {
-      csvContent += `${sanitizeCSVField('Informational')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'N/A')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'School Flyer')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
+      csvContent += `${sanitizeCSVField('Informational')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'N/A')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
     });
 
     const file = new File(Paths.cache, 'Sift_Tasks_Export.csv');
@@ -132,7 +132,7 @@ export function exportItemsToCSV(items: SiftItem[]): string {
     sanitizeCSVField(i.due_at || 'No Due Date'),
     sanitizeCSVField(i.status),
     sanitizeCSVField(i.is_urgent ? 'Yes' : 'No'),
-    sanitizeCSVField(i.doc_filename || 'School Flyer'),
+    sanitizeCSVField(i.doc_filename || 'Document Notice'),
     sanitizeCSVField(i.source_snippet),
     sanitizeCSVField(i.created_at),
   ]);

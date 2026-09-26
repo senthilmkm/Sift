@@ -27,38 +27,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
     }
   }, [item]);
 
-  const renderTextWithLinks = (text: string, style: any) => {
-    if (!text) return null;
-    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/[^\s]*)/g;
-    const parts = text.split(urlRegex);
-    const matches: string[] = text.match(urlRegex) || [];
-
-    if (matches.length === 0) {
-      return <Text style={style}>{text}</Text>;
-    }
-
-    return (
-      <Text style={style}>
-        {parts.map((part, i) => {
-          if (matches.includes(part)) {
-            const fullUrl = part.startsWith('http') ? part : `https://${part}`;
-            return (
-              <Text
-                key={i}
-                style={{ color: '#38bdf8', textDecorationLine: 'underline', fontWeight: '700' }}
-                onPress={() => Linking.openURL(fullUrl)}
-              >
-                {part} 🔗
-              </Text>
-            );
-          }
-          return <Text key={i}>{part}</Text>;
-        })}
-      </Text>
-    );
-  };
-
-  if (!item) return null;
+    if (!item) return null;
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -119,19 +88,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             placeholderTextColor="#64748b"
             multiline
           />
-          {notes ? (
-            <View style={{ marginTop: 4, backgroundColor: '#0f172a', padding: 8, borderRadius: 6 }}>
-              <Text style={{ color: '#64748b', fontSize: 10, fontWeight: '700' }}>INTERACTIVE PREVIEW & LINKS:</Text>
-              {renderTextWithLinks(notes, { color: '#cbd5e1', fontSize: 12, marginTop: 2 })}
-            </View>
-          ) : null}
 
-          {item.source_snippet ? (
-            <View style={{ marginTop: 8, backgroundColor: '#0f172a', padding: 8, borderRadius: 6 }}>
-              <Text style={{ color: '#64748b', fontSize: 10, fontWeight: '700' }}>ORIGINAL FLYER SNIPPET:</Text>
-              {renderTextWithLinks(`"${item.source_snippet}"`, { color: '#cbd5e1', fontSize: 12, fontStyle: 'italic', marginTop: 2 })}
-            </View>
-          ) : null}
 
           <Text style={styles.label}>Tab Category</Text>
           <View style={styles.tabToggleRow}>
@@ -163,7 +120,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
 
             <TouchableOpacity style={styles.shareLink} onPress={handleShareSingleToClass}>
               <Ionicons name="share-social-outline" size={14} color="#c084fc" />
-              <Text style={styles.shareLinkText}>📱 Share to Class Group</Text>
+              <Text style={styles.shareLinkText}>📱 Share Summary / Group</Text>
             </TouchableOpacity>
           </View>
 

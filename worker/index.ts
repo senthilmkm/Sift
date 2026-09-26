@@ -43,7 +43,7 @@ export default {
 
       const todayStr = new Date().toISOString().split('T')[0];
       const prompt = `
-Analyze this school notice, flyer, or newsletter image. Be EXTREMELY SELECTIVE and HIGHLY CONCISE.
+Analyze this document, paper notice, flyer, form, or letter image. Be EXTREMELY SELECTIVE and HIGHLY CONCISE.
 Do NOT convert every line or sentence into an item. Sift down the document to at most 3 to 5 critical takeaways.
 Current Date today is: ${todayStr}.
 
@@ -52,11 +52,11 @@ CRITICAL FILTERING & DUE DATE RULES:
    - Only extract items requiring explicit user action: deadline date, order link/website URL, fee payment, permission slip return date, yearbook orders, or specific items to bring.
    - Example (Yearbook Flyer): "Order Yearbook ($25) at yearbookordercenter.com by May 15" -> Title: "Order Yearbook ($25)", Due Date: "2026-05-15".
    - CONTEXT-BASED DUE DATES: Carefully examine the ENTIRE image/flyer context. Look for dates, deadlines, days of week, order end dates, event dates, or month references anywhere on the page (e.g. "Order by Friday", "End of May", "Due Oct 15", "Sale ends 12/01").
-   - YEAR INFERENCE: If the document omits the year (e.g. "Due May 15"), infer the correct current or upcoming school calendar year relative to Today (${todayStr}).
+   - YEAR INFERENCE: If the document omits the year (e.g. "Due May 15"), infer the correct current or upcoming calendar year relative to Today (${todayStr}).
    - SOONEST FLYER DATE INHERITANCE: Every actionable item MUST have a valid due_date. If an actionable item lacks a specific deadline printed right beside it, inspect all dates present on the flyer and assign the SOONEST (earliest upcoming) date found on the document. Only if NO date exists anywhere on the entire page, default due_date to 7 days from Today (${todayStr}) so an alert can be scheduled.
 2. "informational" (Selective Reference Only):
    - Only extract major key events, theme days (e.g. Spirit Week themes, Picture Day dress code), or critical schedules.
-   - IGNORE boilerplate text, principal greetings, school addresses, generic rules, and newsletter fluff.
+   - IGNORE boilerplate text, header greetings, organization addresses, generic rules, and newsletter fluff.
 3. Keep titles short, clean, and actionable (5-10 words max).
 `;
 
