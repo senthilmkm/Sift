@@ -269,30 +269,30 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
             <Text style={styles.saveBtnText}>Save Confirmed Items ({candidates.length})</Text>
           </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, marginBottom: 4 }}>
-            <Text style={{ color: '#94a3b8', fontSize: 13, fontWeight: '600' }}>Optional Quick Tools</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 18, marginBottom: 8 }}>
+            <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '700', letterSpacing: 1 }}>─── Optional Quick Tools ───</Text>
             <TouchableOpacity
               onPress={() =>
                 Alert.alert(
                   'Quick Tools Information',
-                  '• Sync to Calendar: Saves flyer due dates directly to your native iPhone Calendar app with a 24-hour advance reminder alarm.\n\n• Share to Class: Generates a formatted text summary ready to post in your class WhatsApp, iMessage, or email group.'
+                  '• Add to iPhone Calendar: Saves flyer due dates directly to your native iPhone Calendar app with a 24-hour advance reminder alarm.\n\n• Share to Class Group: Generates a formatted text summary ready to post in your class WhatsApp, iMessage, or email group.'
                 )
               }
               style={{ paddingLeft: 6 }}
             >
-              <Ionicons name="information-circle-outline" size={18} color="#38bdf8" />
+              <Ionicons name="information-circle-outline" size={16} color="#38bdf8" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.secondaryToolsRow}>
             <TouchableOpacity style={styles.calendarBtn} onPress={() => addItemsToPhoneCalendar(candidates)}>
               <Ionicons name="calendar-outline" size={15} color="#38bdf8" />
-              <Text style={styles.calendarBtnText}>Sync to Calendar</Text>
+              <Text style={styles.calendarBtnText}>📅 Add to iPhone Calendar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
               <Ionicons name="share-social-outline" size={15} color="#c084fc" />
-              <Text style={styles.shareGroupBtnText}>Share to Class</Text>
+              <Text style={styles.shareGroupBtnText}>📱 Share to Class Group</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
