@@ -292,7 +292,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
             <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
               <Ionicons name="share-social-outline" size={15} color="#c084fc" />
-              <Text style={styles.shareGroupBtnText}>📱 Share Summary / Group</Text>
+              <Text style={styles.shareGroupBtnText}>📱 Share Summary</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

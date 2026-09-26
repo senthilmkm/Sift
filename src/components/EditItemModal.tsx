@@ -118,7 +118,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.shareLink} onPress={handleShareSingleToClass}>
-              <Text style={styles.shareLinkText}>📱 Share Summary / Group</Text>
+              <Text style={styles.shareLinkText}>📱 Share Summary</Text>
             </TouchableOpacity>
           </View>
 
