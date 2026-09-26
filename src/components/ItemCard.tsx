@@ -144,9 +144,18 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             ) : null}
 
             {item.doc_filename ? (
-              <View style={styles.groupBadge}>
+              <TouchableOpacity
+                style={styles.groupBadge}
+                onPress={() => {
+                  if (onEditItem) {
+                    onEditItem(item);
+                  } else {
+                    Alert.alert('Source Document', `File: ${item.doc_filename}\n\nScanned document flyer record.`);
+                  }
+                }}
+              >
                 <Text style={styles.groupBadgeText} numberOfLines={1}>📄 {item.doc_filename}</Text>
-              </View>
+              </TouchableOpacity>
             ) : null}
 
             {linkInfo ? (
