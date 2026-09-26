@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SiftItem, ItemTab } from '../models/types';
 import { addItemsToPhoneCalendar } from '../services/calendarService';
+import { shareClassGroupSummary } from '../services/shareService';
 import { Ionicons } from '@expo/vector-icons';
 
 interface EditItemModalProps {
@@ -39,7 +40,11 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
   };
 
   const handleSyncSingleToCalendar = async () => {
-    await addItemsToPhoneCalendar([{ title: title || item.title, due_date: dueAt || item.due_at, source_snippet: item.source_snippet }]);
+    await addItemsToPhoneCalendar([{ title: title || item.title, due_date: dueAt || item.due_at, source_snippet: notes || item.notes || item.source_snippet }]);
+  };
+
+  const handleShareSingleToClass = async () => {
+    await shareClassGroupSummary([{ title: title || item.title, due_date: dueAt || item.due_at }], 'Sift Flyer Item');
   };
 
   return (
@@ -111,6 +116,19 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             </TouchableOpacity>
           </View>
 
+          <Text style={styles.label}>Quick Actions</Text>
+          <View style={styles.quickToolsRow}>
+            <TouchableOpacity style={styles.calLink} onPress={handleSyncSingleToCalendar}>
+              <Ionicons name="calendar-outline" size={14} color="#38bdf8" />
+              <Text style={styles.calLinkText}>📅 Add to Calendar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.shareLink} onPress={handleShareSingleToClass}>
+              <Ionicons name="share-social-outline" size={14} color="#c084fc" />
+              <Text style={styles.shareLinkText}>📱 Share to Class Group</Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.actionsRow}>
             <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
               <Text style={styles.cancelBtnText}>Cancel</Text>
@@ -127,6 +145,28 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
 };
 
 const styles = StyleSheet.create({
+  quickToolsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 4,
+  },
+  shareLink: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(192, 132, 252, 0.15)',
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#c084fc',
+  },
+  shareLinkText: {
+    color: '#c084fc',
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 6,
+  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(15, 23, 42, 0.8)',
@@ -159,12 +199,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   calLink: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'rgba(2, 132, 199, 0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#0284c7',
   },
   calLinkText: {
     color: '#38bdf8',
