@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sift — Turn Paper Flyers & Email PDFs into 15-Second Action Items</title>
+  <meta name="description" content="Sift uses Google Gemini AI to instantly scan school flyers, newsletters, and PDFs into actionable tasks and reminders.">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
+    .logo { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .logo span { background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; transition: color 0.2s; }
+    nav a:hover { color: #fff; }
+    .hero { text-align: center; padding: 5rem 1rem 3rem; max-width: 900px; margin: 0 auto; }
+    .hero h1 { font-size: 3.2rem; font-weight: 900; line-height: 1.15; margin-bottom: 1.2rem; background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 0.75rem; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: #fff; padding: 1rem 2rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); transition: transform 0.2s, box-shadow 0.2s; }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6); }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+    .feature-card { background: var(--card-bg); padding: 2.5rem; border-radius: 1.25rem; border: 1px solid #334155; transition: transform 0.2s; }
+    .feature-card:hover { transform: translateY(-4px); }
+    .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .feature-card h3 { font-size: 1.4rem; margin-bottom: 0.75rem; color: #fff; }
+    .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+    .ext-box { max-width: 900px; margin: 2rem auto 4rem; text-align: center; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid #334155; }
+    .ext-box h3 { color: #fff; margin-bottom: 1rem; }
+    .file-badge-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    .file-badge { background: #312e81; color: #a5b4fc; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.9rem; font-family: monospace; font-weight: 700; border: 1px solid #4338ca; }
+    footer { text-align: center; padding: 3rem 1rem; border-top: 1px solid #334155; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
+    footer nav { margin-bottom: 1rem; }
+    footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">⚡ <span>Sift</span></a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="support.html">Support & FAQs</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Turn School Flyers & PDFs Into 15-Second Action Items</h1>
+      <p>Never miss a field trip deadline, spirit day, or permission slip again. Photograph paper notices or share attachments from Mail—Google Gemini AI handles the rest.</p>
+      <a href="https://apple.com" class="cta-btn">
+         Download on the App Store
+      </a>
+    </section>
+
+    <section id="features" class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>Gemini Multimodal AI</h3>
+        <p>1-pass AI extraction reads multi-page newsletters, tables, and handwritten dates with high precision.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>1-Tap Urgent Alarms</h3>
+        <p>High-priority same-day alerts ensure critical forms are signed before morning drop-off.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>100% Privacy Focused</h3>
+        <p>Your documents stay in local device storage. We never scan your inbox or sell your family data.</p>
+      </div>
+    </section>
+
+    <section class="ext-box">
+      <h3>Supports All Major Document & Image Formats</h3>
+      <div class="file-badge-grid">
+        <span class="file-badge">.PDF</span>
+        <span class="file-badge">.JPG</span>
+        <span class="file-badge">.JPEG</span>
+        <span class="file-badge">.PNG</span>
+        <span class="file-badge">.HEIC</span>
+        <span class="file-badge">.HEIF</span>
+        <span class="file-badge">.WEBP</span>
+        <span class="file-badge">.DOCX</span>
+        <span class="file-badge">.DOC</span>
+        <span class="file-badge">.XLSX</span>
+        <span class="file-badge">.XLS</span>
+        <span class="file-badge">.TXT</span>
+        <span class="file-badge">.RTF</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="support.html">Support & FAQs</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+    <p>© 2026 Sift iOS. All rights reserved. Support Contact: <a href="mailto:senthil930@gmail.com" style="color: #818cf8;">senthil930@gmail.com</a></p>
+  </footer>
+</body>
+</html>

@@ -48,6 +48,13 @@ export async function exportAllTasksToExcel(): Promise<void> {
     });
 
     const file = new File(Paths.cache, 'Sift_Tasks_Export.csv');
+    if (file.exists) {
+      try {
+        file.delete();
+      } catch (e) {
+        // Ignore deletion error
+      }
+    }
     file.create();
     file.write(csvContent);
 

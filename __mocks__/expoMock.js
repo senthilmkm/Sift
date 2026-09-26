@@ -20,8 +20,10 @@ module.exports = {
   File: class {
     constructor(dir, name) {
       this.uri = `${dir}/${name}`;
+      this.exists = false;
     }
     create() {}
+    delete() {}
     write() {}
   },
 };
