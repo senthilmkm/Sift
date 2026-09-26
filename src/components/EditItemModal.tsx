@@ -114,7 +114,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
           {item.doc_filename ? (
             <View style={{ marginTop: 10, backgroundColor: '#0f172a', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#334155' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700' }}>📄 Source File: {item.doc_filename}</Text>
+                <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700' }}>📄 Document: {item.doc_filename}</Text>
                 <TouchableOpacity
                   onPress={() =>
                     Alert.alert(

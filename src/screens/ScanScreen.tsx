@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { extractItemsFromDocument } from '../services/geminiExtractor';
+import { extractItemsFromDocument, generateContextualDocumentName } from '../services/geminiExtractor';
 import { saveDocumentAndItems, getUserPreferences, updateUserPreferences } from '../database/db';
 import { CandidateItem, SiftDocument } from '../models/types';
 import { scheduleItemNotification } from '../services/notificationService';
@@ -149,10 +149,11 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
     const prefs = await getUserPreferences();
 
+    const contextualName = generateContextualDocumentName(candidates);
     const doc: SiftDocument = {
       id: 'doc_' + Math.random().toString(36).substring(2, 9),
       origin: 'camera',
-      filename: 'School_Notice.jpg',
+      filename: contextualName,
       mime: 'image/jpeg',
       created_at: new Date().toISOString(),
     };

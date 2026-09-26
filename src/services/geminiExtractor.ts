@@ -67,3 +67,25 @@ export function getMockCandidateItems(): CandidateItem[] {
     },
   ];
 }
+
+
+export function generateContextualDocumentName(candidates: CandidateItem[]): string {
+  if (!candidates || candidates.length === 0) return 'Scanned Notice';
+
+  const firstTitle = (candidates[0].title || '').trim();
+  const firstSnippet = (candidates[0].source_snippet || '').trim();
+  const combined = `${firstTitle} ${firstSnippet}`.toLowerCase();
+
+  if (combined.includes('yearbook')) return 'Yearbook Notice';
+  if (combined.includes('field trip') || combined.includes('permission')) return 'Field Trip Form';
+  if (combined.includes('science fair')) return 'Science Fair Notice';
+  if (combined.includes('bill') || combined.includes('statement') || combined.includes('utility')) return 'Billing Statement';
+  if (combined.includes('tax') || combined.includes('w2') || combined.includes('1099')) return 'Tax Document';
+  if (combined.includes('medical') || combined.includes('health') || combined.includes('vaccine')) return 'Health Record';
+  if (combined.includes('schedule') || combined.includes('calendar')) return 'Event Schedule';
+  if (combined.includes('menu') || combined.includes('lunch') || combined.includes('pizza')) return 'Food Notice';
+
+  const cleanTitle = firstTitle.replace(/\s*\([^)]*\)/g, '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+  const words = cleanTitle.split(/\s+/).slice(0, 3).join(' ');
+  return words ? `${words} Notice` : 'Scanned Notice';
+}
