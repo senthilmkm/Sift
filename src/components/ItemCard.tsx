@@ -135,29 +135,15 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           />
         </TouchableOpacity>
 
-        <View style={styles.titleContainer}>
+                <View style={styles.titleContainer}>
           {renderTextWithLinks(item.title, [styles.titleText, isDone && styles.strikethroughText])}
 
-                    <View style={styles.dueRow}>
+          <View style={styles.dueRow}>
             {validDueDate ? (
               <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
             ) : null}
 
-            {/* Badges Row - IN 7 DAYS, School_notice.jpg, and jostens.com all in ONE line */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
-              {badgeLabel ? (
-                <View
-                  style={[
-                    styles.badge,
-                    dueCategory === 'red' && styles.redBadge,
-                    dueCategory === 'amber' && styles.amberBadge,
-                    dueCategory === 'teal' && styles.tealBadge,
-                  ]}
-                >
-                  <Text style={styles.badgeText}>{badgeLabel}</Text>
-                </View>
-              ) : null}
-
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 3 }}>
               {item.doc_filename ? (
                 <View style={styles.groupBadge}>
                   <Text style={styles.groupBadgeText} numberOfLines={1}>📄 {item.doc_filename}</Text>
@@ -177,24 +163,41 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           </View>
         </View>
 
-        <View style={styles.actionsRow}>
-          <TouchableOpacity onPress={handleSyncToCalendar} style={styles.actionIcon} testID={`sync-${item.id}`}>
-            <Ionicons name="calendar-outline" size={20} color="#38bdf8" />
-          </TouchableOpacity>
+        {/* Right Column: Urgency Status Chip above the 4 Action Icons */}
+        <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', marginLeft: 8 }}>
+          {badgeLabel ? (
+            <View
+              style={[
+                styles.badge,
+                dueCategory === 'red' && styles.redBadge,
+                dueCategory === 'amber' && styles.amberBadge,
+                dueCategory === 'teal' && styles.tealBadge,
+                { marginBottom: 6 }
+              ]}
+            >
+              <Text style={styles.badgeText}>{badgeLabel}</Text>
+            </View>
+          ) : <View style={{ height: 20 }} />}
 
-          {onEditItem && (
-            <TouchableOpacity onPress={() => onEditItem(item)} style={styles.actionIcon}>
-              <Ionicons name="create-outline" size={20} color="#818cf8" />
+          <View style={styles.actionsRow}>
+            <TouchableOpacity onPress={handleSyncToCalendar} style={styles.actionIcon} testID={`sync-${item.id}`}>
+              <Ionicons name="calendar-outline" size={20} color="#38bdf8" />
             </TouchableOpacity>
-          )}
 
-          <TouchableOpacity onPress={() => onShareItem(item)} style={styles.actionIcon}>
-            <Ionicons name="share-outline" size={20} color="#94a3b8" />
-          </TouchableOpacity>
+            {onEditItem && (
+              <TouchableOpacity onPress={() => onEditItem(item)} style={styles.actionIcon}>
+                <Ionicons name="create-outline" size={20} color="#818cf8" />
+              </TouchableOpacity>
+            )}
 
-          <TouchableOpacity onPress={() => onArchiveItem(item.id)} style={styles.actionIcon}>
-            <Ionicons name="archive-outline" size={20} color="#10b981" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => onShareItem(item)} style={styles.actionIcon}>
+              <Ionicons name="share-outline" size={20} color="#94a3b8" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => onArchiveItem(item.id)} style={styles.actionIcon}>
+              <Ionicons name="archive-outline" size={20} color="#10b981" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
