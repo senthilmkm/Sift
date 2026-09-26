@@ -121,7 +121,7 @@ export async function saveDocumentAndItems(
 
 export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
   const database = await getDB();
-  let query = `SELECT items.*, documents.filename as doc_filename FROM items LEFT JOIN documents ON items.document_id = documents.id WHERE items.status != 'archived'`;
+  let query = `SELECT items.*, documents.filename as doc_filename, documents.image_path as image_path FROM items LEFT JOIN documents ON items.document_id = documents.id WHERE items.status != 'archived'`;
   const params: any[] = [];
 
   if (options.tab) {
@@ -165,7 +165,8 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
   return rows.map((r) => ({
     id: r.id,
     document_id: r.document_id,
-    doc_filename: r.doc_filename || 'School Flyer',
+    doc_filename: r.doc_filename || 'Document Notice',
+    image_path: r.image_path,
     tab: r.tab,
     title: r.title,
     notes: r.notes,
@@ -184,13 +185,14 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
 export async function getArchivedItems(): Promise<SiftItem[]> {
   const database = await getDB();
   const rows = await database.getAllAsync<any>(
-    `SELECT items.*, documents.filename as doc_filename FROM items LEFT JOIN documents ON items.document_id = documents.id WHERE items.status = 'archived' ORDER BY items.updated_at DESC`
+    `SELECT items.*, documents.filename as doc_filename, documents.image_path as image_path FROM items LEFT JOIN documents ON items.document_id = documents.id WHERE items.status = 'archived' ORDER BY items.updated_at DESC`
   );
 
   return rows.map((r) => ({
     id: r.id,
     document_id: r.document_id,
-    doc_filename: r.doc_filename || 'School Flyer',
+    doc_filename: r.doc_filename || 'Document Notice',
+    image_path: r.image_path,
     tab: r.tab,
     title: r.title,
     notes: r.notes,

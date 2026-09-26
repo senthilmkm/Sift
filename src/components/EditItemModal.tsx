@@ -163,11 +163,20 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
             </View>
 
             <View style={styles.imageFrame}>
-              <Image
-                source={require('../../assets/icon.png')}
-                style={styles.scannedImage}
-                resizeMode="contain"
-              />
+              {item.image_path ? (
+                <Image
+                  source={{ uri: item.image_path.startsWith('data:') || item.image_path.startsWith('file:') || item.image_path.startsWith('http') ? item.image_path : `data:image/jpeg;base64,${item.image_path}` }}
+                  style={styles.scannedImage}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={{ alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                  <Ionicons name="document-text-outline" size={60} color="#38bdf8" />
+                  <Text style={{ color: '#94a3b8', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+                    Original Document Notice Record\n(Text Snippet extracted via Gemini AI)
+                  </Text>
+                </View>
+              )}
               <View style={styles.snippetOverlayBox}>
                 <Text style={styles.snippetOverlayHeader}>DOCUMENT SNIPPET RECORD:</Text>
                 <Text style={styles.snippetOverlayText}>"{item.source_snippet || 'Scanned document flyer text'}"</Text>

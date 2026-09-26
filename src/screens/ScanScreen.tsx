@@ -18,6 +18,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
   const [loading, setLoading] = useState(false);
   const [candidates, setCandidates] = useState<CandidateItem[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [scannedImageUri, setScannedImageUri] = useState<string | null>(null);
 
   const handlePressScanOption = () => {
     Alert.alert(
@@ -74,6 +75,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
         base64Image = result.assets[0].base64;
         mimeType = result.assets[0].mimeType || 'image/jpeg';
+        setScannedImageUri(result.assets[0].uri || result.assets[0].base64);
       } else if (source === 'library') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -95,6 +97,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
         base64Image = result.assets[0].base64;
         mimeType = result.assets[0].mimeType || 'image/jpeg';
+        setScannedImageUri(result.assets[0].uri || result.assets[0].base64);
       } else {
         base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       }
@@ -155,6 +158,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
       origin: 'camera',
       filename: contextualName,
       mime: 'image/jpeg',
+      image_path: scannedImageUri || undefined,
       created_at: new Date().toISOString(),
     };
 

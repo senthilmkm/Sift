@@ -6,6 +6,7 @@ export interface SiftItem {
   id: string;
   document_id: string;
   doc_filename?: string;
+  image_path?: string;
   tab: ItemTab;
   title: string;
   notes?: string;
