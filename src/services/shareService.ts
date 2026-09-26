@@ -5,7 +5,7 @@ import { SiftItem } from '../models/types';
 import { getItems } from '../database/db';
 
 export async function shareTaskDetails(item: SiftItem): Promise<void> {
-  const message = `⚡ *Sift Task:* ${item.title}\n📅 *Due:* ${item.due_at || 'No Due Date'}\n📄 *Source:* "${item.source_snippet}"${item.notes ? `\n📝 *Notes:* ${item.notes}` : ''}\n\nSent from Sift iOS App`;
+  const message = `⚡ *Sift Task:* ${item.title}\n📅 *Due:* ${item.due_at || 'No Due Date'}\n📄 *Source:* "${item.source_snippet}"${item.notes ? `\n📝 *Notes:* ${item.notes}` : ''}\n\n⚡ *Summarized with Sift iOS:* https://senthilmkm.github.io/Sift/index.html`;
 
   try {
     await Share.share({
@@ -14,6 +14,30 @@ export async function shareTaskDetails(item: SiftItem): Promise<void> {
     });
   } catch (error) {
     console.error('Error sharing task via native share sheet:', error);
+  }
+}
+
+export async function shareClassGroupSummary(
+  items: { title: string; due_date?: string | null; tab?: string }[],
+  flyerName: string = 'School Flyer'
+): Promise<void> {
+  if (items.length === 0) return;
+
+  let msg = `📋 *${flyerName} Summary:*\n`;
+  items.forEach((item) => {
+    const dueStr = item.due_date ? ` (Due: ${item.due_date})` : '';
+    msg += `• ${item.title}${dueStr}\n`;
+  });
+
+  msg += `\n⚡ *Summarized in 5s with Sift iOS:* https://senthilmkm.github.io/Sift/index.html`;
+
+  try {
+    await Share.share({
+      message: msg,
+      title: `[Sift] ${flyerName} Summary`,
+    });
+  } catch (error) {
+    console.error('Error sharing class summary:', error);
   }
 }
 

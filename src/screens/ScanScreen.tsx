@@ -5,6 +5,7 @@ import { extractItemsFromDocument } from '../services/geminiExtractor';
 import { saveDocumentAndItems, getUserPreferences, updateUserPreferences } from '../database/db';
 import { CandidateItem, SiftDocument } from '../models/types';
 import { scheduleItemNotification } from '../services/notificationService';
+import { shareClassGroupSummary } from '../services/shareService';
 import { Ionicons } from '@expo/vector-icons';
 import { PaywallModal } from '../components/PaywallModal';
 
@@ -266,6 +267,11 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
           <TouchableOpacity style={styles.saveBtn} onPress={handleSaveConfirmed}>
             <Text style={styles.saveBtnText}>Save Confirmed Items ({candidates.length})</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.shareGroupBtn} onPress={() => shareClassGroupSummary(candidates, 'Scanned Flyer')}>
+            <Ionicons name="share-social-outline" size={18} color="#fff" />
+            <Text style={styles.shareGroupBtnText}>Share Summary to Class Group Chat</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
 
@@ -402,5 +408,20 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '800',
+  },
+  shareGroupBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#6366f1',
+    paddingVertical: 14,
+    borderRadius: 99,
+    marginTop: 10,
+  },
+  shareGroupBtnText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+    marginLeft: 8,
   },
 });
