@@ -138,55 +138,43 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         <View style={styles.titleContainer}>
           {renderTextWithLinks(item.title, [styles.titleText, isDone && styles.strikethroughText])}
 
-          <View style={styles.dueRow}>
-                        {validDueDate ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    Alert.alert(
-                      'iPhone Calendar Sync',
-                      'Tapping "Sync" saves this event to your native iPhone Calendar app with an automated 24-hour advance alert so you never miss a deadline.'
-                    )
-                  }
-                  style={{ paddingLeft: 4 }}
+                    <View style={styles.dueRow}>
+            {validDueDate ? (
+              <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
+            ) : null}
+
+            {/* Badges Row - IN 7 DAYS, School_notice.jpg, and jostens.com all in ONE line */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
+              {badgeLabel ? (
+                <View
+                  style={[
+                    styles.badge,
+                    dueCategory === 'red' && styles.redBadge,
+                    dueCategory === 'amber' && styles.amberBadge,
+                    dueCategory === 'teal' && styles.tealBadge,
+                  ]}
                 >
-                  <Ionicons name="information-circle-outline" size={14} color="#818cf8" />
+                  <Text style={styles.badgeText}>{badgeLabel}</Text>
+                </View>
+              ) : null}
+
+              {item.doc_filename ? (
+                <View style={styles.groupBadge}>
+                  <Text style={styles.groupBadgeText} numberOfLines={1}>📄 {item.doc_filename}</Text>
+                </View>
+              ) : null}
+
+              {linkInfo ? (
+                <TouchableOpacity
+                  style={styles.linkBadge}
+                  onPress={() => Linking.openURL(linkInfo.url)}
+                >
+                  <Ionicons name="open-outline" size={11} color="#38bdf8" />
+                  <Text style={styles.linkBadgeText} numberOfLines={1}>🔗 {linkInfo.domain}</Text>
                 </TouchableOpacity>
-              </View>
-            ) : null}
-
-            {badgeLabel ? (
-              <View
-                style={[
-                  styles.badge,
-                  dueCategory === 'red' && styles.redBadge,
-                  dueCategory === 'amber' && styles.amberBadge,
-                  dueCategory === 'teal' && styles.tealBadge,
-                ]}
-              >
-                <Text style={styles.badgeText}>{badgeLabel}</Text>
-              </View>
-            ) : null}
-
-            {item.doc_filename ? (
-              <View style={styles.groupBadge}>
-                <Text style={styles.groupBadgeText}>📄 {item.doc_filename}</Text>
-              </View>
-            ) : null}
-
-            {linkInfo ? (
-              <TouchableOpacity
-                style={styles.linkBadge}
-                onPress={() => Linking.openURL(linkInfo.url)}
-              >
-                <Ionicons name="open-outline" size={11} color="#38bdf8" />
-                <Text style={styles.linkBadgeText}>🔗 {linkInfo.domain}</Text>
-              </TouchableOpacity>
-            ) : null}
+              ) : null}
+            </View>
           </View>
-
-
         </View>
 
         <View style={styles.actionsRow}>
