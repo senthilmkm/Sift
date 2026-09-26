@@ -114,12 +114,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ visible, item, onC
           <Text style={styles.label}>Quick Actions</Text>
           <View style={styles.quickToolsRow}>
             <TouchableOpacity style={styles.calLink} onPress={handleSyncSingleToCalendar}>
-              <Ionicons name="calendar-outline" size={14} color="#38bdf8" />
               <Text style={styles.calLinkText}>📅 Add to iPhone Calendar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.shareLink} onPress={handleShareSingleToClass}>
-              <Ionicons name="share-social-outline" size={14} color="#c084fc" />
               <Text style={styles.shareLinkText}>📱 Share Summary / Group</Text>
             </TouchableOpacity>
           </View>
