@@ -22,6 +22,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 }) => {
   const isDone = item.status === 'done' || item.status === 'read' || item.status === 'archived';
 
+  const getExtractedLink = (): { url: string; domain: string } | null => {
+    const fullText = `${item.title || ''} ${item.notes || ''} ${item.source_snippet || ''}`;
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\/[^\s]*)/g;
+    const matches = fullText.match(urlRegex);
+    if (matches && matches.length > 0) {
+      const rawUrl = matches[0];
+      const fullUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+      let domain = rawUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      if (domain.length > 22) domain = domain.substring(0, 20) + '...';
+      return { url: fullUrl, domain };
+    }
+    return null;
+  };
+
+  const linkInfo = getExtractedLink();
+
   let dueCategory: 'red' | 'amber' | 'teal' | 'none' = 'none';
   let badgeLabel = '';
   let validDueDate = '';
@@ -147,6 +163,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 <Text style={styles.groupBadgeText}>📄 {item.doc_filename}</Text>
               </View>
             ) : null}
+
+            {linkInfo ? (
+              <TouchableOpacity
+                style={styles.linkBadge}
+                onPress={() => Linking.openURL(linkInfo.url)}
+              >
+                <Ionicons name="open-outline" size={11} color="#38bdf8" />
+                <Text style={styles.linkBadgeText}>🔗 {linkInfo.domain}</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
 
 
@@ -265,6 +291,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
+  },
+  linkBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#0284c7',
+  },
+  linkBadgeText: {
+    color: '#38bdf8',
+    fontSize: 11,
+    fontWeight: '700',
+    marginLeft: 3,
   },
   groupBadgeText: {
     color: '#cbd5e1',
