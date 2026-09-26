@@ -9,6 +9,7 @@ module.exports = {
     '^expo-sqlite$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-sharing$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-file-system$': '<rootDir>/__mocks__/expoMock.js',
+    '^expo-calendar$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-mail-composer$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-notifications$': '<rootDir>/__mocks__/expoMock.js',
   }

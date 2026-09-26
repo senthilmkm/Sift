@@ -6,6 +6,12 @@ module.exports = {
   cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(true),
   getPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
   requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  requestCalendarPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  getCalendarsAsync: jest.fn().mockResolvedValue([
+    { id: 'cal_1', allowsModifications: true, isPrimary: true, source: { name: 'Default' } }
+  ]),
+  createEventAsync: jest.fn().mockResolvedValue('event_123'),
+  EntityTypes: { EVENT: 'event' },
   setNotificationHandler: jest.fn(),
   AndroidNotificationPriority: { HIGH: 4, DEFAULT: 3 },
   Share: {

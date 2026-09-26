@@ -18,6 +18,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Sift requires camera access to photograph paper school flyers and notices on your fridge.",
         "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",
+        "NSCalendarsUsageDescription": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar.",
         "NSMicrophoneUsageDescription": "Sift does not record audio."
       },
       "entitlements": {
@@ -29,6 +30,7 @@
       "expo-sqlite",
       "expo-notifications",
       "expo-file-system",
+      "expo-calendar",
       [
         "expo-camera",
         {
