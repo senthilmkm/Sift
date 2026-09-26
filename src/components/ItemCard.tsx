@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SiftItem } from '../models/types';
+import { addItemsToPhoneCalendar } from '../services/calendarService';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ItemCardProps {
@@ -10,6 +11,7 @@ interface ItemCardProps {
   onPromoteActionable?: (id: string) => void;
   onEditItem?: (item: SiftItem) => void;
   onShareItem: (item: SiftItem) => void;
+  onSyncCalendar?: (item: SiftItem) => void;
 }
 
 export const ItemCard: React.FC<ItemCardProps> = ({
@@ -19,6 +21,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onPromoteActionable,
   onEditItem,
   onShareItem,
+  onSyncCalendar,
 }) => {
   const isDone = item.status === 'done' || item.status === 'read' || item.status === 'archived';
 
@@ -69,6 +72,14 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       }
     }
   }
+
+    const handleSyncToCalendar = async () => {
+    if (onSyncCalendar) {
+      onSyncCalendar(item);
+    } else {
+      await addItemsToPhoneCalendar([{ title: item.title, due_date: item.due_at, source_snippet: item.notes || item.source_snippet }]);
+    }
+  };
 
   const renderTextWithLinks = (text: string, style: any) => {
     if (!text) return null;
@@ -179,6 +190,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </View>
 
         <View style={styles.actionsRow}>
+          <TouchableOpacity onPress={handleSyncToCalendar} style={styles.actionIcon} testID={`sync-${item.id}`}>
+            <Ionicons name="calendar-outline" size={20} color="#38bdf8" />
+          </TouchableOpacity>
+
           {onEditItem && (
             <TouchableOpacity onPress={() => onEditItem(item)} style={styles.actionIcon}>
               <Ionicons name="create-outline" size={20} color="#818cf8" />
@@ -291,6 +306,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
+  },
+  calBadgeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#0284c7',
+  },
+  calBadgeBtnText: {
+    color: '#38bdf8',
+    fontSize: 10,
+    fontWeight: '800',
+    marginLeft: 3,
   },
   linkBadge: {
     flexDirection: 'row',
