@@ -46,7 +46,7 @@ export const COMMON_PII_PATTERNS: PiiRedactionPattern[] = [
   },
 ];
 
-// Profile-specific additional patterns
+// Profile-specific additional patterns (Evaluated FIRST for specific context)
 export const PROFILE_PII_MAP: Record<ProfileId, PiiRedactionPattern[]> = {
   school: [
     {
@@ -97,15 +97,15 @@ export function sanitizeTextForPrivacy(text: string, profileId: ProfileId = 'sch
   if (!text) return '';
   let sanitized = text;
 
-  // Apply common PII patterns
-  for (const pattern of COMMON_PII_PATTERNS) {
+  // 1. Apply profile-specific PII patterns FIRST for specific context matching
+  const profilePatterns = PROFILE_PII_MAP[profileId] || [];
+  for (const pattern of profilePatterns) {
     pattern.regex.lastIndex = 0;
     sanitized = sanitized.replace(pattern.regex, pattern.replacement);
   }
 
-  // Apply profile-specific PII patterns
-  const profilePatterns = PROFILE_PII_MAP[profileId] || [];
-  for (const pattern of profilePatterns) {
+  // 2. Apply common PII patterns SECOND as general fallback
+  for (const pattern of COMMON_PII_PATTERNS) {
     pattern.regex.lastIndex = 0;
     sanitized = sanitized.replace(pattern.regex, pattern.replacement);
   }
@@ -118,6 +118,7 @@ export function sanitizeTextForPrivacy(text: string, profileId: ProfileId = 'sch
  */
 export function containsSensitivePii(text: string): boolean {
   if (!text) return false;
+
   for (const pattern of COMMON_PII_PATTERNS) {
     pattern.regex.lastIndex = 0;
     if (pattern.regex.test(text)) return true;
