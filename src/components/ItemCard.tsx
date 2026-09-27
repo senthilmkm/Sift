@@ -62,24 +62,27 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
     if (!isNaN(y) && !isNaN(m) && !isNaN(d) && y > 2000) {
       validDueDate = datePart;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
 
-      const dueDate = new Date(y, m - 1, d);
-      dueDate.setHours(0, 0, 0, 0);
+      if (item.tab === 'actionable') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      const diffTime = dueDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const dueDate = new Date(y, m - 1, d);
+        dueDate.setHours(0, 0, 0, 0);
 
-      if (diffDays <= 0) {
-        dueCategory = 'red';
-        badgeLabel = diffDays === 0 ? 'DUE TODAY ⚡' : 'OVERDUE ⚡';
-      } else if (diffDays === 1) {
-        dueCategory = 'amber';
-        badgeLabel = 'DUE TOMORROW ⏰';
-      } else {
-        dueCategory = 'teal';
-        badgeLabel = `IN ${diffDays} DAYS 📅`;
+        const diffTime = dueDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) {
+          dueCategory = 'red';
+          badgeLabel = diffDays === 0 ? 'DUE TODAY ⚡' : 'OVERDUE ⚡';
+        } else if (diffDays === 1) {
+          dueCategory = 'amber';
+          badgeLabel = 'DUE TOMORROW ⏰';
+        } else {
+          dueCategory = 'teal';
+          badgeLabel = `IN ${diffDays} DAYS 📅`;
+        }
       }
     }
   }
@@ -151,7 +154,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
                     <View style={styles.dueRow}>
             {validDueDate ? (
-              <Text style={styles.dueText}>📅 Due: {validDueDate}</Text>
+              <Text style={styles.dueText}>
+                {item.tab === 'actionable' ? `📅 Due: ${validDueDate}` : `📅 Date: ${validDueDate}`}
+              </Text>
             ) : null}
 
             {item.doc_filename ? (
