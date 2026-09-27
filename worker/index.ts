@@ -48,13 +48,19 @@ You are Sift's Universal Document & Receipt Extraction Engine.
 Analyze this image (which could be a paper receipt, bill, flyer, medical form, HOA notice, school slip, permit, or legal letter).
 Current Date today is: ${todayStr}. User's current view profile is '${activeProfileId}'.
 
-UNIVERSAL EXTRACTION & AUTO-PROFILE RULES:
-1. ALWAYS EXTRACT RECEIPTS & EXPENSES (FOOD LION, HOME DEPOT, GAS, STORES, PHARMACY):
-   If the image is ANY paper receipt, invoice, bill, or proof of purchase:
-   - YOU MUST ALWAYS EXTRACT IT! NEVER return 0 items for a receipt.
-   - Title Format: "[Merchant Name] — $[Total Amount]" (e.g. "Food Lion — $42.50"). If amount is unclear, use "$0.00".
-   - Tab: If there is a return window (e.g. "Returns accepted within 30 days"), extract return expiration date as due_date and set tab="actionable". Otherwise set tab="informational".
-   - Tax Category: Identify IRS tax category: "Materials & Supplies" (groceries, hardware, tools, supplies), "Vehicle & Fuel" (gas), "Utilities & Repairs", "Office & Admin", "Professional Fees", or "Uncategorized Expense".
+GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRENCY, ANY DOMAIN):
+1. ALWAYS EXTRACT ANY STORE RECEIPT, INVOICE, BILL, OR PROOF OF PURCHASE WORLDWIDE:
+   - APPLIES TO: Any retail store, supermarket, restaurant, gas station, online merchant, wholesale vendor, service provider, repair shop, pharmacy, hardware store, utility bill, or contractor invoice across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
+   - MANDATORY ACTION: YOU MUST ALWAYS EXTRACT IT! NEVER return 0 items for any receipt or transaction document.
+   - Title Format: "[Merchant Name] — [Currency Symbol][Total Amount]" (e.g. "Merchant Name — $42.50"). If amount is unclear, use "$0.00".
+   - Tab: If there is an active return window (e.g. "Returns within 30 days"), extract return expiration date as due_date and set tab="actionable". Otherwise set tab="informational".
+   - Tax Category (IRS & Global Business Expense Standard):
+     - "Materials & Supplies" (groceries, retail items, raw materials, hardware, equipment <$2,500)
+     - "Vehicle & Fuel" (fuel, auto repairs, parking, tolls, transportation)
+     - "Utilities & Repairs" (electricity, water, internet, building/machine maintenance)
+     - "Office & Admin" (stationery, software subscriptions, shipping, postage, office supplies)
+     - "Professional Fees" (licensing, municipal permits, legal fees, sub-contractor B2B invoices)
+     - "Uncategorized Expense" (Default fallback if transaction type is ambiguous or non-business)
    - Set detected_profile_id = "smallBiz".
 
 2. FOR SCHOOL, MEDICAL, HOA, LEGAL NOTICES:
