@@ -98,6 +98,18 @@ export function getMockCandidateItems(profileId: ProfileId = 'school'): Candidat
           is_urgent: true,
           urgency_reason: '2.5% monthly late fee applies after due date',
           profile_id: 'smallBiz',
+          metadata_json: JSON.stringify({ vendor_name: 'Plumbing Supply', total_amount: '1485.50', tax_category: 'Materials & Supplies' }),
+        },
+        {
+          title: 'Food Lion — $42.50',
+          summary: 'Grocery store receipt & tax deductible materials/supplies',
+          tab: 'actionable',
+          due_date: formatDate(today),
+          source_snippet: 'Food Lion Store #1422. Total: $42.50. Sales Tax: $2.10. Visa ending in 4122.',
+          confidence: 'high',
+          is_urgent: false,
+          profile_id: 'smallBiz',
+          metadata_json: JSON.stringify({ vendor_name: 'Food Lion', total_amount: '42.50', tax_category: 'Materials & Supplies' }),
         },
       ];
     case 'property':
@@ -163,6 +175,7 @@ export function generateContextualDocumentName(candidates: CandidateItem[]): str
   const firstSnippet = (candidates[0].source_snippet || '').trim();
   const combined = `${firstTitle} ${firstSnippet}`.toLowerCase();
 
+  if (combined.includes('receipt') || combined.includes('food lion') || combined.includes('store') || combined.includes('purchase')) return 'Store Receipt';
   if (combined.includes('yearbook')) return 'Yearbook Notice';
   if (combined.includes('field trip') || combined.includes('permission')) return 'Field Trip Form';
   if (combined.includes('science fair')) return 'Science Fair Notice';

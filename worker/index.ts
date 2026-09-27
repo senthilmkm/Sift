@@ -50,33 +50,34 @@ Current Date today is: ${todayStr}. User's current view profile is '${activeProf
 
 GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRENCY, ANY DOMAIN):
 1. ALWAYS EXTRACT ANY STORE RECEIPT, INVOICE, BILL, OR PROOF OF PURCHASE WORLDWIDE:
-   - APPLIES TO: Any retail store, supermarket, restaurant, gas station, online merchant, wholesale vendor, service provider, repair shop, pharmacy (CVS, Walgreens, Rite Aid, local pharmacy), hospital, dental clinic, medical practice, hardware store, utility bill, or contractor invoice across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
-   - MANDATORY ACTION: YOU MUST ALWAYS EXTRACT IT! NEVER return 0 items for any receipt or transaction document.
-   - Title Format: "[Merchant/Provider Name] — [Currency Symbol][Total Amount]" (e.g. "CVS Pharmacy — $18.50", "City Hospital — $150.00", "Bright Smile Dental — $45.00", "Food Lion — $42.50"). If amount is unclear, use "$0.00".
-   - Tab: If there is an active payment deadline, appointment time, or return window, set due_date and tab="actionable". Otherwise set tab="informational".
+   - APPLIES TO: Food Lion, Supermarkets, Groceries, Home Depot, Walmart, Target, Costco, CVS, Walgreens, Gas Stations, Restaurants, Hardware, Utilities, Online Vendors, Repair Shops, across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
+   - MANDATORY ACTION: YOU MUST ALWAYS EXTRACT IT! NEVER RETURN AN EMPTY ITEMS ARRAY OR ZERO ITEMS FOR ANY RECEIPT OR TRANSACTION DOCUMENT.
+   - Title Format: "[Merchant Name] — [Currency Symbol][Total Amount]" (e.g. "Food Lion — $42.50", "Home Depot — $129.99"). If total amount is not clearly visible, use "[Merchant Name] Receipt".
+   - Tab: ALWAYS set tab="actionable" so the receipt is tracked on the user's actionable list for expense logging, returns, tax records, or budget tracking!
+   - Due Date: Set due_date = today (${todayStr}) or return window expiration date (e.g. 30 days from today).
+   - Source Snippet: Include merchant name, total amount, purchase date, tax, payment method, and top items purchased.
    - Tax Category (IRS & Global Business/Personal Expense Standard):
      - "Materials & Supplies" (groceries, retail items, raw materials, hardware, equipment <$2,500)
      - "Vehicle & Fuel" (fuel, auto repairs, parking, tolls, transportation)
      - "Utilities & Repairs" (electricity, water, internet, building/machine maintenance)
      - "Office & Admin" (stationery, software subscriptions, shipping, postage, office supplies)
      - "Professional Fees" (licensing, municipal permits, legal fees, sub-contractor B2B invoices)
-     - "Uncategorized Expense" (Default fallback if transaction type is ambiguous or non-business)
-   - Set detected_profile_id = "smallBiz" for general store/business receipts, OR "elderCare" for medical, hospital, pharmacy, and dental receipts/bills/appointments.
+     - "Uncategorized Expense" (Default fallback)
+   - Set detected_profile_id = "smallBiz" for general store/business receipts, OR "elderCare" for medical, hospital, pharmacy, and dental receipts.
 
 2. FOR MEDICAL, HOSPITAL, PHARMACY & DENTAL SERVICES:
    - APPLIES TO: Doctor appointments, hospital discharge notices, dental checkup reminders, pharmacy prescriptions/refills, health insurance Explanation of Benefits (EOB), lab test instructions, dental bills, and co-pay receipts.
    - MANDATORY ACTION: Extract appointment dates, fasting/prep instructions, payment due dates, prescription refill deadlines, and provider contact numbers.
-   - Set detected_profile_id = "elderCare" (Family Health & Medical Care).
+   - Set tab="actionable" and set detected_profile_id = "elderCare".
 
 3. FOR SCHOOL, HOA, LEGAL NOTICES:
    - Extract actionable deadlines, forms, permission slips, court dates, or HOA violations.
+   - Set tab="actionable" for items requiring action or attendance.
    - Set detected_profile_id to matching profile: "school", "property", or "legalImmigration".
 
 4. ZERO EMPTY RESULT GUARANTEE:
    - If the image contains ANY readable text or document layout, ALWAYS generate at least 1 extracted item card. Never return an empty items list.
 `;
-
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
       const responseSchema = {
         type: 'OBJECT',
@@ -140,16 +141,30 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
         },
       };
 
-      const geminiResponse = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
+      let geminiResponse: Response | null = null;
+      let lastErrText = '';
 
-      if (!geminiResponse.ok) {
-        const errText = await geminiResponse.text();
-        return new Response(JSON.stringify({ error: 'Gemini API call failed', details: errText }), {
-          status: geminiResponse.status,
+      for (const model of modelsToTry) {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const resp = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (resp.ok) {
+          geminiResponse = resp;
+          break;
+        } else {
+          lastErrText = await resp.text();
+          console.warn(`Gemini model ${model} call failed:`, lastErrText);
+        }
+      }
+
+      if (!geminiResponse) {
+        return new Response(JSON.stringify({ error: 'Gemini API call failed across models', details: lastErrText }), {
+          status: 500,
           headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
         });
       }
