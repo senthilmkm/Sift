@@ -28,7 +28,7 @@ export async function extractItemsFromDocument(
     }
 
     const data: any = await response.json();
-    if (data && Array.isArray(data.items)) {
+    if (data && Array.isArray(data.items) && data.items.length > 0) {
       return data.items.map((item: any) => {
         const rawTitle = item.title || 'Scanned Notice Item';
         const rawSnippet = item.source_snippet || '';
