@@ -4,6 +4,21 @@ import * as Sharing from 'expo-sharing';
 import { SiftItem } from '../models/types';
 import { getItems } from '../database/db';
 
+export function exportItemsToJSON(items: SiftItem[]): string {
+  return JSON.stringify(items, null, 2);
+}
+
+export function exportItemsToCSV(items: SiftItem[]): string {
+  let csv = 'ID,Tab,Title,Due Date,Status,Urgent,Document,Source Snippet,Notes\n';
+  items.forEach((item) => {
+    const titleClean = (item.title || '').replace(/"/g, '""').replace(/\r?\n/g, ' ');
+    const snippetClean = (item.source_snippet || '').replace(/"/g, '""').replace(/\r?\n/g, ' ');
+    const notesClean = (item.notes || '').replace(/"/g, '""').replace(/\r?\n/g, ' ');
+    csv += `"${item.id}","${item.tab}","${titleClean}","${item.due_at || ''}","${item.status}","${item.is_urgent ? 'YES' : 'NO'}","${item.doc_filename || ''}","${snippetClean}","${notesClean}"\n`;
+  });
+  return csv;
+}
+
 export async function shareTaskDetails(item: SiftItem): Promise<void> {
   const message = `⚡ *Sift Task:* ${item.title}\n📅 *Due:* ${item.due_at || 'No Due Date'}\n📄 *Source:* "${item.source_snippet}"${item.notes ? `\n📝 *Notes:* ${item.notes}` : ''}\n\n⚡ *Summarized with Sift iOS:* https://senthilmkm.github.io/Sift/index.html`;
 
@@ -61,10 +76,35 @@ export async function shareClassGroupSummary(
     console.error('Error sharing class summary:', error);
   }
 }
+
 function sanitizeCSVField(val: string | null | undefined): string {
   if (!val) return '""';
   const clean = val.replace(/"/g, '""').replace(/\r?\n/g, ' ');
   return `"${clean}"`;
+}
+
+function getTaxFields(item: SiftItem) {
+  let vendor = 'N/A';
+  let totalAmount = '$0.00';
+  let taxCategory = 'Uncategorized Expense';
+
+  if (item.metadata_json) {
+    try {
+      const meta = JSON.parse(item.metadata_json);
+      if (meta.vendor_name) vendor = meta.vendor_name;
+      if (meta.total_amount) totalAmount = meta.total_amount;
+      if (meta.tax_category) taxCategory = meta.tax_category;
+    } catch {
+      // Fallback
+    }
+  }
+
+  if (totalAmount === '$0.00') {
+    const priceMatch = item.title.match(/\$\d+(?:\.\d{2})?/);
+    if (priceMatch) totalAmount = priceMatch[0];
+  }
+
+  return { vendor, totalAmount, taxCategory };
 }
 
 export async function exportAllTasksToExcel(): Promise<void> {
@@ -79,16 +119,19 @@ export async function exportAllTasksToExcel(): Promise<void> {
       return;
     }
 
-    let csvContent = `=== SECTION 1: ACTIONABLE TASKS (${actionable.length}) ===\n`;
-    csvContent += `Tab,Title,Due Date,Status,Urgent,Flyer Document,Source Snippet,Notes\n`;
+    let csvContent = `=== SECTION 1: ACTIONABLE TASKS & DEADLINES (${actionable.length}) ===\n`;
+    csvContent += `Tab,Title,Date / Due Date,Vendor Name,Total Amount Spent,Tax Category,Status,Urgent,Flyer Document,Source Snippet,Receipt Notes\n`;
     actionable.forEach((item) => {
-      csvContent += `${sanitizeCSVField('Actionable')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'No Due Date')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
+      const tax = getTaxFields(item);
+      csvContent += `${sanitizeCSVField('Actionable')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'No Due Date')},${sanitizeCSVField(tax.vendor)},${sanitizeCSVField(tax.totalAmount)},${sanitizeCSVField(tax.taxCategory)},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
     });
 
-    csvContent += `\n=== SECTION 2: INFORMATIONAL REFERENCE NOTES (${informational.length}) ===\n`;
-    csvContent += `Tab,Title,Due Date,Status,Urgent,Flyer Document,Source Snippet,Notes\n`;
+    csvContent += `\n=== SECTION 2: EXPENSES, RECEIPTS & PERMITS (${informational.length}) ===\n`;
+    csvContent += `Tab,Title,Date / Purchase Date,Vendor Name,Total Amount Spent,Tax Category,Status,Urgent,Flyer Document,Source Snippet,Receipt Notes\n`;
     informational.forEach((item) => {
-      csvContent += `${sanitizeCSVField('Informational')},${sanitizeCSVField(item.title)},${sanitizeCSVField(item.due_at || 'N/A')},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
+      const tax = getTaxFields(item);
+      const purchaseDate = item.due_at || (item.created_at ? item.created_at.split('T')[0] : 'N/A');
+      csvContent += `${sanitizeCSVField('Informational')},${sanitizeCSVField(item.title)},${sanitizeCSVField(purchaseDate)},${sanitizeCSVField(tax.vendor)},${sanitizeCSVField(tax.totalAmount)},${sanitizeCSVField(tax.taxCategory)},${sanitizeCSVField(item.status.toUpperCase())},${sanitizeCSVField(item.is_urgent ? 'YES' : 'NO')},${sanitizeCSVField(item.doc_filename || 'Document Notice')},${sanitizeCSVField(item.source_snippet)},${sanitizeCSVField(item.notes || '')}\n`;
     });
 
     const file = new File(Paths.cache, 'Sift_Tasks_Export.csv');
@@ -105,7 +148,7 @@ export async function exportAllTasksToExcel(): Promise<void> {
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(file.uri, {
         mimeType: 'text/csv',
-        dialogTitle: 'Export Sift Tasks to Excel',
+        dialogTitle: 'Export Sift Tasks & Receipts to Excel',
         UTI: 'public.comma-separated-values-text',
       });
     } else {
@@ -114,28 +157,7 @@ export async function exportAllTasksToExcel(): Promise<void> {
         title: 'Sift_Tasks_Export.csv',
       });
     }
-  } catch (err) {
-    console.error('Failed to export tasks to Excel:', err);
+  } catch (error) {
+    console.error('Error exporting tasks to Excel CSV:', error);
   }
-}
-
-export function exportItemsToJSON(items: SiftItem[]): string {
-  return JSON.stringify(items, null, 2);
-}
-
-export function exportItemsToCSV(items: SiftItem[]): string {
-  const headers = ['ID', 'Tab', 'Title', 'Due Date', 'Status', 'Is Urgent', 'Flyer Document', 'Source Snippet', 'Created At'];
-  const rows = items.map((i) => [
-    sanitizeCSVField(i.id),
-    sanitizeCSVField(i.tab),
-    sanitizeCSVField(i.title),
-    sanitizeCSVField(i.due_at || 'No Due Date'),
-    sanitizeCSVField(i.status),
-    sanitizeCSVField(i.is_urgent ? 'Yes' : 'No'),
-    sanitizeCSVField(i.doc_filename || 'Document Notice'),
-    sanitizeCSVField(i.source_snippet),
-    sanitizeCSVField(i.created_at),
-  ]);
-
-  return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 }
