@@ -5,7 +5,7 @@ import { getUserPreferences, updateUserPreferences, autoDeleteOldItems, resetDat
 import { UserPreferences, AutoDeletePeriod } from '../models/types';
 import { TimeRollerPicker } from '../components/TimeRollerPicker';
 import { sendTestNotification, checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
-import { exportAllTasksToExcel } from '../services/shareService';
+import { exportAllTasksToExcel, exportAllTasksToPDF } from '../services/shareService';
 import { PaywallModal } from '../components/PaywallModal';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -55,6 +55,16 @@ export const SettingsScreen: React.FC = () => {
     await loadPrefs();
   };
 
+  const handleToggleCriticalAlerts = async (val: boolean) => {
+    await updateUserPreferences({ enableCriticalAlerts: val });
+    await loadPrefs();
+  };
+
+  const handleTogglePiiRedaction = async (val: boolean) => {
+    await updateUserPreferences({ enablePiiRedaction: val });
+    await loadPrefs();
+  };
+
   const handleSaveReminderTime = async (val: string) => {
     await updateUserPreferences({ defaultReminderTime: val });
     await loadPrefs();
@@ -97,7 +107,19 @@ export const SettingsScreen: React.FC = () => {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {/* Account & Subscription Status Card */}
       <View style={styles.sectionCard}>
-        <Text style={styles.sectionHeader}>Subscription & Usage</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderNoMargin}>Subscription & Usage</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                'Subscription & Free Tier Info',
+                'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.\n\nSift Pro ($4.99/mo or $39.99/yr) unlocks unlimited scans, Critical Alerts, and Excel/PDF CPA tax exports.'
+              )
+            }
+          >
+            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Current Plan:</Text>
@@ -114,7 +136,37 @@ export const SettingsScreen: React.FC = () => {
         )}
       </View>
 
-      {/* Notifications & Reminders Card */}
+      {/* Privacy & Security Controls Card */}
+      <View style={styles.sectionCard}>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderNoMargin}>Privacy & Security Controls</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                'Privacy & Redaction Info',
+                'Sift runs an On-Device PII Redaction Engine directly on your iPhone. SSNs, Medicare MBIs, Credit Cards, Bank Routing Numbers, and USCIS A-Numbers are scrubbed locally before AI processing.\n\nYour data remains 100% locally on your phone in SQLite (`sift_v2.db`) with zero cloud database retention.'
+              )
+            }
+          >
+            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.toggleRow}>
+          <View style={{ flex: 1, paddingRight: 10 }}>
+            <Text style={styles.toggleLabel}>On-Device PII Masking</Text>
+            <Text style={styles.toggleSubtext}>Auto-redacts SSNs, Medicare MBIs & Credit Cards</Text>
+          </View>
+          <Switch
+            value={prefs.enablePiiRedaction}
+            onValueChange={handleTogglePiiRedaction}
+            trackColor={{ false: '#334155', true: '#10b981' }}
+            thumbColor="#ffffff"
+          />
+        </View>
+      </View>
+
+      {/* Notifications & Critical Alerts Card */}
       <View style={styles.sectionCard}>
         <View style={styles.headerRowToggle}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -146,6 +198,34 @@ export const SettingsScreen: React.FC = () => {
           </Text>
         </View>
 
+        {prefs.enableNotifications && (
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.toggleLabel}>Apple Critical Alerts</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    Alert.alert(
+                      'Apple Critical Alerts Info',
+                      'Urgent healthcare pre-op fasting rules, court summons, or utility shutoffs play audible alarms even when your iPhone is set to Silent or Do Not Disturb.'
+                    )
+                  }
+                  style={{ paddingLeft: 6 }}
+                >
+                  <Ionicons name="information-circle-outline" size={16} color="#f43f5e" />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.toggleSubtext}>Play audible alarm for urgent deadlines when Silent</Text>
+            </View>
+            <Switch
+              value={prefs.enableCriticalAlerts}
+              onValueChange={handleToggleCriticalAlerts}
+              trackColor={{ false: '#334155', true: '#f43f5e' }}
+              thumbColor="#ffffff"
+            />
+          </View>
+        )}
+
         {prefs.enableNotifications ? (
           <View style={{ marginTop: 12 }}>
             <Text style={styles.subText}>Roll to Select Default Notification Time:</Text>
@@ -166,19 +246,49 @@ export const SettingsScreen: React.FC = () => {
         )}
       </View>
 
-      {/* Data Export Section */}
+      {/* Data & Tax Export Section */}
       <View style={styles.sectionCard}>
-        <Text style={styles.sectionHeader}>Data Export</Text>
-        <Text style={styles.subText}>Export your Actionable & Informational tasks to Excel:</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderNoMargin}>Tax & Data Export</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                '1-Tap Tax & CPA Export Info',
+                'Export your tasks and receipts into Excel (.CSV) or PDF format.\n\nSift auto-extracts Vendor Name, Purchase Date, Total Amount Spent, Tax Category (Materials, Fuel, Utilities, Office, Fees), and Receipt Notes ready for your CPA or accountant!'
+              )
+            }
+          >
+            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.subText}>Export your Actionable & Informational items for your CPA or records:</Text>
+
         <TouchableOpacity style={styles.exportBtn} onPress={exportAllTasksToExcel}>
           <Ionicons name="stats-chart" size={18} color="#fff" />
-          <Text style={styles.exportBtnText}>EXPORT ALL TASKS TO EXCEL (.CSV)</Text>
+          <Text style={styles.exportBtnText}>EXPORT ALL TO EXCEL (.CSV)</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.exportBtn, { backgroundColor: '#2563eb', marginTop: 10 }]} onPress={exportAllTasksToPDF}>
+          <Ionicons name="document-text" size={18} color="#fff" />
+          <Text style={styles.exportBtnText}>EXPORT CPA TAX REPORT (.PDF)</Text>
         </TouchableOpacity>
       </View>
 
       {/* Auto Data Retention Section */}
       <View style={styles.sectionCard}>
-        <Text style={styles.sectionHeader}>Auto Data Retention & Deletion</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionHeaderNoMargin}>Auto Data Retention & Deletion</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                'Auto Retention Info',
+                'Sift automatically cleans up old completed or archived tasks after the selected period to keep your phone storage light and clutter-free.'
+              )
+            }
+          >
+            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.subText}>Automatically prune completed tasks older than:</Text>
         <View style={styles.periodRow}>
           {(['1w', '2w', '4w', '90d', '180d', 'never'] as AutoDeletePeriod[]).map((period) => (
@@ -207,7 +317,7 @@ export const SettingsScreen: React.FC = () => {
       {/* Support & Legal Links */}
       <View style={styles.sectionCard}>
         <Text style={styles.sectionHeader}>Support & Legal</Text>
-        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://siftapp.com/support.html')}>
+        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://senthilmkm.github.io/Sift/support.html')}>
           <Ionicons name="help-circle-outline" size={18} color="#818cf8" />
           <Text style={styles.linkText}>Support Hub & FAQs</Text>
         </TouchableOpacity>
@@ -217,12 +327,12 @@ export const SettingsScreen: React.FC = () => {
           <Text style={styles.linkText}>Contact Support (senthil930@gmail.com)</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://siftapp.com/privacy.html')}>
+        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://senthilmkm.github.io/Sift/privacy.html')}>
           <Ionicons name="shield-checkmark-outline" size={18} color="#818cf8" />
           <Text style={styles.linkText}>Privacy Policy</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://siftapp.com/terms.html')}>
+        <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://senthilmkm.github.io/Sift/terms.html')}>
           <Ionicons name="document-text-outline" size={18} color="#818cf8" />
           <Text style={styles.linkText}>Terms of Service</Text>
         </TouchableOpacity>
@@ -255,165 +365,196 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     backgroundColor: '#1e293b',
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#334155',
   },
   sectionHeader: {
-    color: '#ffffff',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
+    color: '#ffffff',
     marginBottom: 12,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  sectionHeaderNoMargin: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#ffffff',
   },
   headerRowToggle: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionHeaderNoMargin: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  permStatusBadgeRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
-    backgroundColor: '#0f172a',
-    padding: 8,
-    borderRadius: 8,
-  },
-  permStatusLabel: {
-    color: '#94a3b8',
-    fontSize: 11,
-  },
-  permStatusBadge: {
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  grantedBadge: {
-    color: '#10b981',
-  },
-  deniedBadge: {
-    color: '#ff6b6b',
-  },
-  disabledText: {
-    color: '#64748b',
-    fontSize: 13,
-    marginTop: 8,
-    fontStyle: 'italic',
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#334155',
+  },
+  toggleLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  toggleSubtext: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 2,
   },
   rowLabel: {
-    color: '#cbd5e1',
     fontSize: 14,
+    color: '#94a3b8',
   },
   statusText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
   },
   subActive: {
     color: '#10b981',
   },
   subTrial: {
-    color: '#ff6b6b',
+    color: '#818cf8',
   },
   primaryActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#6366f1',
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 8,
+    borderRadius: 12,
+    paddingVertical: 12,
+    marginTop: 4,
+    gap: 8,
   },
   primaryActionBtnText: {
     color: '#ffffff',
-    fontSize: 14,
     fontWeight: '700',
-    marginLeft: 6,
+    fontSize: 14,
+  },
+  permStatusBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#0f172a',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  permStatusLabel: {
+    fontSize: 12,
+    color: '#94a3b8',
+  },
+  permStatusBadge: {
+    fontSize: 11,
+    fontWeight: '800',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  grantedBadge: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    color: '#34d399',
+  },
+  deniedBadge: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    color: '#fca5a5',
+  },
+  subText: {
+    fontSize: 13,
+    color: '#94a3b8',
+    marginBottom: 10,
+  },
+  disabledText: {
+    fontSize: 13,
+    color: '#f43f5e',
+    fontStyle: 'italic',
+    marginTop: 6,
+  },
+  testNotifBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3b82f6',
+    borderRadius: 10,
+    paddingVertical: 10,
+    marginTop: 12,
+    gap: 6,
+  },
+  testNotifBtnText: {
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: 13,
   },
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#10b981',
+    borderRadius: 12,
     paddingVertical: 12,
-    borderRadius: 8,
-    marginTop: 4,
+    gap: 8,
   },
   exportBtnText: {
     color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '800',
-    marginLeft: 8,
-  },
-  subText: {
-    color: '#94a3b8',
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  testNotifBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#312e81',
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 12,
-  },
-  testNotifBtnText: {
-    color: '#818cf8',
-    fontSize: 13,
     fontWeight: '700',
-    marginLeft: 6,
+    fontSize: 13,
   },
   periodRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   periodChip: {
     backgroundColor: '#0f172a',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#334155',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   periodChipActive: {
     backgroundColor: '#6366f1',
-    borderColor: '#6366f1',
+    borderColor: '#818cf8',
   },
   periodChipText: {
     color: '#94a3b8',
     fontSize: 12,
+    fontWeight: '600',
   },
   periodChipTextActive: {
     color: '#ffffff',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   dangerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f43f5e',
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: '#ef4444',
+    borderRadius: 12,
+    paddingVertical: 12,
+    gap: 6,
   },
   dangerBtnText: {
     color: '#ffffff',
+    fontWeight: '700',
     fontSize: 13,
-    fontWeight: '800',
-    marginLeft: 6,
   },
   linkRow: {
     flexDirection: 'row',
@@ -421,16 +562,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#334155',
+    gap: 10,
   },
   linkText: {
-    color: '#818cf8',
+    color: '#cbd5e1',
     fontSize: 14,
-    marginLeft: 10,
+    fontWeight: '500',
   },
   versionText: {
+    textAlign: 'center',
     color: '#64748b',
     fontSize: 12,
-    textAlign: 'center',
-    marginTop: 10,
+    marginTop: 8,
   },
 });
