@@ -442,3 +442,47 @@ Are there other high-value profiles customers will pay for? **Yes!**
 * **Target Audience:** Visa applicants (USCIS), green card applicants, litigation clients.
 * **Paper Burden:** I-797 Notice of Action, Biometrics appointment letters, Request for Evidence (RFE) deadlines, court dates.
 * **Why They Pay:** Missing a visa deadline leads to deportation or denial. **High urgency, high willingness to pay \$9.99 one-time per case.**
+
+---
+
+## 9. Robust Technical Solutions for Edge Cases & UX Communication Strategy
+
+### Technical Architecture Solutions for Edge Cases
+
+```typescript
+export interface EdgeCaseHandlingStrategy {
+  crumpledDarkPhotos: {
+    ux_guidance: "Real-time camera illuminance detector & flash toggle";
+    image_pre_processing: "expo-image-manipulator contrast normalization & sharpening";
+  };
+  multiPageDocuments: {
+    capture_mode: "Multi-photo carousel (up to 5 pages per document entry)";
+    ai_payload: "Sends multi-image Base64 array in a single Gemini vision call";
+  };
+  ambiguousDateFormat: {
+    locale_awareness: "Pass device locale (e.g. en-US vs en-GB) to Gemini context";
+    ui_safeguard: "Flag ambiguous items with confidence: 'check_date' and ⚠️ Tap to Verify badge";
+  };
+  offlineNoSignal: {
+    local_storage: "Save document photo locally in SQLite with status = 'pending_upload'";
+    background_sync: "@react-native-community/netinfo auto-processes queue when reconnected";
+  };
+}
+```
+
+---
+
+### Contextual UX & Communication Strategy (Where to Disclose Edge Cases)
+
+> [!IMPORTANT]
+> **Do NOT list edge cases or disclaimers during Onboarding.** Onboarding must remain 100% focused on value, speed, and profile selection. Edge cases are communicated contextually throughout the app:
+
+| App Screen / Location | Purpose | Micro-Copy & UX Element |
+| :--- | :--- | :--- |
+| 🎒 **Onboarding** | High Conversion & Value | *"AI paperwork organizer that never lets you miss a deadline."* (Zero disclaimers) |
+| 📷 **Camera / Scan Screen** | Proactive Scan Tips | • Top Bar Tip: *"💡 Tip: Flat paper in good lighting gives best accuracy"*<br>• Flash button toggle |
+| ✏️ **Scan Review Screen** | Verification Callout | *"AI extracted 3 dates. Please review and tap to confirm before adding to calendar."* |
+| 📶 **Offline State Banner** | Status Transparency | *"📶 Offline Mode: Photo saved. Sift will auto-extract dates once connected."* |
+| ⚙️ **Settings / Help Center** | Troubleshooting FAQ | *"Scanning Help: How to scan dark flyers, prescription labels, or multi-page documents."* |
+| ⚖️ **Terms of Service & Privacy** | Legal Disclaimer | *"Sift is an organizational aid. Users are advised to verify critical medical/legal dates."* |
+
