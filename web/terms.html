@@ -36,6 +36,8 @@
     a:hover { text-decoration: underline; }
     .warning-box { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.75rem; padding: 1.25rem; margin: 1.5rem 0; }
     .warning-box p { margin-bottom: 0; color: #fca5a5; font-size: 0.95rem; }
+    .notice-box { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 0.75rem; padding: 1.25rem; margin: 1.5rem 0; }
+    .notice-box p { margin-bottom: 0; color: #e2e8f0; font-size: 0.95rem; }
     footer { text-align: center; padding: 3rem 1rem; border-top: 1px solid #334155; color: var(--text-muted); font-size: 0.9rem; margin-top: 4rem; }
     footer nav { margin-bottom: 1rem; }
     footer nav a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; }
@@ -55,15 +57,20 @@
   <main class="container">
     <div class="header-box">
       <h1>Terms of Service</h1>
-      <p class="effective-date">Effective Date: September 27, 2026 | Version 2.0 (Smart Profiles)</p>
+      <p class="effective-date">Effective Date: September 27, 2026 | Version 2.1 (Service Scope Update)</p>
     </div>
 
     <div class="content-card">
       <h2>1. Acceptance of Terms</h2>
       <p>By downloading, installing, or using the <strong>Sift</strong> mobile application ("App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the App.</p>
 
-      <h2>2. Description of Service</h2>
-      <p>Sift is a productivity command center operating across 5 Smart Profiles (School & Family, Elder Care & Health, Trade Contractors, Property & HOA, and Legal & Immigration). The App extracts key dates, actionable deadlines, and notes from physical paperwork and digital documents using Artificial Intelligence and on-device PII redaction.</p>
+      <h2>2. Nature of Service & Scope of Assistance</h2>
+      <p>Sift functions strictly as a personal productivity assistant designed to help organize physical paperwork, forms, receipts, and digital documents by generating task lists, calendar reminders, and notification alerts across 5 Smart Profiles (School & Family, Elder Care & Health, Trade Contractors, Property & HOA, and Legal & Immigration).</p>
+
+      <div class="notice-box">
+        <p><strong>📌 Important Scope of Assistance & Post-Upload Responsibilities:</strong><br>
+        Sift processes and extracts document information strictly as presented at the moment of scanning or uploading. Sift does not monitor, track, or automatically update records for any subsequent changes, amendments, reschedules, or cancellations issued after a document has been uploaded. Users remain solely responsible for verifying all extracted details and for independently monitoring any external updates, changes, or revisions to their physical or digital documents.</p>
+      </div>
 
       <h2>3. Artificial Intelligence (AI) Data Extraction Disclaimer</h2>
       <p>Sift employs state-of-the-art multimodal AI models (Google Gemini 2.5 Flash) and OCR technology. While AI extraction delivers high accuracy, you acknowledge and agree that:</p>
@@ -74,7 +81,7 @@
 
       <div class="warning-box">
         <p><strong>⚠️ Human-in-the-Loop Verification Requirement:</strong><br>
-        You are strictly responsible for reviewing and verifying all extracted task titles, due dates, times, and action details presented during the <strong>15-Second Confirmation & Edit Screen</strong> prior to saving them to your device. Sift is not liable for any missed deadlines, late fees, court absences, or missed medical appointments caused by unverified AI data extraction.</p>
+        You are strictly responsible for reviewing and verifying all extracted task titles, due dates, times, and action details presented during the <strong>15-Second Confirmation & Edit Screen</strong> prior to saving them to your device. Sift is not liable for any missed deadlines, late fees, court absences, or missed medical appointments caused by unverified AI data extraction or unmonitored document changes.</p>
       </div>
 
       <h2>4. Subscriptions & Payment Terms</h2>
@@ -90,7 +97,7 @@
       <p>Sift schedules local push notifications and optional Apple Critical Alerts based on your device settings. Sift is not responsible for missed alerts resulting from disabled iOS permissions, device battery saver modes, Focus/Do Not Disturb configurations, or hardware failures.</p>
 
       <h2>6. Limitation of Liability</h2>
-      <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, SIFT AND ITS DEVELOPERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING MISSED DEADLINES, LATE FEES, LOSS OF DATA, OR PERSONAL INCONVENIENCE ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE APP.</p>
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, SIFT AND ITS DEVELOPERS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING MISSED DEADLINES, LATE FEES, LOSS OF DATA, OR PERSONAL INCONVENIENCE ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE APP OR UNNOTIFIED EXTERNAL CHANGES TO YOUR DOCUMENTS.</p>
 
       <h2>7. Governing Law & Contact</h2>
       <p>If you have questions regarding these Terms of Service, please contact us at:</p>
