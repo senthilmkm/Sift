@@ -11,6 +11,7 @@ export interface PaywallTier {
 
 export interface PaywallConfig {
   freeScanLimitPerMonth: number;
+  freeTierDisclaimer: string;
   allProfilesUnlocked: boolean;
   unlockedProfiles: ProfileId[];
   tiers: PaywallTier[];
@@ -24,6 +25,7 @@ export interface PaywallConfig {
 
 export const SIFT_PAYWALL_CONFIG: PaywallConfig = {
   freeScanLimitPerMonth: 5,
+  freeTierDisclaimer: 'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.',
   allProfilesUnlocked: true,
   unlockedProfiles: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
   tiers: [
