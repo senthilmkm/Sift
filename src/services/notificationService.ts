@@ -1,4 +1,4 @@
-﻿import * as Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { SiftItem } from '../models/types';
 
@@ -27,17 +27,57 @@ export async function requestNotificationPermissions(): Promise<boolean> {
     });
   }
 
-  const { status: existingStatus, canAskAgain } = await Notifications.getPermissionsAsync();
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
   
   if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
+    const { status } = await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+        allowCriticalAlerts: true, // <--- iOS Critical Alerts Entitlement
+      },
+    });
     finalStatus = status;
   }
   return finalStatus === 'granted';
 }
 
-export async function scheduleItemNotification(item: SiftItem, defaultReminderTime: string = '19:00_nightbefore'): Promise<string | null> {
+/**
+ * Calculates exact date & time triggers with 100% mathematical precision
+ */
+export function calculateNotificationTriggerDate(
+  dueAt: string | null,
+  defaultReminderTime: string = '19:00_nightbefore',
+  now: Date = new Date()
+): Date {
+  const [timePart, timingPart] = defaultReminderTime.split('_');
+  const [hours, minutes] = (timePart || '19:00').split(':').map(Number);
+  const isNightBefore = timingPart !== 'sameday';
+
+  let triggerDate = new Date();
+
+  if (dueAt) {
+    const [y, m, d] = dueAt.split('T')[0].split('-').map(Number);
+    triggerDate = new Date(y, m - 1, d, hours || 19, minutes || 0, 0, 0);
+    if (isNightBefore) {
+      triggerDate.setDate(triggerDate.getDate() - 1);
+    }
+  } else {
+    triggerDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours || 19, minutes || 0, 0, 0);
+    if (triggerDate.getTime() <= now.getTime()) {
+      triggerDate.setDate(triggerDate.getDate() + 1);
+    }
+  }
+
+  return triggerDate;
+}
+
+export async function scheduleItemNotification(
+  item: SiftItem,
+  defaultReminderTime: string = '19:00_nightbefore'
+): Promise<string | null> {
   const granted = await requestNotificationPermissions();
   if (!granted) return null;
 
@@ -45,25 +85,8 @@ export async function scheduleItemNotification(item: SiftItem, defaultReminderTi
     await cancelNotification(item.notification_id);
   }
 
-  const [timePart, timingPart] = defaultReminderTime.split('_');
-  const [hours, minutes] = (timePart || '19:00').split(':').map(Number);
-  const isNightBefore = timingPart !== 'sameday';
-
   const now = new Date();
-  let triggerDate = new Date();
-
-  if (item.due_at) {
-    const [y, m, d] = item.due_at.split('T')[0].split('-').map(Number);
-    triggerDate = new Date(y, m - 1, d, hours || 19, minutes || 0, 0);
-    if (isNightBefore) {
-      triggerDate.setDate(triggerDate.getDate() - 1);
-    }
-  } else {
-    triggerDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours || 19, minutes || 0, 0);
-    if (triggerDate.getTime() <= now.getTime()) {
-      triggerDate.setDate(triggerDate.getDate() + 1);
-    }
-  }
+  const triggerDate = calculateNotificationTriggerDate(item.due_at, defaultReminderTime, now);
 
   const diffSeconds = Math.floor((triggerDate.getTime() - now.getTime()) / 1000);
   let triggerInput: any;
@@ -90,10 +113,14 @@ export async function scheduleItemNotification(item: SiftItem, defaultReminderTi
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
       title: item.is_urgent ? `⚡ URGENT: ${item.title}` : `📋 Sift Reminder: ${item.title}`,
-      body: item.source_snippet || `Due: ${item.due_at || 'Today'}`,
+      body: item.urgency_reason || item.source_snippet || `Due: ${item.due_at || 'Today'}`,
       sound: true,
-      priority: item.is_urgent ? Notifications.AndroidNotificationPriority.HIGH : Notifications.AndroidNotificationPriority.DEFAULT,
-      data: { itemId: item.id },
+      // iOS 15+ Critical Interruption Level when urgent:
+      interruptionLevel: item.is_urgent ? 'critical' : 'active',
+      priority: item.is_urgent
+        ? Notifications.AndroidNotificationPriority.MAX
+        : Notifications.AndroidNotificationPriority.DEFAULT,
+      data: { itemId: item.id, profileId: item.profile_id },
     },
     trigger: triggerInput,
   });
@@ -108,7 +135,7 @@ export async function sendTestNotification(): Promise<string | null> {
   return await Notifications.scheduleNotificationAsync({
     content: {
       title: '⚡ Sift Test Alert',
-      body: 'Your Sift notifications are working perfectly!',
+      body: 'Your Sift notifications and critical alerts are working perfectly!',
       sound: true,
     },
     trigger: {

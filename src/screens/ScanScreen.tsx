@@ -102,7 +102,14 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       }
 
-      const extracted = await extractItemsFromDocument(base64Image, mimeType, true);
+      const prefs = await getUserPreferences();
+      const extracted = await extractItemsFromDocument(
+        base64Image,
+        mimeType,
+        prefs.activeProfile || 'school',
+        prefs.enablePiiRedaction !== false,
+        true
+      );
 
       // Soonest Flyer Date Inheritance: Find the earliest valid date on the flyer
       const validDates = extracted

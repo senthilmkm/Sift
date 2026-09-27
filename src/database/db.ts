@@ -1,12 +1,12 @@
 import * as SQLite from 'expo-sqlite';
-import { SiftItem, SiftDocument, FilterOptions, UserPreferences, AutoDeletePeriod, ItemTab } from '../models/types';
+import { SiftItem, SiftDocument, FilterOptions, UserPreferences, AutoDeletePeriod, ItemTab, ProfileId } from '../models/types';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 export async function getDB(): Promise<SQLite.SQLiteDatabase> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await SQLite.openDatabaseAsync('sift_v1.db');
+  dbInstance = await SQLite.openDatabaseAsync('sift_v2.db');
   await initTables(dbInstance);
   return dbInstance;
 }
@@ -27,6 +27,7 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
     CREATE TABLE IF NOT EXISTS items (
       id TEXT PRIMARY KEY NOT NULL,
       document_id TEXT NOT NULL,
+      profile_id TEXT NOT NULL DEFAULT 'school',
       tab TEXT NOT NULL,
       title TEXT NOT NULL,
       notes TEXT,
@@ -34,9 +35,11 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
       source_snippet TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'open',
       is_urgent INTEGER NOT NULL DEFAULT 0,
+      urgency_reason TEXT,
       reminder_at TEXT,
       notification_id TEXT,
       confidence TEXT NOT NULL DEFAULT 'high',
+      metadata_json TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE CASCADE
@@ -44,7 +47,12 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
 
     CREATE TABLE IF NOT EXISTS user_preferences (
       id INTEGER PRIMARY KEY CHECK (id = 1),
+      active_profile TEXT NOT NULL DEFAULT 'school',
+      enabled_profiles_json TEXT NOT NULL DEFAULT '["school","elderCare","smallBiz","property","legalImmigration"]',
+      onboarding_completed INTEGER NOT NULL DEFAULT 0,
       enable_notifications INTEGER NOT NULL DEFAULT 1,
+      enable_critical_alerts INTEGER NOT NULL DEFAULT 0,
+      enable_pii_redaction INTEGER NOT NULL DEFAULT 1,
       default_reminder_time TEXT NOT NULL DEFAULT '19:00_nightbefore',
       reminder_sound TEXT NOT NULL DEFAULT 'default',
       auto_delete_period TEXT NOT NULL DEFAULT 'never',
@@ -54,15 +62,17 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
     );
   `);
 
-  try {
-    await database.execAsync(`ALTER TABLE user_preferences ADD COLUMN enable_notifications INTEGER NOT NULL DEFAULT 1;`);
-  } catch (err) {
-    // Column already exists
-  }
-
   await database.execAsync(`
-    INSERT OR IGNORE INTO user_preferences (id, enable_notifications, default_reminder_time, reminder_sound, auto_delete_period, free_scans_used, is_subscribed)
-    VALUES (1, 1, '19:00_nightbefore', 'default', 'never', 0, 0);
+    INSERT OR IGNORE INTO user_preferences (
+      id, active_profile, enabled_profiles_json, onboarding_completed, 
+      enable_notifications, enable_critical_alerts, enable_pii_redaction,
+      default_reminder_time, reminder_sound, auto_delete_period, free_scans_used, is_subscribed
+    )
+    VALUES (
+      1, 'school', '["school","elderCare","smallBiz","property","legalImmigration"]', 0,
+      1, 0, 1,
+      '19:00_nightbefore', 'default', 'never', 0, 0
+    );
   `);
 }
 
@@ -93,11 +103,15 @@ export async function saveDocumentAndItems(
     };
 
     await database.runAsync(
-      `INSERT INTO items (id, document_id, tab, title, notes, due_at, source_snippet, status, is_urgent, reminder_at, notification_id, confidence, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO items (
+        id, document_id, profile_id, tab, title, notes, due_at, source_snippet, 
+        status, is_urgent, urgency_reason, reminder_at, notification_id, confidence, metadata_json, created_at, updated_at
+       )
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         newItem.id,
         newItem.document_id,
+        newItem.profile_id || 'school',
         newItem.tab,
         newItem.title,
         newItem.notes || null,
@@ -105,9 +119,11 @@ export async function saveDocumentAndItems(
         newItem.source_snippet,
         newItem.status,
         newItem.is_urgent ? 1 : 0,
+        newItem.urgency_reason || null,
         newItem.reminder_at,
         newItem.notification_id || null,
         newItem.confidence || 'high',
+        newItem.metadata_json || null,
         newItem.created_at,
         newItem.updated_at,
       ]
@@ -123,6 +139,11 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
   const database = await getDB();
   let query = `SELECT items.*, documents.filename as doc_filename, documents.image_path as image_path FROM items LEFT JOIN documents ON items.document_id = documents.id WHERE items.status != 'archived'`;
   const params: any[] = [];
+
+  if (options.profileId) {
+    query += ` AND items.profile_id = ?`;
+    params.push(options.profileId);
+  }
 
   if (options.tab) {
     query += ` AND items.tab = ?`;
@@ -149,7 +170,7 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
       query += ` ORDER BY items.due_at ${options.sortOrder.toUpperCase()} NULLS LAST`;
       break;
     case 'urgency':
-      query += ` ORDER BY items.due_at ASC NULLS LAST`;
+      query += ` ORDER BY items.is_urgent DESC, items.due_at ASC NULLS LAST`;
       break;
     case 'title':
       query += ` ORDER BY items.title ${options.sortOrder.toUpperCase()}`;
@@ -165,6 +186,7 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
   return rows.map((r) => ({
     id: r.id,
     document_id: r.document_id,
+    profile_id: r.profile_id || 'school',
     doc_filename: r.doc_filename || 'Document Notice',
     image_path: r.image_path,
     tab: r.tab,
@@ -174,9 +196,11 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
     source_snippet: r.source_snippet,
     status: r.status,
     is_urgent: r.is_urgent === 1,
+    urgency_reason: r.urgency_reason,
     reminder_at: r.reminder_at,
     notification_id: r.notification_id,
     confidence: r.confidence,
+    metadata_json: r.metadata_json,
     created_at: r.created_at,
     updated_at: r.updated_at,
   }));
@@ -191,6 +215,7 @@ export async function getArchivedItems(): Promise<SiftItem[]> {
   return rows.map((r) => ({
     id: r.id,
     document_id: r.document_id,
+    profile_id: r.profile_id || 'school',
     doc_filename: r.doc_filename || 'Document Notice',
     image_path: r.image_path,
     tab: r.tab,
@@ -200,9 +225,11 @@ export async function getArchivedItems(): Promise<SiftItem[]> {
     source_snippet: r.source_snippet,
     status: r.status,
     is_urgent: r.is_urgent === 1,
+    urgency_reason: r.urgency_reason,
     reminder_at: r.reminder_at,
     notification_id: r.notification_id,
     confidence: r.confidence,
+    metadata_json: r.metadata_json,
     created_at: r.created_at,
     updated_at: r.updated_at,
   }));
@@ -292,7 +319,12 @@ export async function getUserPreferences(): Promise<UserPreferences> {
   const row = await database.getFirstAsync<any>(`SELECT * FROM user_preferences WHERE id = 1`);
   if (!row) {
     return {
+      activeProfile: 'school',
+      enabledProfiles: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
+      onboardingCompleted: false,
       enableNotifications: true,
+      enableCriticalAlerts: false,
+      enablePiiRedaction: true,
       defaultReminderTime: '19:00_nightbefore',
       reminderSound: 'default',
       autoDeletePeriod: 'never',
@@ -301,8 +333,22 @@ export async function getUserPreferences(): Promise<UserPreferences> {
     };
   }
 
+  let enabledProfiles: ProfileId[] = ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'];
+  try {
+    if (row.enabled_profiles_json) {
+      enabledProfiles = JSON.parse(row.enabled_profiles_json);
+    }
+  } catch (e) {
+    // Fallback default
+  }
+
   return {
+    activeProfile: (row.active_profile as ProfileId) || 'school',
+    enabledProfiles,
+    onboardingCompleted: row.onboarding_completed === 1,
     enableNotifications: row.enable_notifications !== undefined ? row.enable_notifications !== 0 : true,
+    enableCriticalAlerts: row.enable_critical_alerts === 1,
+    enablePiiRedaction: row.enable_pii_redaction !== undefined ? row.enable_pii_redaction !== 0 : true,
     defaultReminderTime: row.default_reminder_time || '19:00_nightbefore',
     reminderSound: row.reminder_sound || 'default',
     autoDeletePeriod: row.auto_delete_period || 'never',
@@ -319,7 +365,12 @@ export async function updateUserPreferences(prefs: Partial<UserPreferences>): Pr
 
   await database.runAsync(
     `UPDATE user_preferences SET 
+      active_profile = ?,
+      enabled_profiles_json = ?,
+      onboarding_completed = ?,
       enable_notifications = ?,
+      enable_critical_alerts = ?,
+      enable_pii_redaction = ?,
       default_reminder_time = ?,
       reminder_sound = ?,
       auto_delete_period = ?,
@@ -328,7 +379,12 @@ export async function updateUserPreferences(prefs: Partial<UserPreferences>): Pr
       active_plan_id = ?
      WHERE id = 1`,
     [
+      updated.activeProfile,
+      JSON.stringify(updated.enabledProfiles),
+      updated.onboardingCompleted ? 1 : 0,
       updated.enableNotifications ? 1 : 0,
+      updated.enableCriticalAlerts ? 1 : 0,
+      updated.enablePiiRedaction ? 1 : 0,
       updated.defaultReminderTime,
       updated.reminderSound,
       updated.autoDeletePeriod,

@@ -11,7 +11,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 export const SettingsScreen: React.FC = () => {
   const [prefs, setPrefs] = useState<UserPreferences>({
+    activeProfile: 'school',
+    enabledProfiles: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
+    onboardingCompleted: true,
     enableNotifications: true,
+    enableCriticalAlerts: false,
+    enablePiiRedaction: true,
     defaultReminderTime: '19:00_nightbefore',
     reminderSound: 'default',
     autoDeletePeriod: 'never',
