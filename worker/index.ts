@@ -45,29 +45,34 @@ export default {
       const todayStr = new Date().toISOString().split('T')[0];
       const prompt = `
 You are Sift's Universal Document & Receipt Extraction Engine.
-Analyze this image (which could be a paper receipt, bill, flyer, medical form, HOA notice, school slip, permit, or legal letter).
+Analyze this image (which could be a paper receipt, bill, flyer, medical form, hospital bill, pharmacy slip, dental receipt or appointment notice, HOA notice, school slip, permit, or legal letter).
 Current Date today is: ${todayStr}. User's current view profile is '${activeProfileId}'.
 
 GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRENCY, ANY DOMAIN):
 1. ALWAYS EXTRACT ANY STORE RECEIPT, INVOICE, BILL, OR PROOF OF PURCHASE WORLDWIDE:
-   - APPLIES TO: Any retail store, supermarket, restaurant, gas station, online merchant, wholesale vendor, service provider, repair shop, pharmacy, hardware store, utility bill, or contractor invoice across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
+   - APPLIES TO: Any retail store, supermarket, restaurant, gas station, online merchant, wholesale vendor, service provider, repair shop, pharmacy (CVS, Walgreens, Rite Aid, local pharmacy), hospital, dental clinic, medical practice, hardware store, utility bill, or contractor invoice across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
    - MANDATORY ACTION: YOU MUST ALWAYS EXTRACT IT! NEVER return 0 items for any receipt or transaction document.
-   - Title Format: "[Merchant Name] — [Currency Symbol][Total Amount]" (e.g. "Merchant Name — $42.50"). If amount is unclear, use "$0.00".
-   - Tab: If there is an active return window (e.g. "Returns within 30 days"), extract return expiration date as due_date and set tab="actionable". Otherwise set tab="informational".
-   - Tax Category (IRS & Global Business Expense Standard):
+   - Title Format: "[Merchant/Provider Name] — [Currency Symbol][Total Amount]" (e.g. "CVS Pharmacy — $18.50", "City Hospital — $150.00", "Bright Smile Dental — $45.00", "Food Lion — $42.50"). If amount is unclear, use "$0.00".
+   - Tab: If there is an active payment deadline, appointment time, or return window, set due_date and tab="actionable". Otherwise set tab="informational".
+   - Tax Category (IRS & Global Business/Personal Expense Standard):
      - "Materials & Supplies" (groceries, retail items, raw materials, hardware, equipment <$2,500)
      - "Vehicle & Fuel" (fuel, auto repairs, parking, tolls, transportation)
      - "Utilities & Repairs" (electricity, water, internet, building/machine maintenance)
      - "Office & Admin" (stationery, software subscriptions, shipping, postage, office supplies)
      - "Professional Fees" (licensing, municipal permits, legal fees, sub-contractor B2B invoices)
      - "Uncategorized Expense" (Default fallback if transaction type is ambiguous or non-business)
-   - Set detected_profile_id = "smallBiz".
+   - Set detected_profile_id = "smallBiz" for general store/business receipts, OR "elderCare" for medical, hospital, pharmacy, and dental receipts/bills/appointments.
 
-2. FOR SCHOOL, MEDICAL, HOA, LEGAL NOTICES:
-   - Extract actionable deadlines, forms, permission slips, court dates, or medical preps.
-   - Set detected_profile_id to matching profile: "school", "elderCare", "property", or "legalImmigration".
+2. FOR MEDICAL, HOSPITAL, PHARMACY & DENTAL SERVICES:
+   - APPLIES TO: Doctor appointments, hospital discharge notices, dental checkup reminders, pharmacy prescriptions/refills, health insurance Explanation of Benefits (EOB), lab test instructions, dental bills, and co-pay receipts.
+   - MANDATORY ACTION: Extract appointment dates, fasting/prep instructions, payment due dates, prescription refill deadlines, and provider contact numbers.
+   - Set detected_profile_id = "elderCare" (Family Health & Medical Care).
 
-3. ZERO EMPTY RESULT GUARANTEE:
+3. FOR SCHOOL, HOA, LEGAL NOTICES:
+   - Extract actionable deadlines, forms, permission slips, court dates, or HOA violations.
+   - Set detected_profile_id to matching profile: "school", "property", or "legalImmigration".
+
+4. ZERO EMPTY RESULT GUARANTEE:
    - If the image contains ANY readable text or document layout, ALWAYS generate at least 1 extracted item card. Never return an empty items list.
 `;
 
