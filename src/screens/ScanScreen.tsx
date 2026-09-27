@@ -111,6 +111,12 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         true
       );
 
+      if (!extracted || extracted.length === 0) {
+        Alert.alert('No Items Detected', 'No actionable or reference items could be extracted from this document image. Your free scan count was not used.');
+        setLoading(false);
+        return;
+      }
+
       // Soonest Flyer Date Inheritance: Find the earliest valid date on the flyer
       const validDates = extracted
         .map((i) => i.due_date)
@@ -131,7 +137,8 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
       setCandidates(sanitized);
 
-      if (!prefs.isSubscribed) {
+      // Free tier scan count: increment ONLY on successful scanning of photo or library image
+      if (!prefs.isSubscribed && (source === 'camera' || source === 'library') && sanitized.length > 0) {
         await updateUserPreferences({ freeScansUsed: prefs.freeScansUsed + 1 });
       }
     } catch (err: any) {
