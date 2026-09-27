@@ -120,6 +120,12 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
         },
       };
 
+      let cleanBase64 = base64Image;
+      if (cleanBase64.includes(';base64,')) {
+        cleanBase64 = cleanBase64.split(';base64,')[1];
+      }
+      cleanBase64 = cleanBase64.trim();
+
       const payload = {
         contents: [
           {
@@ -128,7 +134,7 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
               { text: prompt },
               {
                 inlineData: {
-                  data: base64Image,
+                  data: cleanBase64,
                   mimeType: mimeType,
                 },
               },
@@ -141,7 +147,12 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
         },
       };
 
-      const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro'];
+      const modelsToTry = [
+        'gemini-2.5-flash',
+        'gemini-flash-latest',
+        'gemini-3.8-flash',
+        'gemini-3.5-flash',
+      ];
       let geminiResponse: Response | null = null;
       let lastErrText = '';
 
