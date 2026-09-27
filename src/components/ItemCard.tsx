@@ -149,7 +149,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           />
         </TouchableOpacity>
 
-                <View style={styles.titleContainer}>
+        <TouchableOpacity
+          style={styles.titleContainer}
+          onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
+          activeOpacity={0.85}
+        >
           {renderTextWithLinks(item.title, [styles.titleText, isDone && styles.strikethroughText])}
 
                     <View style={styles.dueRow}>
@@ -184,7 +188,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               </TouchableOpacity>
             ) : null}
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Right Column: Urgency Status Chip above the 4 Action Icons */}
         <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', marginLeft: 8 }}>
@@ -226,43 +230,53 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
 
 
-      {lineItems.length > 0 && (
-        <View style={styles.lineItemsWrapper}>
-          <TouchableOpacity
-            style={styles.lineItemsToggleBtn}
-            onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
-            activeOpacity={0.7}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
-              <Text style={styles.lineItemsToggleText}>
-                {lineItems.length} Purchased Item{lineItems.length > 1 ? 's' : ''}
-              </Text>
-              {taxCategory ? (
-                <View style={styles.taxCategoryPill}>
-                  <Text style={styles.taxCategoryText}>{taxCategory}</Text>
-                </View>
-              ) : null}
-            </View>
-            <Ionicons
-              name={isLineItemsExpanded ? 'chevron-up' : 'chevron-down'}
-              size={16}
-              color="#94a3b8"
-            />
-          </TouchableOpacity>
+      <View style={styles.lineItemsWrapper}>
+        <TouchableOpacity
+          style={styles.lineItemsToggleBtn}
+          onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
+          activeOpacity={0.7}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
+            <Text style={styles.lineItemsToggleText}>
+              {lineItems.length > 0
+                ? `${lineItems.length} Purchased Item${lineItems.length > 1 ? 's' : ''}`
+                : 'Receipt & Expense Details'}
+            </Text>
+            {taxCategory ? (
+              <View style={styles.taxCategoryPill}>
+                <Text style={styles.taxCategoryText}>{taxCategory}</Text>
+              </View>
+            ) : null}
+          </View>
+          <Ionicons
+            name={isLineItemsExpanded ? 'chevron-up' : 'chevron-down'}
+            size={16}
+            color="#94a3b8"
+          />
+        </TouchableOpacity>
 
-          {isLineItemsExpanded && (
-            <View style={styles.lineItemsContainer}>
-              {lineItems.map((lineItem, idx) => (
+        {isLineItemsExpanded && (
+          <View style={styles.lineItemsContainer}>
+            {lineItems.length > 0 ? (
+              lineItems.map((lineItem, idx) => (
                 <View key={idx} style={styles.lineItemRow}>
                   <Text style={styles.lineItemBullet}>•</Text>
                   <Text style={styles.lineItemText}>{lineItem}</Text>
                 </View>
-              ))}
-            </View>
-          )}
-        </View>
-      )}
+              ))
+            ) : (
+              <View style={{ paddingVertical: 4 }}>
+                {item.source_snippet ? (
+                  <Text style={styles.lineItemText}>• {item.source_snippet}</Text>
+                ) : (
+                  <Text style={styles.lineItemText}>• Receipt document record logged in Sift.</Text>
+                )}
+              </View>
+            )}
+          </View>
+        )}
+      </View>
 
       {item.tab === 'informational' && onPromoteActionable && (
         <TouchableOpacity
