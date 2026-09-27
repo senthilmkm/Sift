@@ -1,16 +1,18 @@
-﻿{
-  "version": "1.0.0",
+{
+  "version": "2.0.0",
   "paywallTitle": "Unlock Unlimited Sift Pro",
-  "paywallSubtitle": "Scan unlimited flyers with Gemini 2.5 AI & never miss a school deadline again.",
+  "paywallSubtitle": "Scan unlimited paperwork with Gemini AI across all 5 Smart Profiles (School, Health, Trades, Property & Legal).",
   "promotionalBanner": {
     "enabled": true,
-    "bannerText": "⚡ Back to School Special — 50% OFF Annual Pass",
+    "bannerText": "⚡ Special Launch Pass — Unlock All 5 Smart Profiles",
     "badge": "BEST VALUE",
-    "expiresAt": "2026-10-31T23:59:59Z"
+    "expiresAt": "2026-12-31T23:59:59Z"
   },
   "freeTier": {
     "enabled": true,
     "freeScansPerMonth": 5,
+    "freeTierDisclaimer": "Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.",
+    "allProfilesUnlocked": true,
     "hasUrgentAlarms": true,
     "hasExport": false
   },
@@ -28,31 +30,34 @@
       "trialDays": 7,
       "promoMessage": "7 days free, then $4.99/month",
       "features": [
-        "Unlimited Gemini AI Flyer Scans",
-        "Single-Tap Urgent Alarms",
-        "Export to CSV / PDF Digest",
-        "Share Tasks to Spouse & Email"
+        "Unlock All 5 Smart Profiles",
+        "Unlimited Gemini AI Paperwork Scans",
+        "On-Device PII Redaction Engine",
+        "Apple Critical Alerts & Urgent Alarms",
+        "Multi-Page Camera Carousel Scanner",
+        "Export to CSV / iCal Calendar"
       ]
     },
     {
-      "id": "sift_annual_2999",
-      "productId": "com.sift.app.annual2999",
+      "id": "sift_annual_3999",
+      "productId": "com.sift.app.annual3999",
       "name": "Annual Pass",
-      "price": "$29.99",
-      "equivalentMonthlyPrice": "$2.50/mo",
-      "priceMicros": 29990000,
+      "price": "$39.99",
+      "equivalentMonthlyPrice": "$3.33/mo",
+      "priceMicros": 39990000,
       "currency": "USD",
       "billingPeriod": "annual",
       "enabled": true,
       "isPopular": true,
-      "discountPercentage": 50,
+      "discountPercentage": 33,
       "trialDays": 7,
-      "promoMessage": "Save 50% ($2.50/mo billed annually)",
+      "promoMessage": "Save 33% ($3.33/mo billed annually)",
       "features": [
-        "Everything in Monthly",
-        "Save 50% vs Monthly billing",
+        "Everything in Monthly Pro",
+        "Save 33% vs Monthly billing",
+        "All 5 Profiles Included for 1 Price",
         "Priority Gemini AI Processing",
-        "Family Export & Group Sync"
+        "Family & Group Summary Sharing"
       ]
     },
     {
