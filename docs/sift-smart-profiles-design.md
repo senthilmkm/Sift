@@ -10,16 +10,24 @@ Sift evolves from a single-purpose *School Flyer Scanner* into a **Dynamic Multi
 
 ---
 
-## 1. Profile Matrix & Target Audience Pain Points
+## 1. Profile Matrix & Target Audience Sub-Groups
 
-### Onboarding Selection Options
+### Test Inputs Location & Verification Suite
+All automated test input documents (images and PDFs) covering all profiles and target audience sub-groups are stored in:
+`C:\Users\senth\Desktop\ios Apps\Sift\testinputs`
 
-| Profile Icon & Name | Target Audience | Primary Paper Burden | Core Pain Point Addressed |
+---
+
+### Detailed Target Audience Breakdown per Profile
+
+| Profile Icon & Name | Target Audience Sub-Groups | Primary Paper Burden | Core Pain Point Addressed |
 | :--- | :--- | :--- | :--- |
-| 🎒 **School & Family** | Parents (1–3 kids) | School flyers, permission slips, spirit week schedules, sports rosters | Missing spirit days, failing to return signed permission slips, forgotten bake sale fees. |
-| 🩺 **Elder Care & Health** | Adult caregivers, chronic care patients | Pre-op directives, doctor visit prep sheets, lab work instructions, Rx refills | Sleep-deprived caregivers missing fasting windows before surgery or forgetting critical medication holds. |
-| 🛠️ **Small Business & Trades** | Plumbers, electricians, landscapers, solo contractors | Net-30 vendor invoices, city building permits, vehicle inspection slips, license renewals | Paying \$50–\$200 vendor late fees, halted job sites due to expired permits, lost tax-deductible receipts. |
-| 🏡 **Property & HOA** *(Bonus Profile)* | Landlords, HOA board members, tenants | HOA violation notices, utility shutoff warnings, contractor repair quotes, lease renewals | Unplanned HOA fines, missed property tax deadlines, forgotten HVAC maintenance schedules. |
+| 🎒 **School & Family** | • **Primary Parents** (Busy parents with 1–3 kids)<br>• **Single Parents & Shared Custody** (Need clear task/date sharing)<br>• **PTA / Room Parents** (Event sign-ups & bake sales) | School flyers, permission slips, spirit week schedules, sports rosters | Missing spirit days, failing to return signed permission slips, forgotten bake sale fees. |
+| 🩺 **Elder Care & Health** | • **Adult Children Caregivers** (35–60 managing aging parents)<br>• **Home Health Aides & Nurses** (Care plans & Rx refills)<br>• **Chronic Care Patients** (Self-managing pre-op/dialysis) | Pre-op directives, doctor visit prep sheets, lab work instructions, Rx refills | Sleep-deprived caregivers missing fasting windows before surgery or forgetting critical medication holds. |
+| 🛠️ **Small Business & Trades** | • **Solo Tradesmen & Technicians** (Plumbers, electricians, HVAC)<br>• **General Contractors & Landscapers** (Job site permits & suppliers)<br>• **Freelancers & Consultants** (Client billing & quarterly taxes) | Net-30 vendor invoices, city building permits, vehicle inspection slips, license renewals | Paying \$50–\$200 vendor late fees, halted job sites due to expired permits, lost tax-deductible receipts. |
+| 🏡 **Property & HOA** | • **Independent Landlords** (Managing 1–10 rental units)<br>• **HOA Board Members & Owners** (HOA notices & dues)<br>• **Tenants & Renters** (Utility warnings & lease renewals) | HOA violation notices, utility shutoff warnings, contractor repair quotes, lease renewals | Unplanned HOA fines, missed property tax deadlines, forgotten HVAC maintenance schedules. |
+| ⚖️ **Legal & Immigration** | • **Immigration Applicants** (USCIS I-797, biometrics, RFE)<br>• **Litigation Clients & Pro Se Litigants** (Court hearing subpoenas) | I-797 Notice of Action, biometrics appointment letters, court subpoenas | Case denial or deportation risk due to missed mandatory court or USCIS appointment deadlines. |
+
 
 ---
 
