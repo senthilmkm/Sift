@@ -108,7 +108,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         mimeType,
         prefs.activeProfile || 'school',
         prefs.enablePiiRedaction !== false,
-        true
+        source === 'sample'
       );
 
       if (!extracted || extracted.length === 0) {

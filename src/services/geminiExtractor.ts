@@ -56,7 +56,8 @@ export async function extractItemsFromDocument(
       });
     }
 
-    return getMockCandidateItems(profileId);
+    if (useMockIfFailed) return getMockCandidateItems(profileId);
+    return [];
   } catch (err) {
     console.error('Extraction via Cloudflare Proxy failed:', err);
     if (useMockIfFailed) return getMockCandidateItems(profileId);
