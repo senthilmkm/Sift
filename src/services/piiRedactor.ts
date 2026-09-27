@@ -16,8 +16,8 @@ export const COMMON_PII_PATTERNS: PiiRedactionPattern[] = [
   },
   // Credit Card Numbers: 16 digits with optional spaces/dashes
   {
-    name: 'Credit Card',
-    regex: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b/gi,
+    name: 'Credit Card Number',
+    regex: /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/gi,
     replacement: '[REDACTED CARD]',
   },
   // US Bank Routing Number: 9 digits with routing keyword context
