@@ -1,4 +1,4 @@
-﻿# Sift — iOS App Master Design & Technical Architecture (Locked v3.0)
+# Sift — iOS App Master Design & Technical Architecture (Locked v3.0)
 
 > **Status:** FINAL LOCKED SPECIFICATION  
 > **Target Platform:** iOS (React Native / Expo + EAS Native Share Extension)  
@@ -114,8 +114,8 @@ Because Sift uses Google Gemini Multimodal AI for high-accuracy extraction, we *
 │  [✓] Export to CSV / PDF & Share to Spouse                             │
 │                                                                        │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │ 🌟 ANNUAL PASS (BEST VALUE)           $29.99 / year ($2.50/mo) │  │
-│  │ 7 Days Free Trial, then $29.99/yr                              │  │
+│  │ 🌟 ANNUAL PASS (BEST VALUE)           $39.99 / year ($3.33/mo) │  │
+│  │ 7 Days Free Trial, then $39.99/yr                              │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │ MONTHLY PRO                           $4.99 / month             │  │

@@ -427,10 +427,10 @@ Sift can enable, disable, or promote profiles dynamically without requiring an A
 
 To keep onboarding friction low while maximizing revenue:
 
-* **Unified Subscription:** \$4.99 / month or \$29.99 / year unlocks **ALL** profiles.
+* **Unified Subscription:** \$4.99 / month or \$39.99 / year unlocks **ALL** profiles.
 * **Tiered Access:**
-  * **Free Tier:** 3 free scans per month across any profile.
-  * **Pro Pass:** Unlimited AI scans, Critical Alerts, CSV/PDF Export, and access to **Small Business** & **Property** profiles.
+  * **Free Tier:** 5 free scans per month total across all 5 Smart Profiles combined.
+  * **Pro Pass:** Unlimited AI scans, Critical Alerts, CSV/PDF Export, and access to all 5 Smart Profiles.
 
 ---
 
