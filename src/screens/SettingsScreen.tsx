@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { getUserPreferences, updateUserPreferences, autoDeleteOldItems, resetDatabase } from '../database/db';
 import { UserPreferences, AutoDeletePeriod } from '../models/types';
 import { TimeRollerPicker } from '../components/TimeRollerPicker';
-import { sendTestNotification, checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
+import { checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
 import { exportAllTasksToExcel, exportAllTasksToPDF } from '../services/shareService';
 import { PaywallModal } from '../components/PaywallModal';
 import { Ionicons } from '@expo/vector-icons';
@@ -70,15 +70,6 @@ export const SettingsScreen: React.FC = () => {
     await loadPrefs();
   };
 
-  const handleTestNotification = async () => {
-    const id = await sendTestNotification();
-    if (id) {
-      Alert.alert('Test Notification Scheduled', 'You will receive a notification in 5 seconds!');
-    } else {
-      Alert.alert('Permission Denied', 'Please grant notification permissions in iOS Settings.');
-    }
-  };
-
   const handleSelectAutoDelete = async (period: AutoDeletePeriod) => {
     await updateUserPreferences({ autoDeletePeriod: period });
     const deletedCount = await autoDeleteOldItems(period);
@@ -105,51 +96,94 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      {/* Account & Subscription Status Card */}
+      {/* Hero Glassmorphic Subscription Card */}
+      <View style={styles.heroSubCard}>
+        <View style={styles.heroSubHeaderRow}>
+          <View style={{ flex: 1, paddingRight: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.heroSubTitle}>
+                {prefs.isSubscribed ? 'Sift Pro Active ⭐' : 'Sift Free Tier'}
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  Alert.alert(
+                    'Subscription & Free Tier Info',
+                    'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.\n\nSift Pro ($4.99/mo or $39.99/yr) unlocks unlimited scans, Critical Alerts, and Excel/PDF CPA tax exports.'
+                  )
+                }
+                style={{ paddingLeft: 6 }}
+              >
+                <Ionicons name="information-circle-outline" size={16} color="#a5b4fc" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.heroSubDesc}>
+              {prefs.isSubscribed
+                ? 'Unlimited AI Scans & All 5 Profiles Unlocked'
+                : `Used ${prefs.freeScansUsed} of 5 free monthly scans`}
+            </Text>
+          </View>
+
+          {!prefs.isSubscribed && (
+            <TouchableOpacity style={styles.heroUpgradePill} onPress={() => setShowPaywall(true)}>
+              <Ionicons name="sparkles" size={14} color="#fff" />
+              <Text style={styles.heroUpgradePillText}>Upgrade</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {/* Tax & Data Export Segmented Section */}
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderNoMargin}>Subscription & Usage</Text>
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'Subscription & Free Tier Info',
-                'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.\n\nSift Pro ($4.99/mo or $39.99/yr) unlocks unlimited scans, Critical Alerts, and Excel/PDF CPA tax exports.'
-              )
-            }
-          >
-            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionHeaderNoMargin}>Tax & Data Export</Text>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  '1-Tap Tax & CPA Export Info',
+                  'Export your tasks and receipts into Excel (.CSV) or PDF format.\n\nSift auto-extracts Vendor Name, Purchase Date, Total Amount Spent, Tax Category (Materials, Fuel, Utilities, Office, Fees), and Receipt Notes ready for your CPA or accountant!'
+                )
+              }
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Current Plan:</Text>
-          <Text style={[styles.statusText, prefs.isSubscribed ? styles.subActive : styles.subTrial]}>
-            {prefs.isSubscribed ? 'Sift Pro (Unlimited) ⭐' : `Free Tier (${prefs.freeScansUsed}/5 scans used)`}
-          </Text>
-        </View>
+        <View style={styles.exportRow}>
+          <Text style={styles.exportRowLabel}>Export Report:</Text>
+          <View style={styles.exportPillContainer}>
+            <TouchableOpacity style={styles.exportPillExcel} onPress={exportAllTasksToExcel}>
+              <Ionicons name="stats-chart" size={14} color="#fff" />
+              <Text style={styles.exportPillText}>.CSV (Excel)</Text>
+            </TouchableOpacity>
 
-        {!prefs.isSubscribed && (
-          <TouchableOpacity style={styles.primaryActionBtn} onPress={() => setShowPaywall(true)}>
-            <Ionicons name="sparkles" size={16} color="#fff" />
-            <Text style={styles.primaryActionBtnText}>Upgrade to Sift Pro (Unlimited)</Text>
-          </TouchableOpacity>
-        )}
+            <TouchableOpacity style={styles.exportPillPdf} onPress={exportAllTasksToPDF}>
+              <Ionicons name="document-text" size={14} color="#fff" />
+              <Text style={styles.exportPillText}>.PDF (Report)</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
 
       {/* Privacy & Security Controls Card */}
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderNoMargin}>Privacy & Security Controls</Text>
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'Privacy & Redaction Info',
-                'Sift runs an On-Device PII Redaction Engine directly on your iPhone. SSNs, Medicare MBIs, Credit Cards, Bank Routing Numbers, and USCIS A-Numbers are scrubbed locally before AI processing.\n\nYour data remains 100% locally on your phone in SQLite (`sift_v2.db`) with zero cloud database retention.'
-              )
-            }
-          >
-            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionHeaderNoMargin}>Privacy & Security Controls</Text>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'Privacy & Redaction Info',
+                  'Sift runs an On-Device PII Redaction Engine directly on your iPhone. SSNs, Medicare MBIs, Credit Cards, Bank Routing Numbers, and USCIS A-Numbers are scrubbed locally before AI processing.\n\nYour data remains 100% locally on your phone in SQLite (`sift_v2.db`) with zero cloud database retention.'
+                )
+              }
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.toggleRow}>
@@ -228,16 +262,11 @@ export const SettingsScreen: React.FC = () => {
 
         {prefs.enableNotifications ? (
           <View style={{ marginTop: 12 }}>
-            <Text style={styles.subText}>Roll to Select Default Notification Time:</Text>
+            <Text style={styles.subText}>Default Notification Time:</Text>
             <TimeRollerPicker
               value={prefs.defaultReminderTime}
               onSave={handleSaveReminderTime}
             />
-
-            <TouchableOpacity style={styles.testNotifBtn} onPress={handleTestNotification}>
-              <Ionicons name="notifications" size={16} color="#fff" />
-              <Text style={styles.testNotifBtnText}>Test Instant Alert (Rings in 5s)</Text>
-            </TouchableOpacity>
           </View>
         ) : (
           <Text style={styles.disabledText}>
@@ -246,48 +275,23 @@ export const SettingsScreen: React.FC = () => {
         )}
       </View>
 
-      {/* Data & Tax Export Section */}
-      <View style={styles.sectionCard}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderNoMargin}>Tax & Data Export</Text>
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                '1-Tap Tax & CPA Export Info',
-                'Export your tasks and receipts into Excel (.CSV) or PDF format.\n\nSift auto-extracts Vendor Name, Purchase Date, Total Amount Spent, Tax Category (Materials, Fuel, Utilities, Office, Fees), and Receipt Notes ready for your CPA or accountant!'
-              )
-            }
-          >
-            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.subText}>Export your Actionable & Informational items for your CPA or records:</Text>
-
-        <TouchableOpacity style={styles.exportBtn} onPress={exportAllTasksToExcel}>
-          <Ionicons name="stats-chart" size={18} color="#fff" />
-          <Text style={styles.exportBtnText}>EXPORT ALL TO EXCEL (.CSV)</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.exportBtn, { backgroundColor: '#2563eb', marginTop: 10 }]} onPress={exportAllTasksToPDF}>
-          <Ionicons name="document-text" size={18} color="#fff" />
-          <Text style={styles.exportBtnText}>EXPORT CPA TAX REPORT (.PDF)</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Auto Data Retention Section */}
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeaderNoMargin}>Auto Data Retention & Deletion</Text>
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'Auto Retention Info',
-                'Sift automatically cleans up old completed or archived tasks after the selected period to keep your phone storage light and clutter-free.'
-              )
-            }
-          >
-            <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionHeaderNoMargin}>Auto Data Retention & Deletion</Text>
+            <TouchableOpacity
+              onPress={() =>
+                Alert.alert(
+                  'Auto Retention Info',
+                  'Sift automatically cleans up old completed or archived tasks after the selected period to keep your phone storage light and clutter-free.'
+                )
+              }
+              style={{ paddingLeft: 6 }}
+            >
+              <Ionicons name="information-circle-outline" size={18} color="#818cf8" />
+            </TouchableOpacity>
+          </View>
         </View>
         <Text style={styles.subText}>Automatically prune completed tasks older than:</Text>
         <View style={styles.periodRow}>
@@ -303,15 +307,6 @@ export const SettingsScreen: React.FC = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
-
-      {/* Reset App Section */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionHeader}>Danger Zone</Text>
-        <TouchableOpacity style={styles.dangerBtn} onPress={handleResetApp}>
-          <Ionicons name="trash" size={16} color="#fff" />
-          <Text style={styles.dangerBtnText}>RESET ALL LOCAL APP DATA</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Support & Legal Links */}
@@ -335,6 +330,14 @@ export const SettingsScreen: React.FC = () => {
         <TouchableOpacity style={styles.linkRow} onPress={() => Linking.openURL('https://senthilmkm.github.io/Sift/terms.html')}>
           <Ionicons name="document-text-outline" size={18} color="#818cf8" />
           <Text style={styles.linkText}>Terms of Service</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Danger Zone / Reset Row */}
+      <View style={styles.sectionCard}>
+        <TouchableOpacity style={styles.dangerRow} onPress={handleResetApp}>
+          <Ionicons name="trash-outline" size={18} color="#ef4444" />
+          <Text style={styles.dangerRowText}>Reset All Local App Data...</Text>
         </TouchableOpacity>
       </View>
 
@@ -362,6 +365,43 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 40,
+  },
+  heroSubCard: {
+    backgroundColor: '#1e1b4b',
+    borderWidth: 1,
+    borderColor: '#4f46e5',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+  },
+  heroSubHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heroSubTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  heroSubDesc: {
+    fontSize: 12,
+    color: '#a5b4fc',
+    marginTop: 2,
+  },
+  heroUpgradePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#6366f1',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 99,
+    gap: 6,
+  },
+  heroUpgradePillText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
   },
   sectionCard: {
     backgroundColor: '#1e293b',
@@ -394,12 +434,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -418,34 +452,43 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     marginTop: 2,
   },
-  rowLabel: {
-    fontSize: 14,
-    color: '#94a3b8',
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  subActive: {
-    color: '#10b981',
-  },
-  subTrial: {
-    color: '#818cf8',
-  },
-  primaryActionBtn: {
+  exportRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#6366f1',
-    borderRadius: 12,
-    paddingVertical: 12,
-    marginTop: 4,
+    justifyContent: 'space-between',
+    paddingTop: 4,
+  },
+  exportRowLabel: {
+    fontSize: 13,
+    color: '#cbd5e1',
+    fontWeight: '600',
+  },
+  exportPillContainer: {
+    flexDirection: 'row',
     gap: 8,
   },
-  primaryActionBtnText: {
+  exportPillExcel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#059669',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  exportPillPdf: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2563eb',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  exportPillText: {
     color: '#ffffff',
+    fontSize: 12,
     fontWeight: '700',
-    fontSize: 14,
   },
   permStatusBadgeRow: {
     flexDirection: 'row',
@@ -487,35 +530,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: 6,
   },
-  testNotifBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#3b82f6',
-    borderRadius: 10,
-    paddingVertical: 10,
-    marginTop: 12,
-    gap: 6,
-  },
-  testNotifBtnText: {
-    color: '#ffffff',
-    fontWeight: '600',
-    fontSize: 13,
-  },
-  exportBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#10b981',
-    borderRadius: 12,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  exportBtnText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 13,
-  },
   periodRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -542,19 +556,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '800',
   },
-  dangerBtn: {
+  dangerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ef4444',
-    borderRadius: 12,
-    paddingVertical: 12,
-    gap: 6,
+    gap: 8,
   },
-  dangerBtnText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 13,
+  dangerRowText: {
+    color: '#ef4444',
+    fontSize: 14,
+    fontWeight: '600',
   },
   linkRow: {
     flexDirection: 'row',
