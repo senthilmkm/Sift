@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy - Sift iOS App</title>
-  <meta name="description" content="Sift Privacy Policy - Learn how Sift protects your data, handles AI image scanning with Google Gemini, and prioritizes local storage.">
+  <meta name="description" content="Sift Privacy Policy - Learn how Sift protects your data, masks PII on-device, and prioritizes local storage.">
   <style>
     :root {
       --primary: #6366f1;
@@ -55,47 +55,49 @@
   <main class="container">
     <div class="header-box">
       <h1>Privacy Policy</h1>
-      <p class="effective-date">Effective Date: September 26, 2026 | Version 1.2</p>
+      <p class="effective-date">Effective Date: September 27, 2026 | Version 2.0 (Smart Profiles)</p>
     </div>
 
     <div class="content-card">
       <h2>1. Overview & Core Philosophy</h2>
-      <p>Sift ("we", "our", or "us") is dedicated to simplifying family organization while safeguarding user privacy. Sift is designed to scan paper flyers, notices, bills, forms, and digital PDF documents to extract actionable deadlines, fees, and event reminders. We believe your personal documents belong solely to you.</p>
+      <p>Sift ("we", "our", or "us") is dedicated to simplifying paperwork management across 5 Smart Profiles (School & Family, Elder Care & Health, Trade Contractors, Property & HOA, and Legal & Immigration). Sift turns physical notices, forms, receipts, and digital PDFs into actionable items while enforcing zero cloud data retention.</p>
 
-      <h2>2. Data Collection & iOS Permissions</h2>
-      <p>Sift requests minimal iOS permissions required to deliver document scanning and reminder alerts:</p>
+      <h2>2. On-Device Local PII Redaction Engine</h2>
+      <p>To protect your sensitive financial, personal, and healthcare identifiers, Sift runs a local <strong>On-Device PII Redaction Engine</strong> directly on your iOS device before any image or text is transmitted to AI services:</p>
       <ul>
-        <li><strong>Camera Access:</strong> Used exclusively when you take a photo of a physical paper flyer or newsletter within the app.</li>
-        <li><strong>Photo Library Access:</strong> Used when you import existing photos or documents from your iOS Camera Roll.</li>
-        <li><strong>Notifications Permission:</strong> Used to deliver localized background push notifications and urgent alarms for approaching due dates.</li>
+        <li><strong>Redacted Identifiers:</strong> Social Security Numbers (SSN), Medicare Beneficiary Identifiers (MBI), Credit Card Numbers, Bank Routing Numbers, Employer Identification Numbers (EIN), and USCIS Alien Registration Numbers (A-Numbers).</li>
+        <li><strong>Local Execution:</strong> Pattern matching and redaction execute in memory on your phone. Unredacted sensitive numbers never touch cloud servers.</li>
       </ul>
-      <p>We do not track your location, gather contact lists, sell personal data, or utilize cross-site advertising trackers.</p>
 
-      <h2>3. Artificial Intelligence & Processing (Google Gemini API)</h2>
-      <p>To extract task titles, dates, links, and actionable details from complex multi-page flyers or images, Sift utilizes <strong>Google Gemini 2.5 Flash API</strong> via our secure Cloudflare Worker Proxy server.</p>
+      <h2>3. Artificial Intelligence Processing (Google Gemini API)</h2>
+      <p>Sift uses Google Gemini 2.5 Flash API via a secure proxy to extract document titles, due dates, action steps, and notes.</p>
       <div class="highlight-box">
-        <p><strong>🔒 Zero Data Retention & AI Disclaimers:</strong></p>
+        <p><strong>🔒 Zero Cloud Retention Guarantee:</strong></p>
         <ul>
-          <li>Image data transmitted to the Gemini API is processed transiently in server memory to extract text and JSON structured data.</li>
-          <li>Your document photos and PDFs are <strong>NEVER</strong> used to train Google or third-party AI models.</li>
-          <li>No scanned images or parsed text are retained on cloud databases or external servers.</li>
+          <li>Scanned image data is processed transiently in server memory solely to generate JSON response data.</li>
+          <li>Your documents and images are <strong>NEVER</strong> stored on external servers or used to train Google or third-party AI models.</li>
+          <li>No user document photos are retained in cloud database storage.</li>
         </ul>
       </div>
 
-      <h2>4. On-Device SQLite Local Storage</h2>
-      <p>All extracted task items, titles, due dates, custom notes, archived items, and app settings are stored locally on your iOS device using SQLite database storage. Your data remains on your phone and is backed up only according to your personal iOS iCloud device backup settings.</p>
+      <h2>4. Local SQLite Database Storage</h2>
+      <p>All parsed action items, profile preferences, custom notes, and app settings are stored locally on your device in an encrypted SQLite database (`sift_v2.db`). Your data is backed up only via your personal iOS iCloud backup settings.</p>
 
-      <h2>5. AI Accuracy & Human-in-the-Loop Review</h2>
-      <p>Artificial Intelligence algorithms (including Optical Character Recognition and Natural Language Understanding) parse document context with high accuracy. However, AI models may occasionally misread handwritten text, low-resolution flyers, or complex layout formatting. Sift incorporates a mandatory <strong>15-Second Confirmation & Edit Screen</strong>, allowing you to review, edit, or correct extracted titles and due dates before committing items to your task database.</p>
+      <h2>5. iOS Permissions & Critical Alerts</h2>
+      <p>Sift requests minimal iOS permissions:</p>
+      <ul>
+        <li><strong>Camera & Photo Library:</strong> Used strictly to select or photograph documents within the app.</li>
+        <li><strong>Notifications & Critical Alerts:</strong> Used locally to schedule reminder alarms for deadlines. Critical Alerts allow urgent healthcare or court notifications to play even when the phone is on Silent.</li>
+      </ul>
 
-      <h2>6. Children's Privacy (COPPA Compliance)</h2>
-      <p>Sift is designed for busy professionals, families, students, and teams. We do not knowingly collect, request, or harvest personally identifiable information from children under the age of 13. Scanned flyers are processed strictly for local task organization.</p>
+      <h2>6. Children's Privacy (COPPA)</h2>
+      <p>Sift is designed for adults, families, professionals, and caregivers. We do not knowingly harvest or collect personal data from children under 13.</p>
 
-      <h2>7. Data Control & Deletion</h2>
-      <p>You maintain 100% control over your stored data. You can edit, archive, or permanently delete tasks at any time within the app. You may also execute a full app data wipe at any time via <strong>Settings &gt; Reset App Data</strong>.</p>
+      <h2>7. Data Control & Complete Reset</h2>
+      <p>You can edit, archive, or permanently delete items at any time. A full app data wipe is available via <strong>Settings &gt; Reset App Data</strong>.</p>
 
-      <h2>8. Contact & Support</h2>
-      <p>If you have any questions or privacy concerns regarding Sift, please contact our support team:</p>
+      <h2>8. Contact Information</h2>
+      <p>For questions or support regarding privacy, contact us at:</p>
       <p>Email: <a href="mailto:senthil930@gmail.com">senthil930@gmail.com</a></p>
     </div>
   </main>
@@ -107,7 +109,7 @@
       <a href="privacy.html">Privacy Policy</a>
       <a href="terms.html">Terms of Service</a>
     </nav>
-    <p>© 2026 Sift iOS. All rights reserved. Contact: <a href="mailto:senthil930@gmail.com">senthil930@gmail.com</a></p>
+    <p>© 2026 Sift iOS. All rights reserved. Support Contact: <a href="mailto:senthil930@gmail.com">senthil930@gmail.com</a></p>
   </footer>
 </body>
 </html>

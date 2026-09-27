@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support & FAQs — Sift iOS App</title>
+  <title>Support Hub & FAQs — Sift iOS App</title>
   <style>
     :root {
       --primary: #6366f1;
@@ -39,12 +39,38 @@
   </div>
 
   <h1>Support Hub & Frequently Asked Questions</h1>
-  <p class="lead">Need help with Sift? Find answers to common questions about document scanning, file formats, notification alarms, and subscriptions below.</p>
+  <p class="lead">Everything you need to know about Smart Profiles, PII redaction security, supported document types, notification alarms, and local storage.</p>
 
-  <!-- FAQ 1: Supported File Extensions -->
+  <!-- FAQ 1: Smart Profiles -->
+  <div class="faq-card">
+    <h3>🎒 What are Sift Smart Profiles and how do I switch between them?</h3>
+    <p>Sift provides 5 specialized Smart Profiles designed for specific real-world paperwork:</p>
+    <ul>
+      <li><strong>🎒 School & Family:</strong> Field trip permission slips, PTA signups, spirit days, tuition bills.</li>
+      <li><strong>🩺 Elder Care & Health:</strong> Doctor appointment fasting prep, lab orders, Rx refills, Medicare claim appeals.</li>
+      <li><strong>🛠️ Trade Contractors & Small Business:</strong> Overdue invoices, municipal permits, material receipts, license renewals.</li>
+      <li><strong>🏡 Property & HOA:</strong> HOA violation compliance deadlines, tenant lease renewals, utility shutoff warnings.</li>
+      <li><strong>⚖️ Legal & Immigration:</strong> USCIS I-797C receipt dates, court summons appearance windows, DMV renewals.</li>
+    </ul>
+    <p>You select your profile during onboarding and can switch anytime by tapping the <strong>Profile Pill</strong> in the top header.</p>
+  </div>
+
+  <!-- FAQ 2: PII Privacy -->
+  <div class="faq-card">
+    <h3>🔒 Is my Social Security Number, Medicare ID, or bank info safe?</h3>
+    <p>Yes! Sift runs an <strong>On-Device Local PII Redaction Engine</strong> directly on your iPhone <em>before</em> sending images for AI extraction. SSNs, Medicare MBIs, Credit Cards, Bank Routing Numbers, EINs, and USCIS A-Numbers are automatically masked locally with zero cloud transmission of sensitive IDs.</p>
+  </div>
+
+  <!-- FAQ 3: Critical Alerts -->
+  <div class="faq-card">
+    <h3>🚨 How do Apple Critical Alerts work for urgent deadlines?</h3>
+    <p>For urgent medical pre-op fasting rules, court summons, or utility shutoffs, Sift can dispatch <strong>Apple Critical Alerts</strong> that play an audible alert even if your iPhone is set to Silent or Do Not Disturb. You can toggle this permission in iOS Settings.</p>
+  </div>
+
+  <!-- FAQ 4: File Extensions -->
   <div class="faq-card">
     <h3>📄 What file extensions and document types are supported by Sift?</h3>
-    <p>Sift accepts almost all document and image formats sent in school newsletters, email attachments, or web portals via the iOS Share Sheet and Camera scan:</p>
+    <p>Sift accepts documents sent via paper photo scan or iOS Share Sheet from Mail, Files, or Photos:</p>
     <div class="file-badge-grid">
       <span class="file-badge">.PDF</span>
       <span class="file-badge">.JPG</span>
@@ -62,47 +88,34 @@
     </div>
   </div>
 
-  <!-- FAQ 2: iOS Share Sheet -->
+  <!-- FAQ 5: Edge Cases -->
   <div class="faq-card">
-    <h3>📥 How do I share an email attachment from Gmail or Mail into Sift?</h3>
-    <p>Open any PDF or flyer attachment in Gmail, Apple Mail, or Files ➔ tap the iOS <strong>Share</strong> button ➔ select <strong>Sift</strong>. Sift will open automatically and extract your actionable items with Gemini AI!</p>
-    <p><em>Pro Tip:</em> Scroll to the far right of your share icons, tap <strong>More (...)</strong>, tap <strong>Edit</strong>, and tap <strong>+</strong> next to Sift to pin Sift as your <strong>#1 Favorite Share Target</strong>.</p>
+    <h3>📷 What happens if a document is blurry, handwritten, or multi-page?</h3>
+    <p>Sift is equipped to handle difficult edge cases:</p>
+    <ul>
+      <li><strong>Blurry / Low-Light Scans:</strong> AI flags items with an orange <em>Review Needed</em> badge for human verification.</li>
+      <li><strong>Handwritten Sticky Notes:</strong> Gemini parses cursive and marginal notes into raw handwriting snippets.</li>
+      <li><strong>Multi-Page Documents:</strong> Summarizes main action item dates while capturing secondary milestone dates.</li>
+      <li><strong>Offline Mode:</strong> Photos are saved to local SQLite and automatically synced when cellular/Wi-Fi signal returns.</li>
+    </ul>
   </div>
 
-  <!-- FAQ 3: Photographing Flyers -->
+  <!-- FAQ 6: Custom Notifications -->
   <div class="faq-card">
-    <h3>📷 How do I scan paper flyers on my fridge?</h3>
-    <p>Tap the center <strong>📷 Quick Scan</strong> button in Sift ➔ choose <strong>Take Photo</strong> ➔ snap a picture of your paper flyer. Gemini AI sifts through the document and presents your 15-second tap-to-confirm screen.</p>
+    <h3>⏰ How does Sift calculate reminder notification times?</h3>
+    <p>Sift uses precise mathematical logic for reminder triggers. For morning appointments (e.g. 9:00 AM doctor or court dates), Sift sets default alerts to <strong>19:00 (7:00 PM) the evening prior</strong> so you can prepare overnight.</p>
   </div>
 
-  <!-- FAQ 4: Reminders & Urgent Alarms -->
+  <!-- FAQ 7: Pricing -->
   <div class="faq-card">
-    <h3>⏰ How do I customize reminder times or set urgent alarms?</h3>
-    <p>In <strong>⚙️ Settings ➔ Reminders & Notifications</strong>, use the interactive vertical scroll wheel to set your preferred default reminder time (e.g. 7:30 PM Night Before or 8:00 AM Same Day). For high-importance deadlines, tap the <strong>⚡ Lightning Bolt</strong> icon on any task card to enable a high-priority urgent alarm.</p>
-  </div>
-
-  <!-- FAQ 5: Editing Items -->
-  <div class="faq-card">
-    <h3>✏️ Can I edit the due date or title after saving an item?</h3>
-    <p>Yes! Tap the pencil ✏️ edit icon on any task card in the Actionable or Informational tab to open the <strong>Edit Item Modal</strong>. You can update the title, due date, personal notes, or switch between Actionable and Informational tabs.</p>
-  </div>
-
-  <!-- FAQ 6: Auto Data Retention & Reset -->
-  <div class="faq-card">
-    <h3>🧹 How does auto-data retention work?</h3>
-    <p>Under <strong>⚙️ Settings ➔ Auto Data Retention & Deletion</strong>, choose how long completed items are kept (1w, 2w, 4w, 90d, 180d, or Never). Sift automatically cleans up old records to keep your phone clutter-free.</p>
-  </div>
-
-  <!-- FAQ 7: Subscriptions -->
-  <div class="faq-card">
-    <h3>💳 How do subscriptions & payments work?</h3>
-    <p>Sift offers 5 free document scans per month. Sift Pro unlocks unlimited Gemini AI document scans, urgent alarms, spouse email sharing, and CSV/PDF export. Managed safely via your Apple ID in iOS Settings.</p>
+    <h3>💳 What is the pricing model across profiles?</h3>
+    <p>Sift uses a standard freemium model for all profiles: <strong>5 free document scans per month</strong> for all users. Sift Pro unlocks unlimited scans, critical alarms, export tools, and multi-device sync.</p>
   </div>
 
   <!-- Direct Contact Box -->
   <div class="contact-box">
     <h2>Still Have Questions?</h2>
-    <p style="color: #cbd5e1;">Our support team is here to help you get the most out of Sift.</p>
+    <p style="color: #cbd5e1;">Our support team is here to help you organize your paper life.</p>
     <a href="mailto:senthil930@gmail.com" class="contact-btn">✉️ Contact Support (senthil930@gmail.com)</a>
   </div>
 

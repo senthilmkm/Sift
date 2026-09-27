@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sift — Turn Paper Flyers & Email PDFs into 15-Second Action Items</title>
-  <meta name="description" content="Sift uses Google Gemini AI to instantly scan paper flyers, event notices, forms, and PDFs into actionable tasks and reminders.">
+  <title>Sift — Multi-Profile Paperwork Command Center</title>
+  <meta name="description" content="Sift turns physical paperwork, flyers, medical notices, contractor receipts, HOA forms, and legal PDFs into 15-second action items with Google Gemini AI and on-device PII redaction.">
   <style>
     :root {
       --primary: #6366f1;
@@ -13,25 +13,42 @@
       --card-bg: #1e293b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-purple: #c084fc;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; }
     .logo { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-    .logo span { background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo span { background: linear-gradient(135deg, #818cf8, var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     nav a { color: var(--text-muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; transition: color 0.2s; }
     nav a:hover { color: #fff; }
-    .hero { text-align: center; padding: 5rem 1rem 3rem; max-width: 900px; margin: 0 auto; }
+    .hero { text-align: center; padding: 5rem 1rem 3rem; max-width: 950px; margin: 0 auto; }
     .hero h1 { font-size: 3.2rem; font-weight: 900; line-height: 1.15; margin-bottom: 1.2rem; background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto; }
+    .hero p { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 780px; margin-left: auto; margin-right: auto; }
     .cta-btn { display: inline-flex; align-items: center; gap: 0.75rem; background: linear-gradient(135deg, var(--primary), #8b5cf6); color: #fff; padding: 1rem 2rem; border-radius: 99px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); transition: transform 0.2s, box-shadow 0.2s; }
     .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6); }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+    
+    .section-title { text-align: center; font-size: 2rem; color: #fff; font-weight: 800; margin-top: 4rem; margin-bottom: 1rem; }
+    .section-subtitle { text-align: center; color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.5rem; }
+
+    .profiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1150px; margin: 0 auto; padding: 0 1.5rem; }
+    .profile-card { background: var(--card-bg); padding: 2rem; border-radius: 1.25rem; border: 1px solid #334155; position: relative; overflow: hidden; transition: transform 0.2s, border-color 0.2s; }
+    .profile-card:hover { transform: translateY(-4px); border-color: #64748b; }
+    .profile-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .profile-card h3 { font-size: 1.35rem; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .profile-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+    .profile-tag { font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; text-transform: uppercase; }
+
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem; }
     .feature-card { background: var(--card-bg); padding: 2.5rem; border-radius: 1.25rem; border: 1px solid #334155; transition: transform 0.2s; }
     .feature-card:hover { transform: translateY(-4px); }
     .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
     .feature-card h3 { font-size: 1.4rem; margin-bottom: 0.75rem; color: #fff; }
     .feature-card p { color: var(--text-muted); font-size: 0.95rem; }
+
     .ext-box { max-width: 900px; margin: 2rem auto 4rem; text-align: center; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid #334155; }
     .ext-box h3 { color: #fff; margin-bottom: 1rem; }
     .file-badge-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
@@ -45,6 +62,7 @@
   <header>
     <a href="index.html" class="logo">⚡ <span>Sift</span></a>
     <nav>
+      <a href="#profiles">Smart Profiles</a>
       <a href="#features">Features</a>
       <a href="support.html">Support & FAQs</a>
       <a href="privacy.html">Privacy Policy</a>
@@ -54,31 +72,80 @@
 
   <main>
     <section class="hero">
-      <h1>Turn Paper Flyers, Notices & PDFs Into 15-Second Action Items</h1>
-      <p>Never miss a field trip deadline, spirit day, or permission slip again. Photograph paper notices or share attachments from Mail—Google Gemini AI handles the rest.</p>
+      <h1>Turn Physical Paperwork & PDFs Into 15-Second Action Items</h1>
+      <p>Whether it's a school permission slip, Medicare lab notice, contractor invoice, HOA violation, or court summons—Sift uses Gemini AI and on-device PII redaction to organize your paper life instantly.</p>
       <a href="https://apps.apple.com/app/id6816518559" class="cta-btn">
          Download on the App Store
       </a>
     </section>
 
-    <section id="features" class="features">
-      <div class="feature-card">
-        <div class="feature-icon">🤖</div>
-        <h3>Gemini Multimodal AI</h3>
-        <p>1-pass AI extraction reads multi-page newsletters, tables, and handwritten dates with high precision.</p>
+    <!-- 5 SMART PROFILES SHOWCASE -->
+    <h2 id="profiles" class="section-title">Tailored Smart Profiles</h2>
+    <p class="section-subtitle">Select your primary focus or switch profiles anytime for customized AI extraction & fields.</p>
+    
+    <section class="profiles-grid">
+      <div class="profile-card">
+        <div class="profile-icon">🎒</div>
+        <h3>School & Family <span class="profile-tag" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">Family</span></h3>
+        <p>Field trips, permission slips, spirit days, PTA signups, and tuition deadlines for parents, students & volunteers.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>1-Tap Urgent Alarms</h3>
-        <p>High-priority same-day alerts ensure critical forms are signed before morning drop-off.</p>
+
+      <div class="profile-card">
+        <div class="profile-icon">🩺</div>
+        <h3>Elder Care & Health <span class="profile-tag" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Healthcare</span></h3>
+        <p>Doctor appointment fasting prep, lab orders, Rx refills, and Medicare claim appeal deadlines with PII masking.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>100% Privacy Focused</h3>
-        <p>Your documents stay in local device storage. We never scan your inbox or sell your family data.</p>
+
+      <div class="profile-card">
+        <div class="profile-icon">🛠️</div>
+        <h3>Trades & Small Business <span class="profile-tag" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">Business</span></h3>
+        <p>Overdue client invoices, municipal building permits, vendor material receipts, and tax deduction tracking.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-icon">🏡</div>
+        <h3>Property & HOA <span class="profile-tag" style="background: rgba(192, 132, 252, 0.2); color: #e879f9;">Housing</span></h3>
+        <p>HOA violation compliance deadlines, tenant lease renewals, utility shutoff warnings, and contractor bids.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-icon">⚖️</div>
+        <h3>Legal & Immigration <span class="profile-tag" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">Legal</span></h3>
+        <p>USCIS I-797C notice dates, court summons appearance windows, DMV renewal deadlines, and compliance filings.</p>
       </div>
     </section>
 
+    <!-- CORE FEATURES -->
+    <h2 id="features" class="section-title">Built for Real Life & High Privacy</h2>
+    <p class="section-subtitle">Advanced multimodal AI powered by local, on-device data protection.</p>
+
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>Gemini Multimodal AI</h3>
+        <p>1-pass AI extraction reads complex multi-page newsletters, table layouts, and handwritten sticky notes with precision.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>On-Device PII Redaction</h3>
+        <p>SSNs, Medicare MBIs, Credit Cards, Bank Routing, and USCIS A-Numbers are automatically scrubbed on your phone before AI processing.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3>Apple Critical Alerts</h3>
+        <p>High-priority alarms bypass Silent mode for urgent healthcare pre-op prep, court summons, or utility shutoffs.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>100% Local Device Storage</h3>
+        <p>All scanned documents and task cards remain in local SQLite database on your device. We never sell your personal data.</p>
+      </div>
+    </section>
+
+    <!-- FILE FORMAT SUPPORT -->
     <section class="ext-box">
       <h3>Supports All Major Document & Image Formats</h3>
       <div class="file-badge-grid">
