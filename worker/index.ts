@@ -57,14 +57,14 @@ CRITICAL EXTRACTION & TAX CATEGORIZATION RULES:
 
 3. TAX CATEGORIZATION (FOR RECEIPTS & INVOICES):
    Identify the appropriate IRS tax category:
-   - "Materials & Supplies" (building materials, hardware, parts, tools)
+   - "Materials & Supplies" (building materials, hardware, parts, tools, grocery/food supplies)
    - "Vehicle & Fuel" (gas receipts, auto parts, parking)
    - "Utilities & Repairs" (utility bills, equipment repair)
    - "Office & Admin" (paper, ink, software, postage)
    - "Professional Fees" (permits, licensing, subcontractor fees)
    - DEFAULT FALLBACK: "Uncategorized Expense" (if type cannot be identified with high confidence).
 
-4. Keep titles short, clean, and actionable (e.g. "Home Depot — $452.19 (PVC Supplies)").
+4. Keep titles short, clean, and actionable (e.g. "Food Lion — $42.50 (Groceries/Supplies)").
 `;
 
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -79,7 +79,7 @@ CRITICAL EXTRACTION & TAX CATEGORIZATION RULES:
               properties: {
                 title: { type: 'STRING' },
                 tab: { type: 'STRING', enum: ['actionable', 'informational'] },
-                due_date: { type: 'STRING', description: 'ISO YYYY-MM-DD string' },
+                due_date: { type: 'STRING', description: 'ISO YYYY-MM-DD string or null' },
                 due_time: { type: 'STRING', description: 'HH:MM or null' },
                 source_snippet: { type: 'STRING' },
                 confidence: { type: 'STRING', enum: ['high', 'check_date'] },
@@ -99,7 +99,7 @@ CRITICAL EXTRACTION & TAX CATEGORIZATION RULES:
                 total_amount: { type: 'STRING', description: 'Total dollar amount or 0.00' },
                 vendor_name: { type: 'STRING', description: 'Merchant / Vendor name' }
               },
-              required: ['title', 'tab', 'due_date', 'source_snippet', 'confidence', 'tax_category'],
+              required: ['title', 'tab', 'source_snippet', 'confidence'],
             },
           },
         },

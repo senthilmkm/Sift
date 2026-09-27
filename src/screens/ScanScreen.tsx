@@ -65,7 +65,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         const result = await ImagePicker.launchCameraAsync({
           mediaTypes: ['images'],
           base64: true,
-          quality: 0.7,
+          quality: 0.5,
         });
 
         if (result.canceled || !result.assets[0].base64) {
@@ -87,7 +87,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ['images'],
           base64: true,
-          quality: 0.7,
+          quality: 0.5,
         });
 
         if (result.canceled || !result.assets[0].base64) {
