@@ -47,10 +47,10 @@ export const SIFT_PAYWALL_CONFIG: PaywallConfig = {
   features: [
     'Unlock All 5 Smart Profiles (School, Elder Care, Small Business, Property, Legal)',
     'Unlimited Gemini AI Document Scans',
+    'Excel (.CSV) Tax & CPA Receipt Export (Vendor, Amount, Category & Notes)',
     'On-Device PII Redaction Engine',
     'Apple Critical Alerts for Urgent Deadlines',
-    'Multi-Page Document Camera Carousel',
-    'Excel (.CSV) & ICS Calendar Export'
+    'Multi-Page Document Camera Carousel Scanner'
   ],
   profitabilityMetrics: {
     avgCostPerScanUSD: 0.00015,
