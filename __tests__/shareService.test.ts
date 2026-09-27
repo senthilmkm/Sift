@@ -1,9 +1,18 @@
-import { exportItemsToJSON, exportItemsToCSV, exportAllTasksToExcel } from '../src/services/shareService';
+import { exportItemsToJSON, exportItemsToCSV, exportAllTasksToExcel, exportAllTasksToPDF } from '../src/services/shareService';
 import { SiftItem } from '../src/models/types';
 import * as db from '../src/database/db';
 
 jest.mock('../src/database/db', () => ({
   getItems: jest.fn(),
+}));
+
+jest.mock('expo-print', () => ({
+  printToFileAsync: jest.fn().mockResolvedValue({ uri: 'file:///mock_report.pdf' }),
+}));
+
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(true),
 }));
 
 describe('Share Service & Data Export Tests', () => {
@@ -46,6 +55,11 @@ describe('Share Service & Data Export Tests', () => {
   it('handles exportAllTasksToExcel with items', async () => {
     (db.getItems as jest.Mock).mockResolvedValue(mockItems);
     await expect(exportAllTasksToExcel()).resolves.not.toThrow();
+  });
+
+  it('handles exportAllTasksToPDF with items', async () => {
+    (db.getItems as jest.Mock).mockResolvedValue(mockItems);
+    await expect(exportAllTasksToPDF()).resolves.not.toThrow();
   });
 
   it('handles exportAllTasksToExcel with 0 items safely', async () => {

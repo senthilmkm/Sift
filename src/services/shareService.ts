@@ -1,6 +1,7 @@
 import { Share, Alert } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
 import { SiftItem } from '../models/types';
 import { getItems } from '../database/db';
 
@@ -159,5 +160,96 @@ export async function exportAllTasksToExcel(): Promise<void> {
     }
   } catch (error) {
     console.error('Error exporting tasks to Excel CSV:', error);
+  }
+}
+
+/**
+ * Generates a clean, professional PDF Expense & Tax Report
+ */
+export async function exportAllTasksToPDF(): Promise<void> {
+  try {
+    const actionable = await getItems({ searchQuery: '', tab: 'actionable', status: 'all', urgentOnly: false, sortBy: 'due_date', sortOrder: 'asc' });
+    const informational = await getItems({ searchQuery: '', tab: 'informational', status: 'all', urgentOnly: false, sortBy: 'created_at', sortOrder: 'desc' });
+    const allItems = [...actionable, ...informational];
+
+    if (allItems.length === 0) {
+      if (typeof Alert !== 'undefined' && Alert.alert) {
+        Alert.alert('No Items to Export', 'There are no active or saved items to generate a PDF report.');
+      }
+      return;
+    }
+
+    const todayStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    let tableRows = '';
+    allItems.forEach((item, index) => {
+      const tax = getTaxFields(item);
+      const rowBg = index % 2 === 0 ? '#ffffff' : '#f8fafc';
+      tableRows += `
+        <tr style="background-color: ${rowBg}; border-bottom: 1px solid #e2e8f0;">
+          <td style="padding: 10px; font-size: 12px; color: #334155;">${item.due_at || item.created_at.split('T')[0]}</td>
+          <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #0f172a;">${item.title}</td>
+          <td style="padding: 10px; font-size: 12px; color: #059669; font-weight: 600;">${tax.taxCategory}</td>
+          <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #2563eb;">${tax.totalAmount}</td>
+          <td style="padding: 10px; font-size: 11px; color: #64748b;">${item.notes || item.source_snippet.substring(0, 60)}</td>
+        </tr>
+      `;
+    });
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Sift Tax & Expense Report</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; color: #0f172a; }
+          .header { background: #0f172a; color: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .header p { margin: 5px 0 0; font-size: 12px; color: #94a3b8; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th { background: #1e293b; color: #ffffff; text-align: left; padding: 10px; font-size: 12px; }
+          .footer { margin-top: 30px; font-size: 10px; text-align: center; color: #94a3b8; border-top: 1px solid #cbd5e1; padding-top: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>⚡ Sift — Tax & CPA Expense Report</h1>
+          <p>Generated on ${todayStr} | Total Records: ${allItems.length}</p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Item / Vendor</th>
+              <th>Tax Category</th>
+              <th>Amount</th>
+              <th>Notes / Snippet</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p>Generated automatically with Sift iOS — Privacy-First Document & Expense Command Center</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const pdf = await Print.printToFileAsync({ html: htmlContent });
+
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(pdf.uri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Export Sift PDF Expense Report',
+        UTI: 'com.adobe.pdf',
+      });
+    }
+  } catch (error) {
+    console.error('Error generating PDF export:', error);
   }
 }
