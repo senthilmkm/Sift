@@ -23,7 +23,18 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onShareItem,
   onSyncCalendar,
 }) => {
+  const [isLineItemsExpanded, setIsLineItemsExpanded] = React.useState(false);
   const isDone = item.status === 'done' || item.status === 'read' || item.status === 'archived';
+
+  let lineItems: string[] = [];
+  let taxCategory = '';
+  if (item.metadata_json) {
+    try {
+      const parsed = JSON.parse(item.metadata_json);
+      if (Array.isArray(parsed.line_items)) lineItems = parsed.line_items;
+      if (parsed.tax_category) taxCategory = parsed.tax_category;
+    } catch {}
+  }
 
   const getExtractedLink = (): { url: string; domain: string } | null => {
     const fullText = `${item.title || ''} ${item.notes || ''} ${item.source_snippet || ''}`;
@@ -210,6 +221,44 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
 
 
+      {lineItems.length > 0 && (
+        <View style={styles.lineItemsWrapper}>
+          <TouchableOpacity
+            style={styles.lineItemsToggleBtn}
+            onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
+            activeOpacity={0.7}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
+              <Text style={styles.lineItemsToggleText}>
+                {lineItems.length} Purchased Item{lineItems.length > 1 ? 's' : ''}
+              </Text>
+              {taxCategory ? (
+                <View style={styles.taxCategoryPill}>
+                  <Text style={styles.taxCategoryText}>{taxCategory}</Text>
+                </View>
+              ) : null}
+            </View>
+            <Ionicons
+              name={isLineItemsExpanded ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color="#94a3b8"
+            />
+          </TouchableOpacity>
+
+          {isLineItemsExpanded && (
+            <View style={styles.lineItemsContainer}>
+              {lineItems.map((lineItem, idx) => (
+                <View key={idx} style={styles.lineItemRow}>
+                  <Text style={styles.lineItemBullet}>•</Text>
+                  <Text style={styles.lineItemText}>{lineItem}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+
       {item.tab === 'informational' && onPromoteActionable && (
         <TouchableOpacity
           style={styles.promoteBtn}
@@ -373,6 +422,64 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
     marginTop: 2,
+  },
+  lineItemsWrapper: {
+    marginTop: 8,
+    backgroundColor: '#0f172a',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#334155',
+    overflow: 'hidden',
+  },
+  lineItemsToggleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+  },
+  lineItemsToggleText: {
+    color: '#38bdf8',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  taxCategoryPill: {
+    backgroundColor: '#1e1b4b',
+    borderColor: '#6366f1',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    marginLeft: 8,
+  },
+  taxCategoryText: {
+    color: '#a5b4fc',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  lineItemsContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderTopWidth: 1,
+    borderTopColor: '#1e293b',
+    backgroundColor: '#090d16',
+  },
+  lineItemRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 3,
+  },
+  lineItemBullet: {
+    color: '#38bdf8',
+    fontSize: 12,
+    marginRight: 6,
+    fontWeight: 'bold',
+  },
+  lineItemText: {
+    color: '#e2e8f0',
+    fontSize: 12,
+    flex: 1,
   },
   promoteBtn: {
     flexDirection: 'row',

@@ -53,9 +53,10 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
    - APPLIES TO: Food Lion, Supermarkets, Groceries, Home Depot, Walmart, Target, Costco, CVS, Walgreens, Gas Stations, Restaurants, Hardware, Utilities, Online Vendors, Repair Shops, across ANY country, currency ($, €, £, ¥, ₹, etc.), language, or domain.
    - MANDATORY ACTION: YOU MUST ALWAYS EXTRACT IT! NEVER RETURN AN EMPTY ITEMS ARRAY OR ZERO ITEMS FOR ANY RECEIPT OR TRANSACTION DOCUMENT.
    - Title Format: "[Merchant Name] — [Currency Symbol][Total Amount]" (e.g. "Food Lion — $42.50", "Home Depot — $129.99"). If total amount is not clearly visible, use "[Merchant Name] Receipt".
-   - Tab: ALWAYS set tab="actionable" so the receipt is tracked on the user's actionable list for expense logging, returns, tax records, or budget tracking!
+   - Tab: Set tab="informational" for completed store receipts (so your Actionable deadline list stays clean and receipts are organized under Receipts & Records), or tab="actionable" if payment is due or return action is needed.
    - Due Date: Set due_date = today (${todayStr}) or return window expiration date (e.g. 30 days from today).
    - Source Snippet: Include merchant name, total amount, purchase date, tax, payment method, and top items purchased.
+   - Line Items: Extract individual purchased items with quantities and prices into line_items.
    - Tax Category (IRS & Global Business/Personal Expense Standard):
      - "Materials & Supplies" (groceries, retail items, raw materials, hardware, equipment <$2,500)
      - "Vehicle & Fuel" (fuel, auto repairs, parking, tolls, transportation)
@@ -68,7 +69,8 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
 2. FOR MEDICAL, HOSPITAL, PHARMACY & DENTAL SERVICES:
    - APPLIES TO: Doctor appointments, hospital discharge notices, dental checkup reminders, pharmacy prescriptions/refills, health insurance Explanation of Benefits (EOB), lab test instructions, dental bills, and co-pay receipts.
    - MANDATORY ACTION: Extract appointment dates, fasting/prep instructions, payment due dates, prescription refill deadlines, and provider contact numbers.
-   - Set tab="actionable" and set detected_profile_id = "elderCare".
+   - Set tab="actionable" for upcoming appointments/bills, or tab="informational" for completed care receipts.
+   - Set detected_profile_id = "elderCare".
 
 3. FOR SCHOOL, HOA, LEGAL NOTICES:
    - Extract actionable deadlines, forms, permission slips, court dates, or HOA violations.
@@ -108,6 +110,11 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
                 },
                 total_amount: { type: 'STRING', description: 'Total dollar amount or 0.00' },
                 vendor_name: { type: 'STRING', description: 'Merchant / Vendor name' },
+                line_items: {
+                  type: 'ARRAY',
+                  items: { type: 'STRING' },
+                  description: 'Purchased line items with price (e.g. ["1x Milk $3.99", "1x Bread $2.49"])'
+                },
                 detected_profile_id: {
                   type: 'STRING',
                   enum: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
