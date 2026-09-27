@@ -205,6 +205,21 @@ sequenceDiagram
 
 ---
 
+### Per-Profile PII Redaction Matrix
+
+The local `PrivacyEngine` detects and redacts specific sensitive data patterns before passing base64 images to the AI proxy:
+
+| Profile | PII Fields / Sensitive Data Identified for Redaction | Regex & Vision Matching Target | Why Redaction is Critical |
+| :--- | :--- | :--- | :--- |
+| 🎒 **School & Family** | • Child's Full Name & Date of Birth<br>• Student ID Number & Grade<br>• Parent Physical Signatures<br>• Family Home Address & Private Phone<br>• Student Medical/Allergy Notes | • `Student ID:\s*#?\d+`<br>• Canvas signature bounding box<br>• Street Address & Phone Regex | Prevents child identity theft, signature forgery, and exposure of minor contact details. |
+| 🩺 **Elder Care & Health** | • Social Security Number (SSN)<br>• Medicare ID / Health Insurance Policy #<br>• Patient Medical Record Number (MRN)<br>• Rx Prescription Numbers & DEA #s<br>• Billing/Insurance Account Numbers | • `\d{3}-\d{2}-\d{4}` (SSN)<br>• `[A-Z0-9]{4}-[A-Z0-9]{3}-[A-Z0-9]{4}` (Medicare)<br>• `MRN:\s*\d+`<br>• `Rx#:\s*\d+` | HIPAA compliance, preventing medical identity theft & health insurance fraud. |
+| 🛠️ **Small Business & Trades** | • Bank Routing & Checking Account #s<br>• Credit Card Numbers & CVV Codes<br>• Employer Identification Number (EIN/TIN)<br>• Sole Proprietor SSN & License #s<br>• Client Personal Billing Addresses | • `\d{9}` (Routing #)<br>• `\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}` (Credit Card)<br>• `\d{2}-\d{7}` (EIN/TIN) | Prevents corporate bank account fraud, credit card theft, and vendor identity spoofing. |
+| 🏡 **Property & HOA** | • Tenant SSN & Driver's License #<br>• Bank Wire Transfer Instructions<br>• Property Owner Tax ID / Mortgage Account # | • `DL:\s*[A-Z0-9]+`<br>• `Routing/Account` check footers<br>• `Mortgage Acct:\s*\d+` | Protects tenant privacy, prevents wire fraud and property tax account compromise. |
+| ⚖️ **Legal & Immigration** | • Alien Registration Number (A-Number / USCIS ID)<br>• Passport Number & I-94 Arrival Number<br>• Social Security Number (SSN)<br>• Case File Tracking Number & Attorney Bar # | • `A-?\d{8,9}` (USCIS)<br>• Passport Regex (`[A-Z0-9]{8,9}`)<br>• `I-94#:\s*\d+` | Prevents identity theft of immigrants, protecting sensitive legal case confidentiality. |
+
+
+---
+
 ## 6. Remote Feature Flags & Dynamic Profile Management
 
 Sift can enable, disable, or promote profiles dynamically without requiring an App Store update. This is controlled via remote configuration (`docs/pricing.json` or Cloudflare Worker).
