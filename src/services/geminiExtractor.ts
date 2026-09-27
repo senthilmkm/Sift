@@ -50,8 +50,8 @@ export async function extractItemsFromDocument(
             ? item.action_checklist.map((step: string) => enablePiiRedaction ? sanitizeTextForPrivacy(step, profileId) : step)
             : [],
           contact_info: item.contact_info || undefined,
-          profile_id: profileId,
-          metadata_json: item.metadata_json || JSON.stringify(item.profile_data || {}),
+          profile_id: item.detected_profile_id || profileId,
+          metadata_json: item.metadata_json || JSON.stringify({ vendor_name: item.vendor_name, total_amount: item.total_amount, tax_category: item.tax_category }),
         };
       });
     }

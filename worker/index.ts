@@ -33,7 +33,7 @@ export default {
       const body: any = await request.json();
       const base64Image = body.base64Image;
       const mimeType = body.mimeType || 'image/jpeg';
-      const profileId = body.profileId || 'school';
+      const activeProfileId = body.profileId || 'school';
 
       if (!base64Image) {
         return new Response(JSON.stringify({ error: 'Missing base64Image parameter' }), {
@@ -44,27 +44,25 @@ export default {
 
       const todayStr = new Date().toISOString().split('T')[0];
       const prompt = `
-Analyze this document, paper notice, flyer, form, receipt, or letter image for profile '${profileId}'.
-Current Date today is: ${todayStr}.
+You are Sift's Universal Document & Receipt Extraction Engine.
+Analyze this image (which could be a paper receipt, bill, flyer, medical form, HOA notice, school slip, permit, or legal letter).
+Current Date today is: ${todayStr}. User's current view profile is '${activeProfileId}'.
 
-CRITICAL EXTRACTION & TAX CATEGORIZATION RULES:
-1. "actionable" (High Priority):
-   - Only extract items requiring explicit user action: deadline date, order link/website URL, fee payment, permission slip return date, or return window expiration.
-   - For RECEIPTS / INVOICES: If there is a return window (e.g. "Returns accepted within 30 days"), extract the return expiration date as due_date.
+UNIVERSAL EXTRACTION & AUTO-PROFILE RULES:
+1. ALWAYS EXTRACT RECEIPTS & EXPENSES (FOOD LION, HOME DEPOT, GAS, STORES, PHARMACY):
+   If the image is ANY paper receipt, invoice, bill, or proof of purchase:
+   - YOU MUST ALWAYS EXTRACT IT! NEVER return 0 items for a receipt.
+   - Title Format: "[Merchant Name] — $[Total Amount]" (e.g. "Food Lion — $42.50"). If amount is unclear, use "$0.00".
+   - Tab: If there is a return window (e.g. "Returns accepted within 30 days"), extract return expiration date as due_date and set tab="actionable". Otherwise set tab="informational".
+   - Tax Category: Identify IRS tax category: "Materials & Supplies" (groceries, hardware, tools, supplies), "Vehicle & Fuel" (gas), "Utilities & Repairs", "Office & Admin", "Professional Fees", or "Uncategorized Expense".
+   - Set detected_profile_id = "smallBiz".
 
-2. "informational" (Selective Reference Only):
-   - For paper receipts without active return deadlines, categorize as "informational".
+2. FOR SCHOOL, MEDICAL, HOA, LEGAL NOTICES:
+   - Extract actionable deadlines, forms, permission slips, court dates, or medical preps.
+   - Set detected_profile_id to matching profile: "school", "elderCare", "property", or "legalImmigration".
 
-3. TAX CATEGORIZATION (FOR RECEIPTS & INVOICES):
-   Identify the appropriate IRS tax category:
-   - "Materials & Supplies" (building materials, hardware, parts, tools, grocery/food supplies)
-   - "Vehicle & Fuel" (gas receipts, auto parts, parking)
-   - "Utilities & Repairs" (utility bills, equipment repair)
-   - "Office & Admin" (paper, ink, software, postage)
-   - "Professional Fees" (permits, licensing, subcontractor fees)
-   - DEFAULT FALLBACK: "Uncategorized Expense" (if type cannot be identified with high confidence).
-
-4. Keep titles short, clean, and actionable (e.g. "Food Lion — $42.50 (Groceries/Supplies)").
+3. ZERO EMPTY RESULT GUARANTEE:
+   - If the image contains ANY readable text or document layout, ALWAYS generate at least 1 extracted item card. Never return an empty items list.
 `;
 
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -97,7 +95,12 @@ CRITICAL EXTRACTION & TAX CATEGORIZATION RULES:
                   description: 'Default to Uncategorized Expense if unknown'
                 },
                 total_amount: { type: 'STRING', description: 'Total dollar amount or 0.00' },
-                vendor_name: { type: 'STRING', description: 'Merchant / Vendor name' }
+                vendor_name: { type: 'STRING', description: 'Merchant / Vendor name' },
+                detected_profile_id: {
+                  type: 'STRING',
+                  enum: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
+                  description: 'Detected profile for auto-categorization'
+                }
               },
               required: ['title', 'tab', 'source_snippet', 'confidence'],
             },
