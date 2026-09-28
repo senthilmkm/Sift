@@ -41,6 +41,30 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     } catch {}
   }
 
+  let displayLineItems: string[] = [...lineItems];
+  if (displayLineItems.length === 0) {
+    const snippetText = item.source_snippet || item.notes || '';
+    if (snippetText) {
+      const parts = snippetText
+        .split(/[\n;]|,\s*(?=[A-Z0-9])/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0 && !s.toLowerCase().startsWith('visa') && !s.toLowerCase().startsWith('total:'));
+      if (parts.length > 0) {
+        displayLineItems = parts;
+      }
+    }
+    if (displayLineItems.length === 0) {
+      displayLineItems = [item.title || 'Store Purchase'];
+    }
+  }
+
+  if (!totalAmount) {
+    const priceMatch = (item.title || '').match(/[\$\€\£\¥\₹]\d+(\.\d{2})?/);
+    if (priceMatch) {
+      totalAmount = priceMatch[0];
+    }
+  }
+
   const formatLineItem = (str: string) => {
     if (!str) return { name: '', price: '' };
     const parts = str.split(/\s+[—\-]\s+/);
@@ -259,9 +283,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
             <Text style={styles.lineItemsToggleText}>
-              {lineItems.length > 0
-                ? `${lineItems.length} Purchased Item${lineItems.length > 1 ? 's' : ''}`
-                : 'Receipt & Expense Details'}
+              {displayLineItems.length > 0
+                ? `${displayLineItems.length} Line Item${displayLineItems.length > 1 ? 's' : ''}`
+                : 'Receipt & Expense Breakdown'}
             </Text>
             {taxCategory ? (
               <View style={styles.taxCategoryPill}>
@@ -278,39 +302,29 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
         {isLineItemsExpanded && (
           <View style={styles.lineItemsContainer}>
-            {lineItems.length > 0 ? (
-              <View style={styles.receiptTable}>
-                <View style={styles.receiptHeaderRow}>
-                  <Text style={styles.receiptHeaderColName}>PURCHASED ITEM</Text>
-                  <Text style={styles.receiptHeaderColPrice}>PRICE</Text>
-                </View>
-                {lineItems.map((lineItemStr, idx) => {
-                  const { name, price } = formatLineItem(lineItemStr);
-                  return (
-                    <View key={idx} style={[styles.receiptRow, idx % 2 === 1 && styles.receiptRowAlt]}>
-                      <Text style={styles.receiptItemName}>{name}</Text>
-                      <Text style={styles.receiptItemPrice}>{price || '—'}</Text>
-                    </View>
-                  );
-                })}
-                {totalAmount ? (
-                  <View style={styles.receiptFooterRow}>
-                    <Text style={styles.receiptFooterLabel}>TOTAL RECEIPT AMOUNT</Text>
-                    <Text style={styles.receiptFooterPrice}>
-                      {totalAmount.startsWith('$') ? totalAmount : `$${totalAmount}`}
-                    </Text>
+            <View style={styles.receiptTable}>
+              <View style={styles.receiptHeaderRow}>
+                <Text style={styles.receiptHeaderColName}>PURCHASED ITEM</Text>
+                <Text style={styles.receiptHeaderColPrice}>PRICE</Text>
+              </View>
+              {displayLineItems.map((lineItemStr, idx) => {
+                const { name, price } = formatLineItem(lineItemStr);
+                return (
+                  <View key={idx} style={[styles.receiptRow, idx % 2 === 1 && styles.receiptRowAlt]}>
+                    <Text style={styles.receiptItemName}>{name}</Text>
+                    <Text style={styles.receiptItemPrice}>{price || '—'}</Text>
                   </View>
-                ) : null}
-              </View>
-            ) : (
-              <View style={{ paddingVertical: 4 }}>
-                {item.source_snippet ? (
-                  <Text style={styles.lineItemText}>• {item.source_snippet}</Text>
-                ) : (
-                  <Text style={styles.lineItemText}>• Receipt document record logged in Sift.</Text>
-                )}
-              </View>
-            )}
+                );
+              })}
+              {totalAmount ? (
+                <View style={styles.receiptFooterRow}>
+                  <Text style={styles.receiptFooterLabel}>TOTAL RECEIPT AMOUNT</Text>
+                  <Text style={styles.receiptFooterPrice}>
+                    {totalAmount.startsWith('$') ? totalAmount : `$${totalAmount}`}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         )}
       </View>
