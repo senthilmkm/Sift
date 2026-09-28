@@ -109,13 +109,26 @@ export function getMockCandidateItems(profileId: ProfileId = 'school'): Candidat
         {
           title: 'Food Lion — $42.50',
           summary: 'Grocery store receipt & tax deductible materials/supplies',
-          tab: 'actionable',
+          tab: 'informational',
           due_date: formatDate(today),
           source_snippet: 'Food Lion Store #1422. Total: $42.50. Sales Tax: $2.10. Visa ending in 4122.',
           confidence: 'high',
           is_urgent: false,
           profile_id: 'smallBiz',
-          metadata_json: JSON.stringify({ vendor_name: 'Food Lion', total_amount: '42.50', tax_category: 'Materials & Supplies' }),
+          metadata_json: JSON.stringify({
+            vendor_name: 'Food Lion',
+            total_amount: '42.50',
+            tax_category: 'Materials & Supplies',
+            line_items: [
+              'Food Lion Whole Milk 1 GAL — $3.99',
+              'Nature\'s Own Wheat Bread 20oz — $2.49',
+              'Fresh Gala Apples 2 lb — $3.98',
+              'Bounty Paper Towels 6 Roll — $8.99',
+              'Eggland\'s Best Large Eggs 12ct — $4.29',
+              'Coca-Cola 12pk 12oz Cans — $7.49',
+              'Tyson Boneless Chicken Breast — $8.29',
+            ],
+          }),
         },
       ];
     case 'property':

@@ -28,13 +28,33 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
   let lineItems: string[] = [];
   let taxCategory = '';
+  let vendorName = '';
+  let totalAmount = '';
+
   if (item.metadata_json) {
     try {
       const parsed = JSON.parse(item.metadata_json);
       if (Array.isArray(parsed.line_items)) lineItems = parsed.line_items;
       if (parsed.tax_category) taxCategory = parsed.tax_category;
+      if (parsed.vendor_name) vendorName = parsed.vendor_name;
+      if (parsed.total_amount) totalAmount = parsed.total_amount;
     } catch {}
   }
+
+  const formatLineItem = (str: string) => {
+    if (!str) return { name: '', price: '' };
+    const parts = str.split(/\s+[—\-]\s+/);
+    if (parts.length >= 2) {
+      const price = parts[parts.length - 1].trim();
+      const name = parts.slice(0, parts.length - 1).join(' — ').trim();
+      return { name, price };
+    }
+    const match = str.match(/^(.*?)\s+([\$\€\£\¥\₹]?\d+\.\d{2})/);
+    if (match) {
+      return { name: match[1].trim(), price: match[2].trim() };
+    }
+    return { name: str, price: '' };
+  };
 
   const getExtractedLink = (): { url: string; domain: string } | null => {
     const fullText = `${item.title || ''} ${item.notes || ''} ${item.source_snippet || ''}`;
@@ -259,12 +279,29 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {isLineItemsExpanded && (
           <View style={styles.lineItemsContainer}>
             {lineItems.length > 0 ? (
-              lineItems.map((lineItem, idx) => (
-                <View key={idx} style={styles.lineItemRow}>
-                  <Text style={styles.lineItemBullet}>•</Text>
-                  <Text style={styles.lineItemText}>{lineItem}</Text>
+              <View style={styles.receiptTable}>
+                <View style={styles.receiptHeaderRow}>
+                  <Text style={styles.receiptHeaderColName}>PURCHASED ITEM</Text>
+                  <Text style={styles.receiptHeaderColPrice}>PRICE</Text>
                 </View>
-              ))
+                {lineItems.map((lineItemStr, idx) => {
+                  const { name, price } = formatLineItem(lineItemStr);
+                  return (
+                    <View key={idx} style={[styles.receiptRow, idx % 2 === 1 && styles.receiptRowAlt]}>
+                      <Text style={styles.receiptItemName}>{name}</Text>
+                      <Text style={styles.receiptItemPrice}>{price || '—'}</Text>
+                    </View>
+                  );
+                })}
+                {totalAmount ? (
+                  <View style={styles.receiptFooterRow}>
+                    <Text style={styles.receiptFooterLabel}>TOTAL RECEIPT AMOUNT</Text>
+                    <Text style={styles.receiptFooterPrice}>
+                      {totalAmount.startsWith('$') ? totalAmount : `$${totalAmount}`}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
             ) : (
               <View style={{ paddingVertical: 4 }}>
                 {item.source_snippet ? (
@@ -499,6 +536,77 @@ const styles = StyleSheet.create({
     color: '#e2e8f0',
     fontSize: 12,
     flex: 1,
+  },
+  receiptTable: {
+    marginVertical: 4,
+  },
+  receiptHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 4,
+    marginBottom: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#334155',
+  },
+  receiptHeaderColName: {
+    color: '#64748b',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    flex: 1,
+  },
+  receiptHeaderColPrice: {
+    color: '#64748b',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textAlign: 'right',
+    width: 75,
+  },
+  receiptRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  receiptRowAlt: {
+    backgroundColor: 'rgba(30, 41, 59, 0.4)',
+  },
+  receiptItemName: {
+    color: '#f1f5f9',
+    fontSize: 12,
+    fontWeight: '500',
+    flex: 1,
+    paddingRight: 8,
+  },
+  receiptItemPrice: {
+    color: '#34d399',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'right',
+    width: 75,
+  },
+  receiptFooterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6,
+    paddingTop: 6,
+    borderTopWidth: 1.5,
+    borderTopColor: '#38bdf8',
+  },
+  receiptFooterLabel: {
+    color: '#cbd5e1',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  receiptFooterPrice: {
+    color: '#38bdf8',
+    fontSize: 13,
+    fontWeight: '800',
   },
   promoteBtn: {
     flexDirection: 'row',

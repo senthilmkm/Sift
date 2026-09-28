@@ -56,7 +56,7 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
    - Tab: Set tab="informational" for completed store receipts (so your Actionable deadline list stays clean and receipts are organized under Receipts & Records), or tab="actionable" if payment is due or return action is needed.
    - Due Date: Set due_date = today (${todayStr}) or return window expiration date (e.g. 30 days from today).
    - Source Snippet: Include merchant name, total amount, purchase date, tax, payment method, and top items purchased.
-   - Line Items: Extract individual purchased items with quantities and prices into line_items.
+   - Line Items: Extract EVERY single purchased line item printed on the receipt with item description, quantity, and exact price as printed on the receipt. Format each element as "[Item Name] — [Currency Symbol][Price]" (e.g. "1x Whole Milk 1 GAL — $3.99", "2x Gala Apples — $3.98", "1x Paper Towels — $8.99").
    - Tax Category (IRS & Global Business/Personal Expense Standard):
      - "Materials & Supplies" (groceries, retail items, raw materials, hardware, equipment <$2,500)
      - "Vehicle & Fuel" (fuel, auto repairs, parking, tolls, transportation)
@@ -113,7 +113,7 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
                 line_items: {
                   type: 'ARRAY',
                   items: { type: 'STRING' },
-                  description: 'Purchased line items with price (e.g. ["1x Milk $3.99", "1x Bread $2.49"])'
+                  description: 'Complete list of all purchased line items with exact prices (e.g. ["1x Whole Milk 1 GAL — $3.99", "2x Gala Apples — $3.98"])'
                 },
                 detected_profile_id: {
                   type: 'STRING',
