@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView
 import * as ImagePicker from 'expo-image-picker';
 import { extractItemsFromDocument, generateContextualDocumentName } from '../services/geminiExtractor';
 import { saveDocumentAndItems, getUserPreferences, updateUserPreferences } from '../database/db';
+import { canUserScan, recordSuccessfulScan } from '../services/secureUsageStore';
 import { CandidateItem, SiftDocument } from '../models/types';
 import { scheduleItemNotification } from '../services/notificationService';
 import { shareClassGroupSummary } from '../services/shareService';
@@ -43,8 +44,8 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
   };
 
   const processImageSource = async (source: 'camera' | 'library' | 'sample') => {
-    const prefs = await getUserPreferences();
-    if (!prefs.isSubscribed && prefs.freeScansUsed >= 5) {
+    const allowedToScan = await canUserScan();
+    if (!allowedToScan) {
       setShowPaywall(true);
       return;
     }
@@ -137,9 +138,10 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
 
       setCandidates(sanitized);
 
-      // Free tier scan count: increment ONLY on successful scanning of photo or library image
+      // Persistent Free Tier scan count: record in SecureStore + update user preferences
       if (!prefs.isSubscribed && (source === 'camera' || source === 'library') && sanitized.length > 0) {
-        await updateUserPreferences({ freeScansUsed: prefs.freeScansUsed + 1 });
+        const updatedRecord = await recordSuccessfulScan();
+        await updateUserPreferences({ freeScansUsed: updatedRecord.scansUsedThisMonth });
       }
     } catch (err: any) {
       Alert.alert('Scan Failed', err?.message || 'Could not process document flyer.');
@@ -194,6 +196,8 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
         is_urgent: !!c.is_urgent,
         reminder_at: `${finalDueDate}T19:00:00`,
         confidence: c.confidence,
+        profile_id: c.profile_id,
+        metadata_json: c.metadata_json,
       };
     });
 
@@ -203,7 +207,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
     if (prefs.enableNotifications) {
       for (const item of savedItems) {
         if (item.tab === 'actionable') {
-          await scheduleItemNotification(item, prefs.defaultReminderTime);
+          await scheduleItemNotification(item, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
         }
       }
     }

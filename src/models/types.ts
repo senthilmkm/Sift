@@ -75,6 +75,7 @@ export interface FilterOptions {
   urgentOnly: boolean;
   sortBy: SortByOption;
   sortOrder: SortOrder;
+  taxCategory?: string;
 }
 
 export type AutoDeletePeriod = '1w' | '2w' | '4w' | '90d' | '180d' | 'never';
@@ -86,6 +87,7 @@ export interface UserPreferences {
   enableNotifications: boolean;
   enableCriticalAlerts: boolean;
   enablePiiRedaction: boolean;
+  enableBiometricLock: boolean;
   defaultReminderTime: string;
   reminderSound: string;
   autoDeletePeriod: AutoDeletePeriod;

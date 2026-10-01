@@ -20,12 +20,14 @@
         "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",
         "NSCalendarsUsageDescription": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar.",
         "NSMicrophoneUsageDescription": "Sift does not record audio.",
+        "NSFaceIDUsageDescription": "Sift uses Face ID / Touch ID to protect your scanned confidential medical directives, legal notices, and financial receipts.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.com.senthilmkm.sift"
-        ]
+        ],
+        "com.apple.developer.usernotifications.critical-alerts": true
       }
     },
     "plugins": [
@@ -45,7 +47,8 @@
         {
           "photosPermission": "Sift requires photo library access to select flyer photos and PDF notices."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {

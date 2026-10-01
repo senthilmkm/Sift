@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { SiftItem, SiftDocument, FilterOptions, UserPreferences, AutoDeletePeriod, ItemTab, ProfileId } from '../models/types';
+import { syncPreferencesWithSecureStore, updateSecureSubscriptionState, getSecureUsageRecord } from '../services/secureUsageStore';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
@@ -53,6 +54,7 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
       enable_notifications INTEGER NOT NULL DEFAULT 1,
       enable_critical_alerts INTEGER NOT NULL DEFAULT 0,
       enable_pii_redaction INTEGER NOT NULL DEFAULT 1,
+      enable_biometric_lock INTEGER NOT NULL DEFAULT 0,
       default_reminder_time TEXT NOT NULL DEFAULT '19:00_nightbefore',
       reminder_sound TEXT NOT NULL DEFAULT 'default',
       auto_delete_period TEXT NOT NULL DEFAULT 'never',
@@ -62,15 +64,19 @@ async function initTables(database: SQLite.SQLiteDatabase): Promise<void> {
     );
   `);
 
+  try {
+    await database.execAsync(`ALTER TABLE user_preferences ADD COLUMN enable_biometric_lock INTEGER NOT NULL DEFAULT 0;`);
+  } catch {}
+
   await database.execAsync(`
     INSERT OR IGNORE INTO user_preferences (
       id, active_profile, enabled_profiles_json, onboarding_completed, 
-      enable_notifications, enable_critical_alerts, enable_pii_redaction,
+      enable_notifications, enable_critical_alerts, enable_pii_redaction, enable_biometric_lock,
       default_reminder_time, reminder_sound, auto_delete_period, free_scans_used, is_subscribed
     )
     VALUES (
       1, 'school', '["school","elderCare","smallBiz","property","legalImmigration"]', 0,
-      1, 0, 1,
+      1, 0, 1, 0,
       '19:00_nightbefore', 'default', 'never', 0, 0
     );
   `);
@@ -157,6 +163,11 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
 
   if (options.urgentOnly) {
     query += ` AND items.is_urgent = 1`;
+  }
+
+  if (options.taxCategory && options.taxCategory !== 'All') {
+    query += ` AND items.metadata_json LIKE ?`;
+    params.push(`%${options.taxCategory}%`);
   }
 
   if (options.searchQuery && options.searchQuery.trim().length > 0) {
@@ -307,61 +318,82 @@ export async function autoDeleteOldItems(period: AutoDeletePeriod): Promise<numb
 
 export async function resetDatabase(): Promise<void> {
   const database = await getDB();
+  const secureRecord = await getSecureUsageRecord();
   await database.execAsync(`
     DELETE FROM items;
     DELETE FROM documents;
-    UPDATE user_preferences SET free_scans_used = 0, is_subscribed = 0 WHERE id = 1;
+    UPDATE user_preferences SET free_scans_used = ${secureRecord.scansUsedThisMonth}, is_subscribed = ${secureRecord.isSubscribed ? 1 : 0} WHERE id = 1;
   `);
 }
 
 export async function getUserPreferences(): Promise<UserPreferences> {
   const database = await getDB();
   const row = await database.getFirstAsync<any>(`SELECT * FROM user_preferences WHERE id = 1`);
+
+  let rawPrefs: UserPreferences;
+
   if (!row) {
-    return {
+    rawPrefs = {
       activeProfile: 'school',
       enabledProfiles: ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'],
       onboardingCompleted: false,
       enableNotifications: true,
       enableCriticalAlerts: false,
       enablePiiRedaction: true,
+      enableBiometricLock: false,
       defaultReminderTime: '19:00_nightbefore',
       reminderSound: 'default',
       autoDeletePeriod: 'never',
       freeScansUsed: 0,
       isSubscribed: false,
     };
-  }
-
-  let enabledProfiles: ProfileId[] = ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'];
-  try {
-    if (row.enabled_profiles_json) {
-      enabledProfiles = JSON.parse(row.enabled_profiles_json);
+  } else {
+    let enabledProfiles: ProfileId[] = ['school', 'elderCare', 'smallBiz', 'property', 'legalImmigration'];
+    try {
+      if (row.enabled_profiles_json) {
+        enabledProfiles = JSON.parse(row.enabled_profiles_json);
+      }
+    } catch (e) {
+      // Fallback default
     }
-  } catch (e) {
-    // Fallback default
+
+    rawPrefs = {
+      activeProfile: (row.active_profile as ProfileId) || 'school',
+      enabledProfiles,
+      onboardingCompleted: row.onboarding_completed === 1,
+      enableNotifications: row.enable_notifications !== undefined ? row.enable_notifications !== 0 : true,
+      enableCriticalAlerts: row.enable_critical_alerts === 1,
+      enablePiiRedaction: row.enable_pii_redaction !== undefined ? row.enable_pii_redaction !== 0 : true,
+      enableBiometricLock: row.enable_biometric_lock === 1,
+      defaultReminderTime: row.default_reminder_time || '19:00_nightbefore',
+      reminderSound: row.reminder_sound || 'default',
+      autoDeletePeriod: row.auto_delete_period || 'never',
+      freeScansUsed: row.free_scans_used || 0,
+      isSubscribed: row.is_subscribed === 1,
+      activePlanId: row.active_plan_id,
+    };
   }
 
-  return {
-    activeProfile: (row.active_profile as ProfileId) || 'school',
-    enabledProfiles,
-    onboardingCompleted: row.onboarding_completed === 1,
-    enableNotifications: row.enable_notifications !== undefined ? row.enable_notifications !== 0 : true,
-    enableCriticalAlerts: row.enable_critical_alerts === 1,
-    enablePiiRedaction: row.enable_pii_redaction !== undefined ? row.enable_pii_redaction !== 0 : true,
-    defaultReminderTime: row.default_reminder_time || '19:00_nightbefore',
-    reminderSound: row.reminder_sound || 'default',
-    autoDeletePeriod: row.auto_delete_period || 'never',
-    freeScansUsed: row.free_scans_used || 0,
-    isSubscribed: row.is_subscribed === 1,
-    activePlanId: row.active_plan_id,
-  };
+  // Reconcile with persistent SecureStore (Keychain) to resist reinstall/reset wipes
+  const synced = await syncPreferencesWithSecureStore(rawPrefs);
+  if (synced.freeScansUsed !== rawPrefs.freeScansUsed || synced.isSubscribed !== rawPrefs.isSubscribed) {
+    await database.runAsync(
+      `UPDATE user_preferences SET free_scans_used = ?, is_subscribed = ? WHERE id = 1`,
+      [synced.freeScansUsed, synced.isSubscribed ? 1 : 0]
+    );
+  }
+
+  return synced;
 }
 
 export async function updateUserPreferences(prefs: Partial<UserPreferences>): Promise<void> {
   const database = await getDB();
   const current = await getUserPreferences();
   const updated = { ...current, ...prefs };
+
+  if (prefs.isSubscribed !== undefined) {
+    await updateSecureSubscriptionState(prefs.isSubscribed, prefs.activePlanId);
+  }
 
   await database.runAsync(
     `UPDATE user_preferences SET 
@@ -371,6 +403,7 @@ export async function updateUserPreferences(prefs: Partial<UserPreferences>): Pr
       enable_notifications = ?,
       enable_critical_alerts = ?,
       enable_pii_redaction = ?,
+      enable_biometric_lock = ?,
       default_reminder_time = ?,
       reminder_sound = ?,
       auto_delete_period = ?,
@@ -385,6 +418,7 @@ export async function updateUserPreferences(prefs: Partial<UserPreferences>): Pr
       updated.enableNotifications ? 1 : 0,
       updated.enableCriticalAlerts ? 1 : 0,
       updated.enablePiiRedaction ? 1 : 0,
+      updated.enableBiometricLock ? 1 : 0,
       updated.defaultReminderTime,
       updated.reminderSound,
       updated.autoDeletePeriod,

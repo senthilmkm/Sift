@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React from 'react';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
 import { FilterOptions, SortByOption } from '../models/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,14 +8,25 @@ interface FilterBarProps {
   onChangeOptions: (updated: Partial<FilterOptions>) => void;
 }
 
+const TAX_CATEGORIES = [
+  'All',
+  'Materials & Supplies',
+  'Vehicle & Fuel',
+  'Utilities & Repairs',
+  'Office & Admin',
+  'Professional Fees',
+];
+
 export const FilterBar: React.FC<FilterBarProps> = ({ options, onChangeOptions }) => {
+  const activeCategory = options.taxCategory || 'All';
+
   return (
     <View style={styles.container}>
       <View style={styles.searchRow}>
         <Ionicons name="search-outline" size={18} color="#94a3b8" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search items or snippets..."
+          placeholder="Search items, vendors, or snippets..."
           placeholderTextColor="#64748b"
           value={options.searchQuery}
           onChangeText={(text) => onChangeOptions({ searchQuery: text })}
@@ -25,6 +36,31 @@ export const FilterBar: React.FC<FilterBarProps> = ({ options, onChangeOptions }
             <Ionicons name="close-circle" size={18} color="#94a3b8" />
           </TouchableOpacity>
         ) : null}
+      </View>
+
+      {/* Tax Category Filter Pills Bar */}
+      <View style={styles.categoryPillsWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryPillsScroll}
+        >
+          {TAX_CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat;
+            return (
+              <TouchableOpacity
+                key={cat}
+                style={[styles.taxPill, isActive && styles.activeTaxPill]}
+                onPress={() => onChangeOptions({ taxCategory: cat === 'All' ? undefined : cat })}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.taxPillText, isActive && styles.activeTaxPillText]}>
+                  {cat === 'All' ? '🏷️ All Expenses' : cat}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       <View style={styles.filterChipRow}>
@@ -89,6 +125,35 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#f8fafc',
     fontSize: 14,
+  },
+  categoryPillsWrapper: {
+    marginTop: 8,
+  },
+  categoryPillsScroll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  taxPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: '#1e1b4b',
+    marginRight: 6,
+    borderWidth: 1,
+    borderColor: '#3730a3',
+  },
+  activeTaxPill: {
+    backgroundColor: '#6366f1',
+    borderColor: '#818cf8',
+  },
+  taxPillText: {
+    color: '#a5b4fc',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  activeTaxPillText: {
+    color: '#ffffff',
+    fontWeight: '700',
   },
   filterChipRow: {
     flexDirection: 'row',

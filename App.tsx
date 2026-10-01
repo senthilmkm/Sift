@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, ActivityIndicator, View, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, ActivityIndicator, View, TouchableOpacity, Text, AppState } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { OnboardingProfileScreen } from './src/screens/OnboardingProfileScreen';
 import { getDB, getUserPreferences, updateUserPreferences } from './src/database/db';
 import { ArchivedTasksModal } from './src/components/ArchivedTasksModal';
 import { ProfileSwitcherModal } from './src/components/ProfileSwitcherModal';
+import { BiometricLockOverlay } from './src/components/BiometricLockOverlay';
 import { exportAllTasksToExcel } from './src/services/shareService';
 import { ProfileId } from './src/models/types';
 import { PROFILE_CONFIGS } from './src/config/profiles';
@@ -23,6 +24,7 @@ export default function App() {
   const [activeProfile, setActiveProfile] = useState<ProfileId>('school');
   const [showArchivedModal, setShowArchivedModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
     getDB()
@@ -30,9 +32,25 @@ export default function App() {
         const prefs = await getUserPreferences();
         setOnboarded(prefs.onboardingCompleted);
         setActiveProfile(prefs.activeProfile);
+        if (prefs.enableBiometricLock) {
+          setIsLocked(true);
+        }
         setDbReady(true);
       })
       .catch((err) => console.error('Failed to init DB:', err));
+
+    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+      if (nextAppState === 'active') {
+        const prefs = await getUserPreferences();
+        if (prefs.enableBiometricLock) {
+          setIsLocked(true);
+        }
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const handleSelectProfile = async (profileId: ProfileId) => {
@@ -136,6 +154,11 @@ export default function App() {
           activeProfile={activeProfile}
           onSelectProfile={handleSelectProfile}
           onClose={() => setShowProfileModal(false)}
+        />
+
+        <BiometricLockOverlay
+          visible={isLocked}
+          onUnlockSuccess={() => setIsLocked(false)}
         />
       </NavigationContainer>
     </SafeAreaView>

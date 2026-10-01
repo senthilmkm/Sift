@@ -34,6 +34,7 @@ export default {
       const base64Image = body.base64Image;
       const mimeType = body.mimeType || 'image/jpeg';
       const activeProfileId = body.profileId || 'school';
+      const deviceId = request.headers.get('X-Sift-Device-ID') || body.deviceId || 'anonymous';
 
       if (!base64Image) {
         return new Response(JSON.stringify({ error: 'Missing base64Image parameter' }), {

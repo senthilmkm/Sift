@@ -1,5 +1,6 @@
 import { CandidateItem, ProfileId } from '../models/types';
 import { sanitizeTextForPrivacy } from './piiRedactor';
+import { getOrCreateDeviceInstallId } from './secureUsageStore';
 
 const PROXY_URL = process.env.EXPO_PUBLIC_PROXY_URL || 'https://sift-gemini-proxy.senthilmkm.workers.dev';
 
@@ -11,13 +12,15 @@ export async function extractItemsFromDocument(
   useMockIfFailed: boolean = true
 ): Promise<CandidateItem[]> {
   try {
+    const deviceId = await getOrCreateDeviceInstallId();
     const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'SiftApp/1.0 (iOS Client)',
+        'X-Sift-Device-ID': deviceId,
       },
-      body: JSON.stringify({ base64Image, mimeType, profileId }),
+      body: JSON.stringify({ base64Image, mimeType, profileId, deviceId }),
     });
 
     if (!response.ok) {
@@ -107,17 +110,17 @@ export function getMockCandidateItems(profileId: ProfileId = 'school'): Candidat
           metadata_json: JSON.stringify({ vendor_name: 'Plumbing Supply', total_amount: '1485.50', tax_category: 'Materials & Supplies' }),
         },
         {
-          title: 'Food Lion — $42.50',
+          title: 'Food Lion — $23.74',
           summary: 'Grocery store receipt & tax deductible materials/supplies',
           tab: 'informational',
           due_date: formatDate(today),
-          source_snippet: 'Food Lion Store #1422. Total: $42.50. Sales Tax: $2.10. Visa ending in 4122.',
+          source_snippet: 'Food Lion Store #1422. Total: $23.74. Sales Tax: $1.15. Visa ending in 4122.',
           confidence: 'high',
           is_urgent: false,
           profile_id: 'smallBiz',
           metadata_json: JSON.stringify({
             vendor_name: 'Food Lion',
-            total_amount: '42.50',
+            total_amount: '23.74',
             tax_category: 'Materials & Supplies',
             line_items: [
               'Food Lion Whole Milk 1 GAL — $3.99',
@@ -125,8 +128,6 @@ export function getMockCandidateItems(profileId: ProfileId = 'school'): Candidat
               'Fresh Gala Apples 2 lb — $3.98',
               'Bounty Paper Towels 6 Roll — $8.99',
               'Eggland\'s Best Large Eggs 12ct — $4.29',
-              'Coca-Cola 12pk 12oz Cans — $7.49',
-              'Tyson Boneless Chicken Breast — $8.29',
             ],
           }),
         },

@@ -23,7 +23,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onShareItem,
   onSyncCalendar,
 }) => {
-  const [isLineItemsExpanded, setIsLineItemsExpanded] = React.useState(false);
+  const [isLineItemsExpanded, setIsLineItemsExpanded] = React.useState(true);
   const isDone = item.status === 'done' || item.status === 'read' || item.status === 'archived';
 
   let lineItems: string[] = [];
@@ -58,27 +58,50 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     }
   }
 
-  if (!totalAmount) {
-    const priceMatch = (item.title || '').match(/[\$\€\£\¥\₹]\d+(\.\d{2})?/);
-    if (priceMatch) {
-      totalAmount = priceMatch[0];
-    }
-  }
-
   const formatLineItem = (str: string) => {
     if (!str) return { name: '', price: '' };
-    const parts = str.split(/\s+[—\-]\s+/);
+    const parts = str.split(/\s+[\—\–\-]\s+/);
     if (parts.length >= 2) {
-      const price = parts[parts.length - 1].trim();
-      const name = parts.slice(0, parts.length - 1).join(' — ').trim();
-      return { name, price };
+      const priceStr = parts[parts.length - 1].trim();
+      const nameStr = parts.slice(0, parts.length - 1).join(' — ').trim();
+      const price = priceStr.startsWith('$') || priceStr.startsWith('€') || priceStr.startsWith('£') || priceStr.startsWith('¥') || priceStr.startsWith('₹')
+        ? priceStr
+        : `$${priceStr}`;
+      return { name: nameStr, price };
     }
-    const match = str.match(/^(.*?)\s+([\$\€\£\¥\₹]?\d+\.\d{2})/);
+    const match = str.match(/^(.*?)\s+([\$\€\£\¥\₹]?\s*\d+\.\d{2})\s*$/);
     if (match) {
-      return { name: match[1].trim(), price: match[2].trim() };
+      const priceStr = match[2].trim();
+      const price = priceStr.startsWith('$') || priceStr.startsWith('€') || priceStr.startsWith('£') || priceStr.startsWith('¥') || priceStr.startsWith('₹')
+        ? priceStr
+        : `$${priceStr}`;
+      return { name: match[1].trim(), price };
     }
     return { name: str, price: '' };
   };
+
+  if (!totalAmount) {
+    let sum = 0;
+    let hasNumericPrice = false;
+    for (const line of displayLineItems) {
+      const { price } = formatLineItem(line);
+      if (price) {
+        const num = parseFloat(price.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num) && num > 0) {
+          sum += num;
+          hasNumericPrice = true;
+        }
+      }
+    }
+    if (hasNumericPrice) {
+      totalAmount = sum.toFixed(2);
+    } else {
+      const priceMatch = (item.title || '').match(/[\$\€\£\¥\₹]\d+(\.\d{2})?/);
+      if (priceMatch) {
+        totalAmount = priceMatch[0];
+      }
+    }
+  }
 
   const getExtractedLink = (): { url: string; domain: string } | null => {
     const fullText = `${item.title || ''} ${item.notes || ''} ${item.source_snippet || ''}`;

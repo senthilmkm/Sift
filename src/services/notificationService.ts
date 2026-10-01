@@ -76,7 +76,8 @@ export function calculateNotificationTriggerDate(
 
 export async function scheduleItemNotification(
   item: SiftItem,
-  defaultReminderTime: string = '19:00_nightbefore'
+  defaultReminderTime: string = '19:00_nightbefore',
+  enableCriticalAlerts: boolean = true
 ): Promise<string | null> {
   const granted = await requestNotificationPermissions();
   if (!granted) return null;
@@ -110,13 +111,15 @@ export async function scheduleItemNotification(
     };
   }
 
+  const isCritical = item.is_urgent && enableCriticalAlerts !== false;
+
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
       title: item.is_urgent ? `⚡ URGENT: ${item.title}` : `📋 Sift Reminder: ${item.title}`,
       body: item.urgency_reason || item.source_snippet || `Due: ${item.due_at || 'Today'}`,
       sound: true,
-      // iOS 15+ Critical Interruption Level when urgent:
-      interruptionLevel: item.is_urgent ? 'critical' : 'active',
+      // iOS 15+ Critical Interruption Level when urgent & enabled:
+      interruptionLevel: isCritical ? 'critical' : 'active',
       priority: item.is_urgent
         ? Notifications.AndroidNotificationPriority.MAX
         : Notifications.AndroidNotificationPriority.DEFAULT,
@@ -128,15 +131,18 @@ export async function scheduleItemNotification(
   return notificationId;
 }
 
-export async function sendTestNotification(): Promise<string | null> {
+export async function sendTestNotification(isCritical: boolean = false): Promise<string | null> {
   const granted = await requestNotificationPermissions();
   if (!granted) return null;
 
   return await Notifications.scheduleNotificationAsync({
     content: {
-      title: '⚡ Sift Test Alert',
-      body: 'Your Sift notifications and critical alerts are working perfectly!',
+      title: isCritical ? '⚡ Sift Critical Test Alert' : '📋 Sift Test Reminder',
+      body: isCritical
+        ? 'Urgent Critical Alert sound test. Rings even on Silent or Focus mode!'
+        : 'Your Sift notifications are working perfectly!',
       sound: true,
+      interruptionLevel: isCritical ? 'critical' : 'active',
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,

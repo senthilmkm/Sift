@@ -1,3 +1,5 @@
+const secureStorageMap = new Map();
+
 module.exports = {
   isAvailableAsync: jest.fn().mockResolvedValue(true),
   shareAsync: jest.fn().mockResolvedValue(true),
@@ -14,6 +16,9 @@ module.exports = {
   EntityTypes: { EVENT: 'event' },
   setNotificationHandler: jest.fn(),
   AndroidNotificationPriority: { HIGH: 4, DEFAULT: 3 },
+  getItemAsync: jest.fn(async (key) => secureStorageMap.get(key) || null),
+  setItemAsync: jest.fn(async (key, val) => { secureStorageMap.set(key, val); }),
+  deleteItemAsync: jest.fn(async (key) => { secureStorageMap.delete(key); }),
   Share: {
     share: jest.fn().mockResolvedValue({ action: 'sharedAction' }),
   },

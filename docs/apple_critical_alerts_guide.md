@@ -2,6 +2,12 @@
 
 This guide provides both the **ready-to-submit Apple Entitlement Application copy** and the **exact technical & configuration steps** required to enable Critical Alerts in Sift.
 
+> [!NOTE]
+> **Submitted Application Tracking**  
+> **Apple Request ID:** `25258T5RLF`  
+> **Submitted Date:** October 1, 2026  
+> **Status:** Submitted & Pending Apple Developer Review (24–48 hours)
+
 ---
 
 ## Part 1: Apple Developer Entitlement Application Details

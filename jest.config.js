@@ -13,5 +13,6 @@ module.exports = {
     '^expo-calendar/legacy$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-mail-composer$': '<rootDir>/__mocks__/expoMock.js',
     '^expo-notifications$': '<rootDir>/__mocks__/expoMock.js',
+    '^expo-secure-store$': '<rootDir>/__mocks__/expoMock.js',
   }
 };

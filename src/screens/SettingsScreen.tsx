@@ -6,6 +6,7 @@ import { UserPreferences, AutoDeletePeriod } from '../models/types';
 import { TimeRollerPicker } from '../components/TimeRollerPicker';
 import { checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
 import { exportAllTasksToExcel, exportAllTasksToPDF } from '../services/shareService';
+import { authenticateBiometrics } from '../services/biometricService';
 import { PaywallModal } from '../components/PaywallModal';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,6 +18,7 @@ export const SettingsScreen: React.FC = () => {
     enableNotifications: true,
     enableCriticalAlerts: false,
     enablePiiRedaction: true,
+    enableBiometricLock: false,
     defaultReminderTime: '19:00_nightbefore',
     reminderSound: 'default',
     autoDeletePeriod: 'never',
@@ -62,6 +64,18 @@ export const SettingsScreen: React.FC = () => {
 
   const handleTogglePiiRedaction = async (val: boolean) => {
     await updateUserPreferences({ enablePiiRedaction: val });
+    await loadPrefs();
+  };
+
+  const handleToggleBiometricLock = async (val: boolean) => {
+    if (val) {
+      const success = await authenticateBiometrics('Confirm Face ID / Touch ID to enable App Lock');
+      if (!success) {
+        Alert.alert('Authentication Failed', 'Could not verify biometrics. App lock was not enabled.');
+        return;
+      }
+    }
+    await updateUserPreferences({ enableBiometricLock: val });
     await loadPrefs();
   };
 
@@ -195,6 +209,19 @@ export const SettingsScreen: React.FC = () => {
             value={prefs.enablePiiRedaction}
             onValueChange={handleTogglePiiRedaction}
             trackColor={{ false: '#334155', true: '#10b981' }}
+            thumbColor="#ffffff"
+          />
+        </View>
+
+        <View style={styles.toggleRow}>
+          <View style={{ flex: 1, paddingRight: 10 }}>
+            <Text style={styles.toggleLabel}>Face ID / Touch ID App Lock 🔒</Text>
+            <Text style={styles.toggleSubtext}>Locks Sift with biometrics when opening or resuming app</Text>
+          </View>
+          <Switch
+            value={prefs.enableBiometricLock}
+            onValueChange={handleToggleBiometricLock}
+            trackColor={{ false: '#334155', true: '#6366f1' }}
             thumbColor="#ffffff"
           />
         </View>
