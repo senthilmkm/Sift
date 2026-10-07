@@ -36,7 +36,6 @@ export async function requestNotificationPermissions(): Promise<boolean> {
         allowAlert: true,
         allowBadge: true,
         allowSound: true,
-        allowCriticalAlerts: true, // <--- iOS Critical Alerts Entitlement
       },
     });
     finalStatus = status;
@@ -118,8 +117,8 @@ export async function scheduleItemNotification(
       title: item.is_urgent ? `⚡ URGENT: ${item.title}` : `📋 Sift Reminder: ${item.title}`,
       body: item.urgency_reason || item.source_snippet || `Due: ${item.due_at || 'Today'}`,
       sound: true,
-      // iOS 15+ Critical Interruption Level when urgent & enabled:
-      interruptionLevel: isCritical ? 'critical' : 'active',
+      // iOS 15+ Time-Sensitive Interruption Level when urgent:
+      interruptionLevel: isCritical ? 'timeSensitive' : 'active',
       priority: item.is_urgent
         ? Notifications.AndroidNotificationPriority.MAX
         : Notifications.AndroidNotificationPriority.DEFAULT,
@@ -137,12 +136,12 @@ export async function sendTestNotification(isCritical: boolean = false): Promise
 
   return await Notifications.scheduleNotificationAsync({
     content: {
-      title: isCritical ? '⚡ Sift Critical Test Alert' : '📋 Sift Test Reminder',
+      title: isCritical ? '⚡ Sift Urgent Test Alert' : '📋 Sift Test Reminder',
       body: isCritical
-        ? 'Urgent Critical Alert sound test. Rings even on Silent or Focus mode!'
+        ? 'Time-sensitive alert sound test.'
         : 'Your Sift notifications are working perfectly!',
       sound: true,
-      interruptionLevel: isCritical ? 'critical' : 'active',
+      interruptionLevel: isCritical ? 'timeSensitive' : 'active',
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,

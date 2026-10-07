@@ -49,7 +49,7 @@ export const SIFT_PAYWALL_CONFIG: PaywallConfig = {
     'Unlimited Gemini AI Document Scans',
     'Excel (.CSV) Tax & CPA Receipt Export (Vendor, Amount, Category & Notes)',
     'On-Device PII Redaction Engine',
-    'Apple Critical Alerts for Urgent Deadlines',
+    'Time-Sensitive Urgent Reminders & Lockscreen Alarms',
     'Multi-Page Document Camera Carousel Scanner'
   ],
   profitabilityMetrics: {

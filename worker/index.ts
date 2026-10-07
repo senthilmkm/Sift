@@ -34,7 +34,14 @@ export default {
       const base64Image = body.base64Image;
       const mimeType = body.mimeType || 'image/jpeg';
       const activeProfileId = body.profileId || 'school';
-      const deviceId = request.headers.get('X-Sift-Device-ID') || body.deviceId || 'anonymous';
+      const deviceId = request.headers.get('X-Sift-Device-ID') || body.deviceId;
+
+      if (!deviceId || typeof deviceId !== 'string' || deviceId.trim() === '' || deviceId === 'anonymous') {
+        return new Response(JSON.stringify({ error: 'Unauthorized: Missing or invalid Sift Device Identifier' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        });
+      }
 
       if (!base64Image) {
         return new Response(JSON.stringify({ error: 'Missing base64Image parameter' }), {

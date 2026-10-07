@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text, RefreshControl, Alert, DeviceEventEmitter } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { SiftItem, FilterOptions, ItemTab } from '../models/types';
-import { getItems, updateItemStatus, promoteToActionable, archiveItem, updateItemDetails } from '../database/db';
+import { SiftItem, FilterOptions, ItemTab, ProfileId } from '../models/types';
+import { getItems, updateItemStatus, promoteToActionable, archiveItem, updateItemDetails, getUserPreferences } from '../database/db';
 import { ItemCard } from '../components/ItemCard';
 import { FilterBar } from '../components/FilterBar';
 import { EditItemModal } from '../components/EditItemModal';
@@ -10,6 +10,7 @@ import { shareTaskDetails } from '../services/shareService';
 
 export const InformationalScreen: React.FC = () => {
   const [items, setItems] = useState<SiftItem[]>([]);
+  const [activeProfile, setActiveProfile] = useState<ProfileId>('school');
   const [refreshing, setRefreshing] = useState(false);
   const [editingItem, setEditingItem] = useState<SiftItem | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -23,7 +24,10 @@ export const InformationalScreen: React.FC = () => {
 
   const loadItems = async () => {
     try {
-      const data = await getItems(filterOptions);
+      const prefs = await getUserPreferences();
+      const currentProfile = prefs.activeProfile || 'school';
+      setActiveProfile(currentProfile);
+      const data = await getItems({ ...filterOptions, profileId: currentProfile });
       setItems(data);
     } catch (err) {
       console.error('Failed to load informational items:', err);
@@ -37,11 +41,16 @@ export const InformationalScreen: React.FC = () => {
   );
 
   useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener('SIFT_ITEM_RESTORED', () => {
+    const subRestore = DeviceEventEmitter.addListener('SIFT_ITEM_RESTORED', () => {
+      loadItems();
+    });
+    const subProfile = DeviceEventEmitter.addListener('SIFT_PROFILE_CHANGED', (newProfile: ProfileId) => {
+      setActiveProfile(newProfile);
       loadItems();
     });
     return () => {
-      subscription.remove();
+      subRestore.remove();
+      subProfile.remove();
     };
   }, [filterOptions]);
 
@@ -97,6 +106,7 @@ export const InformationalScreen: React.FC = () => {
     <View style={styles.container}>
       <FilterBar
         options={filterOptions}
+        profileId={activeProfile}
         onChangeOptions={(updated) => setFilterOptions({ ...filterOptions, ...updated })}
       />
 

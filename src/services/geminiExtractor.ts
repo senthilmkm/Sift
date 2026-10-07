@@ -54,12 +54,16 @@ export async function extractItemsFromDocument(
             : [],
           contact_info: item.contact_info || undefined,
           profile_id: item.detected_profile_id || profileId,
-          metadata_json: item.metadata_json || JSON.stringify({
-            vendor_name: item.vendor_name,
-            total_amount: item.total_amount,
-            tax_category: item.tax_category,
-            line_items: Array.isArray(item.line_items) ? item.line_items : [],
-          }),
+          metadata_json: typeof item.metadata_json === 'string'
+            ? item.metadata_json
+            : (item.metadata_json && typeof item.metadata_json === 'object'
+                ? JSON.stringify(item.metadata_json)
+                : JSON.stringify({
+                    vendor_name: item.vendor_name,
+                    total_amount: item.total_amount,
+                    tax_category: item.tax_category,
+                    line_items: Array.isArray(item.line_items) ? item.line_items : [],
+                  })),
         };
       });
     }

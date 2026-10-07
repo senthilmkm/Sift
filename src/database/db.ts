@@ -166,8 +166,9 @@ export async function getItems(options: FilterOptions): Promise<SiftItem[]> {
   }
 
   if (options.taxCategory && options.taxCategory !== 'All') {
-    query += ` AND items.metadata_json LIKE ?`;
-    params.push(`%${options.taxCategory}%`);
+    query += ` AND (items.metadata_json LIKE ? OR items.title LIKE ? OR items.source_snippet LIKE ? OR items.urgency_reason LIKE ?)`;
+    const catParam = `%${options.taxCategory}%`;
+    params.push(catParam, catParam, catParam, catParam);
   }
 
   if (options.searchQuery && options.searchQuery.trim().length > 0) {

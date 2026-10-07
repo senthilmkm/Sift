@@ -6,10 +6,11 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0f172a"
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f812c76c-2572-4bb2-bcf8-a7aa3f5b97d8"
     },
     "ios": {
       "supportsTablet": false,
@@ -19,6 +20,8 @@
         "NSCameraUsageDescription": "Sift requires camera access to photograph paper school flyers and notices on your fridge.",
         "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",
         "NSCalendarsUsageDescription": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar.",
+        "NSCalendarsFullAccessUsageDescription": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar.",
+        "NSCalendarsWriteOnlyAccessUsageDescription": "Sift requires calendar write access to add school flyer due dates directly to your iPhone Calendar.",
         "NSMicrophoneUsageDescription": "Sift does not record audio.",
         "NSFaceIDUsageDescription": "Sift uses Face ID / Touch ID to protect your scanned confidential medical directives, legal notices, and financial receipts.",
         "ITSAppUsesNonExemptEncryption": false
@@ -26,16 +29,28 @@
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.com.senthilmkm.sift"
-        ],
-        "com.apple.developer.usernotifications.critical-alerts": true
+        ]
       }
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0f172a"
+        }
+      ],
       "expo-updates",
       "expo-sqlite",
       "expo-notifications",
       "expo-file-system",
-      "expo-calendar",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Sift requires calendar access to add school flyer due dates directly to your iPhone Calendar."
+        }
+      ],
       [
         "expo-camera",
         {
@@ -48,7 +63,8 @@
           "photosPermission": "Sift requires photo library access to select flyer photos and PDF notices."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-asset"
     ],
     "extra": {
       "eas": {

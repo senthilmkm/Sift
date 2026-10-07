@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, ActivityIndicator, View, TouchableOpacity, Text, AppState } from 'react-native';
+import { SafeAreaView, StatusBar, StyleSheet, ActivityIndicator, View, TouchableOpacity, Text, AppState, DeviceEventEmitter } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -56,6 +56,7 @@ export default function App() {
   const handleSelectProfile = async (profileId: ProfileId) => {
     setActiveProfile(profileId);
     await updateUserPreferences({ activeProfile: profileId });
+    DeviceEventEmitter.emit('SIFT_PROFILE_CHANGED', profileId);
   };
 
   const handleOnboardingComplete = (profileId: ProfileId) => {

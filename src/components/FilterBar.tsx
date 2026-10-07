@@ -1,24 +1,25 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView } from 'react-native';
-import { FilterOptions, SortByOption } from '../models/types';
+import { FilterOptions, SortByOption, ProfileId } from '../models/types';
 import { Ionicons } from '@expo/vector-icons';
 
 interface FilterBarProps {
   options: FilterOptions;
+  profileId?: ProfileId;
   onChangeOptions: (updated: Partial<FilterOptions>) => void;
 }
 
-const TAX_CATEGORIES = [
-  'All',
-  'Materials & Supplies',
-  'Vehicle & Fuel',
-  'Utilities & Repairs',
-  'Office & Admin',
-  'Professional Fees',
-];
+const PROFILE_CATEGORIES: Record<string, string[]> = {
+  smallBiz: ['All', 'Materials & Supplies', 'Vehicle & Fuel', 'Utilities & Repairs', 'Office & Admin', 'Professional Fees'],
+  elderCare: ['All', 'Medical & Rx', 'Care Services', 'Insurance & EOB', 'Supplies & Equipment'],
+  property: ['All', 'Repairs & Maintenance', 'HOA & Dues', 'Utilities', 'Landscaping'],
+  school: ['All', 'Yearbooks & Fees', 'Spirit & Events', 'Forms & Permissions'],
+  legalImmigration: ['All', 'Appointments & Court', 'Filing & Fees', 'Notices & Compliance'],
+};
 
-export const FilterBar: React.FC<FilterBarProps> = ({ options, onChangeOptions }) => {
+export const FilterBar: React.FC<FilterBarProps> = ({ options, profileId = 'school', onChangeOptions }) => {
   const activeCategory = options.taxCategory || 'All';
+  const categories = PROFILE_CATEGORIES[profileId] || PROFILE_CATEGORIES.school;
 
   return (
     <View style={styles.container}>
@@ -38,14 +39,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({ options, onChangeOptions }
         ) : null}
       </View>
 
-      {/* Tax Category Filter Pills Bar */}
+      {/* Contextual Profile Category Filter Pills Bar */}
       <View style={styles.categoryPillsWrapper}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoryPillsScroll}
         >
-          {TAX_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isActive = activeCategory === cat;
             return (
               <TouchableOpacity
@@ -55,7 +56,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ options, onChangeOptions }
                 activeOpacity={0.7}
               >
                 <Text style={[styles.taxPillText, isActive && styles.activeTaxPillText]}>
-                  {cat === 'All' ? '🏷️ All Expenses' : cat}
+                  {cat === 'All' ? '🏷️ All Categories' : cat}
                 </Text>
               </TouchableOpacity>
             );
