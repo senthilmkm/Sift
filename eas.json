@@ -18,12 +18,17 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "env": {
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      },
       "ios": {
         "simulator": false
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ascAppId": "6816518559"
+    }
   }
 }
