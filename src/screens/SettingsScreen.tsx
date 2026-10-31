@@ -373,11 +373,9 @@ export const SettingsScreen: React.FC = () => {
       <PaywallModal
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
-        onSubscribePlan={async (planId) => {
-          await updateUserPreferences({ isSubscribed: true, activePlanId: planId });
+        onSubscribePlan={async () => {
           setShowPaywall(false);
           await loadPrefs();
-          Alert.alert('Subscribed!', 'Welcome to Sift Pro!');
         }}
       />
     </ScrollView>

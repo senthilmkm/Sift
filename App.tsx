@@ -15,6 +15,7 @@ import { BiometricLockOverlay } from './src/components/BiometricLockOverlay';
 import { exportAllTasksToExcel } from './src/services/shareService';
 import { ProfileId } from './src/models/types';
 import { PROFILE_CONFIGS } from './src/config/profiles';
+import { initializePurchases, checkSubscriptionStatus } from './src/services/purchaseService';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,6 +37,9 @@ export default function App() {
           setIsLocked(true);
         }
         setDbReady(true);
+        // Initialize RevenueCat and sync subscription state
+        await initializePurchases();
+        await checkSubscriptionStatus();
       })
       .catch((err) => console.error('Failed to init DB:', err));
 
@@ -45,6 +49,7 @@ export default function App() {
         if (prefs.enableBiometricLock) {
           setIsLocked(true);
         }
+        await checkSubscriptionStatus();
       }
     });
 

@@ -324,10 +324,8 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
       <PaywallModal
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
-        onSubscribePlan={async (planId) => {
-          await updateUserPreferences({ isSubscribed: true, activePlanId: planId });
+        onSubscribePlan={async () => {
           setShowPaywall(false);
-          Alert.alert('Subscribed!', 'Welcome to Sift Pro!');
         }}
       />
     </View>
