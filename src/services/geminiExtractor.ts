@@ -53,7 +53,9 @@ export async function extractItemsFromDocument(
             ? item.action_checklist.map((step: string) => enablePiiRedaction ? sanitizeTextForPrivacy(step, profileId) : step)
             : [],
           contact_info: item.contact_info || undefined,
-          profile_id: item.detected_profile_id || profileId,
+          profile_id: (item.tax_category || item.total_amount || (Array.isArray(item.line_items) && item.line_items.length > 0)) && profileId
+            ? profileId
+            : (item.detected_profile_id || profileId),
           metadata_json: typeof item.metadata_json === 'string'
             ? item.metadata_json
             : (item.metadata_json && typeof item.metadata_json === 'object'

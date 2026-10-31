@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert, TextInput, DeviceEventEmitter } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { extractItemsFromDocument, generateContextualDocumentName } from '../services/geminiExtractor';
 import { saveDocumentAndItems, getUserPreferences, updateUserPreferences } from '../database/db';
 import { canUserScan, recordSuccessfulScan } from '../services/secureUsageStore';
-import { CandidateItem, SiftDocument } from '../models/types';
+import { CandidateItem, SiftDocument, ProfileId } from '../models/types';
+import { PROFILE_CONFIGS, ALL_PROFILES } from '../config/profiles';
 import { scheduleItemNotification } from '../services/notificationService';
 import { shareClassGroupSummary } from '../services/shareService';
 import { addItemsToPhoneCalendar } from '../services/calendarService';
@@ -16,6 +18,7 @@ interface ScanScreenProps {
 }
 
 export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
+  const navigation = useNavigation<any>();
   const [loading, setLoading] = useState(false);
   const [candidates, setCandidates] = useState<CandidateItem[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -212,9 +215,41 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
       }
     }
 
-    Alert.alert('Success', `Saved ${candidates.length} item(s) to your list & scheduled reminders!`);
-    setCandidates([]);
-    if (onScanComplete) onScanComplete();
+    const savedProfile: ProfileId = (itemsToSave[0]?.profile_id as ProfileId) || prefs.activeProfile || 'school';
+    const hasActionable = itemsToSave.some((i) => i.tab === 'actionable');
+    const targetTab = hasActionable ? 'Actionable' : 'Informational';
+    const profileCfg = PROFILE_CONFIGS[savedProfile] || PROFILE_CONFIGS.school;
+    const targetTabName = targetTab === 'Actionable' ? profileCfg.tab1Name : profileCfg.tab2Name;
+
+    if (savedProfile !== prefs.activeProfile) {
+      await updateUserPreferences({ activeProfile: savedProfile });
+      DeviceEventEmitter.emit('SIFT_PROFILE_CHANGED', savedProfile);
+    }
+
+    Alert.alert(
+      'Saved Successfully! 🎉',
+      `Saved ${candidates.length} item(s) to ${profileCfg.name} under "${targetTabName}".`,
+      [
+        {
+          text: 'View Items Now ➔',
+          onPress: () => {
+            setCandidates([]);
+            setScannedImageUri(null);
+            if (onScanComplete) onScanComplete();
+            navigation.navigate(targetTab);
+          },
+        },
+        {
+          text: 'Scan Another',
+          onPress: () => {
+            setCandidates([]);
+            setScannedImageUri(null);
+            if (onScanComplete) onScanComplete();
+          },
+          style: 'cancel',
+        },
+      ]
+    );
   };
 
   return (
@@ -261,6 +296,30 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
                 >
                   <Text style={styles.badgeText}>{item.tab.toUpperCase()}</Text>
                 </TouchableOpacity>
+
+                {(() => {
+                  const pId = (item.profile_id as ProfileId) || 'school';
+                  const pConfig = PROFILE_CONFIGS[pId] || PROFILE_CONFIGS.school;
+                  return (
+                    <TouchableOpacity
+                      style={[
+                        styles.profileBadge,
+                        { borderColor: pConfig.accentColor, backgroundColor: pConfig.accentColor + '18' },
+                      ]}
+                      onPress={() => {
+                        const curIdx = ALL_PROFILES.indexOf(pId);
+                        const nextProfile = ALL_PROFILES[(curIdx + 1) % ALL_PROFILES.length];
+                        handleUpdateCandidate(index, { profile_id: nextProfile });
+                      }}
+                    >
+                      <Ionicons name={pConfig.icon as any} size={12} color={pConfig.accentColor} style={{ marginRight: 4 }} />
+                      <Text style={[styles.profileBadgeText, { color: pConfig.accentColor }]}>
+                        {pConfig.name}
+                      </Text>
+                      <Ionicons name="swap-horizontal" size={10} color={pConfig.accentColor} style={{ marginLeft: 4, opacity: 0.8 }} />
+                    </TouchableOpacity>
+                  );
+                })()}
 
                 <TouchableOpacity onPress={() => handleRemoveCandidate(index)} style={{ marginLeft: 'auto' }}>
                   <Ionicons name="trash-outline" size={18} color="#f43f5e" />
@@ -412,6 +471,19 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 10,
     fontWeight: '800',
+  },
+  profileBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    marginLeft: 8,
+  },
+  profileBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   titleInput: {
     color: '#ffffff',
