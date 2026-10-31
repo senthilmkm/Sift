@@ -122,7 +122,7 @@ export const SettingsScreen: React.FC = () => {
                 onPress={() =>
                   Alert.alert(
                     'Subscription & Free Tier Info',
-                    'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.\n\nSift Pro ($4.99/mo or $39.99/yr) unlocks unlimited scans, Critical Alerts, and Excel/PDF CPA tax exports.'
+                    'Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.\n\nSift Pro ($4.99/mo or $39.99/yr) unlocks unlimited scans, urgent alarms, and Excel/PDF CPA tax exports.'
                   )
                 }
                 style={{ paddingLeft: 6 }}
@@ -258,34 +258,6 @@ export const SettingsScreen: React.FC = () => {
             {permStatus === 'granted' ? 'GRANTED ✅' : 'DENIED ⚠️'}
           </Text>
         </View>
-
-        {prefs.enableNotifications && (
-          <View style={styles.toggleRow}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.toggleLabel}>Apple Critical Alerts</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    Alert.alert(
-                      'Apple Critical Alerts Info',
-                      'Urgent healthcare pre-op fasting rules, court summons, or utility shutoffs play audible alarms even when your iPhone is set to Silent or Do Not Disturb.'
-                    )
-                  }
-                  style={{ paddingLeft: 6 }}
-                >
-                  <Ionicons name="information-circle-outline" size={16} color="#f43f5e" />
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.toggleSubtext}>Play audible alarm for urgent deadlines when Silent</Text>
-            </View>
-            <Switch
-              value={prefs.enableCriticalAlerts}
-              onValueChange={handleToggleCriticalAlerts}
-              trackColor={{ false: '#334155', true: '#f43f5e' }}
-              thumbColor="#ffffff"
-            />
-          </View>
-        )}
 
         {prefs.enableNotifications ? (
           <View style={{ marginTop: 12 }}>
