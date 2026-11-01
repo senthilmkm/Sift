@@ -11,6 +11,12 @@ export async function isBiometricsAvailable(): Promise<boolean> {
   }
 }
 
+let isAuthenticating = false;
+
+export function isBiometricAuthInProgress(): boolean {
+  return isAuthenticating;
+}
+
 export async function authenticateBiometrics(
   reason: string = 'Unlock Sift to view confidential receipts & documents'
 ): Promise<boolean> {
@@ -21,6 +27,7 @@ export async function authenticateBiometrics(
       return true;
     }
 
+    isAuthenticating = true;
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: reason,
       fallbackLabel: 'Enter Device Passcode',
@@ -32,5 +39,9 @@ export async function authenticateBiometrics(
   } catch (error) {
     console.error('Biometrics authentication failed:', error);
     return false;
+  } finally {
+    setTimeout(() => {
+      isAuthenticating = false;
+    }, 1200);
   }
 }

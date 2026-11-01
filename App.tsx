@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, ActivityIndicator, View, TouchableOpacity, Text, AppState, DeviceEventEmitter } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -16,6 +16,7 @@ import { exportAllTasksToExcel } from './src/services/shareService';
 import { ProfileId } from './src/models/types';
 import { PROFILE_CONFIGS } from './src/config/profiles';
 import { initializePurchases, checkSubscriptionStatus } from './src/services/purchaseService';
+import { isBiometricAuthInProgress } from './src/services/biometricService';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +27,8 @@ export default function App() {
   const [showArchivedModal, setShowArchivedModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  const appState = useRef(AppState.currentState);
+  const lastUnlockedAt = useRef<number>(0);
 
   useEffect(() => {
     getDB()
@@ -44,11 +47,20 @@ export default function App() {
       .catch((err) => console.error('Failed to init DB:', err));
 
     const subscription = AppState.addEventListener('change', async (nextAppState) => {
-      if (nextAppState === 'active') {
-        const prefs = await getUserPreferences();
-        if (prefs.enableBiometricLock) {
-          setIsLocked(true);
+      const prev = appState.current;
+      appState.current = nextAppState;
+
+      // Only re-lock when returning from true BACKGROUND (not from in-app dialogs like Face ID or camera)
+      if (prev === 'background' && nextAppState === 'active') {
+        const timeSinceUnlock = Date.now() - lastUnlockedAt.current;
+        if (!isBiometricAuthInProgress() && timeSinceUnlock > 2500) {
+          const prefs = await getUserPreferences();
+          if (prefs.enableBiometricLock) {
+            setIsLocked(true);
+          }
         }
+        await checkSubscriptionStatus();
+      } else if (nextAppState === 'active') {
         await checkSubscriptionStatus();
       }
     });
@@ -164,7 +176,10 @@ export default function App() {
 
         <BiometricLockOverlay
           visible={isLocked}
-          onUnlockSuccess={() => setIsLocked(false)}
+          onUnlockSuccess={() => {
+            lastUnlockedAt.current = Date.now();
+            setIsLocked(false);
+          }}
         />
       </NavigationContainer>
     </SafeAreaView>

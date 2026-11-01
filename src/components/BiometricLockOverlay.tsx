@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { authenticateBiometrics } from '../services/biometricService';
+import { authenticateBiometrics, isBiometricAuthInProgress } from '../services/biometricService';
 
 interface BiometricLockOverlayProps {
   visible: boolean;
@@ -12,12 +12,29 @@ export const BiometricLockOverlay: React.FC<BiometricLockOverlayProps> = ({
   visible,
   onUnlockSuccess,
 }) => {
+  const isAuthRunning = useRef(false);
+
   const handleAuthenticate = async () => {
-    const success = await authenticateBiometrics('Unlock Sift to view confidential receipts & documents');
-    if (success) {
-      onUnlockSuccess();
+    if (isAuthRunning.current || isBiometricAuthInProgress()) return;
+    isAuthRunning.current = true;
+    try {
+      const success = await authenticateBiometrics('Unlock Sift to view confidential receipts & documents');
+      if (success) {
+        onUnlockSuccess();
+      }
+    } finally {
+      isAuthRunning.current = false;
     }
   };
+
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        handleAuthenticate();
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
 
   if (!visible) return null;
 
