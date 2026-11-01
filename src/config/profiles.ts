@@ -27,12 +27,12 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
   },
   smallBiz: {
     id: 'smallBiz',
-    name: 'Small Business & Trades',
-    subtitle: 'Net-30 invoices, permits & tax notices',
-    icon: 'briefcase-outline',
+    name: 'Receipts & Small Business',
+    subtitle: 'Store receipts, invoices, permits & expenses',
+    icon: 'receipt-outline',
     accentColor: '#10b981', // Emerald
     secondaryColor: '#334155', // Slate
-    badgeText: 'PRO',
+    badgeText: 'EXPENSES',
     emptyStateText: 'No unpaid invoices or expiring permits found!',
     tab1Name: '💳 Unpaid Invoices',
     tab2Name: '📄 Permits & Receipts',

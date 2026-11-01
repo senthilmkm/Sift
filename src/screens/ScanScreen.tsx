@@ -226,29 +226,14 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
       DeviceEventEmitter.emit('SIFT_PROFILE_CHANGED', savedProfile);
     }
 
+    setCandidates([]);
+    setScannedImageUri(null);
+    if (onScanComplete) onScanComplete();
+    navigation.navigate(targetTab);
+
     Alert.alert(
-      'Saved Successfully! 🎉',
-      `Saved ${candidates.length} item(s) to ${profileCfg.name} under "${targetTabName}".`,
-      [
-        {
-          text: 'View Items Now ➔',
-          onPress: () => {
-            setCandidates([]);
-            setScannedImageUri(null);
-            if (onScanComplete) onScanComplete();
-            navigation.navigate(targetTab);
-          },
-        },
-        {
-          text: 'Scan Another',
-          onPress: () => {
-            setCandidates([]);
-            setScannedImageUri(null);
-            if (onScanComplete) onScanComplete();
-          },
-          style: 'cancel',
-        },
-      ]
+      'Saved Successfully! 📄',
+      `Filed under ${profileCfg.name} ➔ "${targetTabName}".`
     );
   };
 

@@ -53,8 +53,8 @@ export async function extractItemsFromDocument(
             ? item.action_checklist.map((step: string) => enablePiiRedaction ? sanitizeTextForPrivacy(step, profileId) : step)
             : [],
           contact_info: item.contact_info || undefined,
-          profile_id: (item.tax_category || item.total_amount || (Array.isArray(item.line_items) && item.line_items.length > 0)) && profileId
-            ? profileId
+          profile_id: (item.tax_category || item.total_amount || (Array.isArray(item.line_items) && item.line_items.length > 0))
+            ? 'smallBiz'
             : (item.detected_profile_id || profileId),
           metadata_json: typeof item.metadata_json === 'string'
             ? item.metadata_json

@@ -72,7 +72,7 @@ GLOBAL RECEIPT & TRANSACTION EXTRACTION RULES (ANY STORE, ANY COUNTRY, ANY CURRE
      - "Office & Admin" (stationery, software subscriptions, shipping, postage, office supplies)
      - "Professional Fees" (licensing, municipal permits, legal fees, sub-contractor B2B invoices)
      - "Uncategorized Expense" (Default fallback)
-   - Set detected_profile_id = "${activeProfileId}" for general store/business receipts so the receipt is immediately accessible in the user's active profile, OR "elderCare" for medical, hospital, pharmacy, and dental receipts, OR "smallBiz" if the user's active profile is "smallBiz".
+   - Set detected_profile_id = "smallBiz" for all store, grocery, retail receipts, and invoices so they are neatly consolidated under Receipts & Small Business, OR "elderCare" for medical, hospital, pharmacy, and dental receipts.
 
 2. FOR MEDICAL, HOSPITAL, PHARMACY & DENTAL SERVICES:
    - APPLIES TO: Doctor appointments, hospital discharge notices, dental checkup reminders, pharmacy prescriptions/refills, health insurance Explanation of Benefits (EOB), lab test instructions, dental bills, and co-pay receipts.
