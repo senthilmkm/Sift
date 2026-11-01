@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.senthilmkm.sift",
+      "buildNumber": "6",
       "infoPlist": {
         "NSCameraUsageDescription": "Sift requires camera access to photograph paper school flyers and notices on your fridge.",
         "NSPhotoLibraryUsageDescription": "Sift requires photo library access to select flyer photos and PDF notices.",

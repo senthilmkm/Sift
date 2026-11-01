@@ -34,7 +34,7 @@ export const SettingsScreen: React.FC = () => {
   const [showPaywall, setShowPaywall] = useState(false);
 
   const appVersion = Constants.expoConfig?.version || '1.0.0';
-  const buildNumber = Constants.nativeBuildVersion || Constants.expoConfig?.ios?.buildNumber || '1';
+  const buildNumber = Constants.nativeBuildVersion || Constants.expoConfig?.ios?.buildNumber || '6';
 
   const loadPrefs = async () => {
     const data = await getUserPreferences();
