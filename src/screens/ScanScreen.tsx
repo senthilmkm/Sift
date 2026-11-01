@@ -242,9 +242,9 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
       {candidates.length === 0 ? (
         <View style={styles.initialBox}>
           <Ionicons name="camera-reverse-outline" size={64} color="#6366f1" />
-          <Text style={styles.title}>Scan Flyer or Notice</Text>
+          <Text style={styles.title}>Scan Document, Receipt or Flyer</Text>
           <Text style={styles.subtitle}>
-            Photograph a school paper flyer on your fridge or pick a flyer photo from your library.
+            Photograph a paper flyer on your fridge, grocery receipt, medical slip, or bill.
           </Text>
 
           {loading ? (
@@ -257,7 +257,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
           ) : (
             <TouchableOpacity style={styles.scanBtn} onPress={handlePressScanOption}>
               <Ionicons name="aperture" size={20} color="#fff" />
-              <Text style={styles.scanBtnText}>Scan Document Flyer</Text>
+              <Text style={styles.scanBtnText}>Scan Document or Receipt</Text>
             </TouchableOpacity>
           )}
         </View>

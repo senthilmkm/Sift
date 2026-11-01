@@ -7,6 +7,7 @@ import { ItemCard } from '../components/ItemCard';
 import { FilterBar } from '../components/FilterBar';
 import { EditItemModal } from '../components/EditItemModal';
 import { shareTaskDetails } from '../services/shareService';
+import { PROFILE_CONFIGS } from '../config/profiles';
 
 export const ActionableScreen: React.FC = () => {
   const [items, setItems] = useState<SiftItem[]>([]);
@@ -105,9 +106,11 @@ export const ActionableScreen: React.FC = () => {
 
       {items.length === 0 ? (
         <View style={styles.emptyBox}>
-          <Text style={styles.emptyTitle}>No Actionable Tasks</Text>
+          <Text style={styles.emptyTitle}>
+            No {PROFILE_CONFIGS[activeProfile]?.tab1Name?.replace(/^[^\w\s]+/, '').trim() || 'Actionable Tasks'}
+          </Text>
           <Text style={styles.emptySub}>
-            Photograph a school flyer or share a PDF to extract your actionable deadlines!
+            {PROFILE_CONFIGS[activeProfile]?.emptyStateText || 'Scan a flyer, bill, or notice to extract your deadlines!'}
           </Text>
         </View>
       ) : (

@@ -7,6 +7,7 @@ import { ItemCard } from '../components/ItemCard';
 import { FilterBar } from '../components/FilterBar';
 import { EditItemModal } from '../components/EditItemModal';
 import { shareTaskDetails } from '../services/shareService';
+import { PROFILE_CONFIGS } from '../config/profiles';
 
 export const InformationalScreen: React.FC = () => {
   const [items, setItems] = useState<SiftItem[]>([]);
@@ -112,9 +113,19 @@ export const InformationalScreen: React.FC = () => {
 
       {items.length === 0 ? (
         <View style={styles.emptyBox}>
-          <Text style={styles.emptyTitle}>No Reference Notes</Text>
+          <Text style={styles.emptyTitle}>
+            No {PROFILE_CONFIGS[activeProfile]?.tab2Name?.replace(/^[^\w\s]+/, '').trim() || 'Reference Records'}
+          </Text>
           <Text style={styles.emptySub}>
-            Informational highlights, spirit week themes, and menu updates will appear here!
+            {activeProfile === 'smallBiz'
+              ? 'Scanned store receipts, expense slips, and permits will be organized here!'
+              : activeProfile === 'elderCare'
+              ? 'Doctor preps, prescriptions, and medical receipts will appear here!'
+              : activeProfile === 'property'
+              ? 'HOA letters, lease terms, and contractor quotes will appear here!'
+              : activeProfile === 'legalImmigration'
+              ? 'USCIS filings, appointment notices, and case records will appear here!'
+              : 'School flyers, menu schedules, and spirit days will appear here!'}
           </Text>
         </View>
       ) : (

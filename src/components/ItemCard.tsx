@@ -41,8 +41,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     } catch {}
   }
 
-  let displayLineItems: string[] = [...lineItems];
-  if (displayLineItems.length === 0) {
+  const isReceipt = !!(
+    (lineItems.length > 0) ||
+    taxCategory ||
+    totalAmount ||
+    (item.profile_id === 'smallBiz') ||
+    (item.title && /[\$\€\£\¥\₹]\d+(\.\d{2})?/.test(item.title))
+  );
+
+  let displayLineItems: string[] = isReceipt ? [...lineItems] : [];
+  if (isReceipt && displayLineItems.length === 0) {
     const snippetText = item.source_snippet || item.notes || '';
     if (snippetText) {
       const parts = snippetText
@@ -53,7 +61,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         displayLineItems = parts;
       }
     }
-    if (displayLineItems.length === 0) {
+    if (displayLineItems.length === 0 && totalAmount) {
       displayLineItems = [item.title || 'Store Purchase'];
     }
   }
@@ -297,60 +305,69 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
 
 
-      <View style={styles.lineItemsWrapper}>
-        <TouchableOpacity
-          style={styles.lineItemsToggleBtn}
-          onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
-          activeOpacity={0.7}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
-            <Text style={styles.lineItemsToggleText}>
-              {displayLineItems.length > 0
-                ? `${displayLineItems.length} Line Item${displayLineItems.length > 1 ? 's' : ''}`
-                : 'Receipt & Expense Breakdown'}
-            </Text>
-            {taxCategory ? (
-              <View style={styles.taxCategoryPill}>
-                <Text style={styles.taxCategoryText}>{taxCategory}</Text>
-              </View>
-            ) : null}
-          </View>
-          <Ionicons
-            name={isLineItemsExpanded ? 'chevron-up' : 'chevron-down'}
-            size={16}
-            color="#94a3b8"
-          />
-        </TouchableOpacity>
-
-        {isLineItemsExpanded && (
-          <View style={styles.lineItemsContainer}>
-            <View style={styles.receiptTable}>
-              <View style={styles.receiptHeaderRow}>
-                <Text style={styles.receiptHeaderColName}>PURCHASED ITEM</Text>
-                <Text style={styles.receiptHeaderColPrice}>PRICE</Text>
-              </View>
-              {displayLineItems.map((lineItemStr, idx) => {
-                const { name, price } = formatLineItem(lineItemStr);
-                return (
-                  <View key={idx} style={[styles.receiptRow, idx % 2 === 1 && styles.receiptRowAlt]}>
-                    <Text style={styles.receiptItemName}>{name}</Text>
-                    <Text style={styles.receiptItemPrice}>{price || '—'}</Text>
-                  </View>
-                );
-              })}
-              {totalAmount ? (
-                <View style={styles.receiptFooterRow}>
-                  <Text style={styles.receiptFooterLabel}>TOTAL RECEIPT AMOUNT</Text>
-                  <Text style={styles.receiptFooterPrice}>
-                    {totalAmount.startsWith('$') ? totalAmount : `$${totalAmount}`}
-                  </Text>
+      {isReceipt ? (
+        <View style={styles.lineItemsWrapper}>
+          <TouchableOpacity
+            style={styles.lineItemsToggleBtn}
+            onPress={() => setIsLineItemsExpanded(!isLineItemsExpanded)}
+            activeOpacity={0.7}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <Ionicons name="cart-outline" size={15} color="#38bdf8" style={{ marginRight: 6 }} />
+              <Text style={styles.lineItemsToggleText}>
+                {displayLineItems.length > 0
+                  ? `${displayLineItems.length} Line Item${displayLineItems.length > 1 ? 's' : ''}`
+                  : 'Receipt & Expense Breakdown'}
+              </Text>
+              {taxCategory ? (
+                <View style={styles.taxCategoryPill}>
+                  <Text style={styles.taxCategoryText}>{taxCategory}</Text>
                 </View>
               ) : null}
             </View>
-          </View>
-        )}
-      </View>
+            <Ionicons
+              name={isLineItemsExpanded ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color="#94a3b8"
+            />
+          </TouchableOpacity>
+
+          {isLineItemsExpanded && (
+            <View style={styles.lineItemsContainer}>
+              <View style={styles.receiptTable}>
+                <View style={styles.receiptHeaderRow}>
+                  <Text style={styles.receiptHeaderColName}>PURCHASED ITEM</Text>
+                  <Text style={styles.receiptHeaderColPrice}>PRICE</Text>
+                </View>
+                {displayLineItems.map((lineItemStr, idx) => {
+                  const { name, price } = formatLineItem(lineItemStr);
+                  return (
+                    <View key={idx} style={[styles.receiptRow, idx % 2 === 1 && styles.receiptRowAlt]}>
+                      <Text style={styles.receiptItemName}>{name}</Text>
+                      <Text style={styles.receiptItemPrice}>{price || '—'}</Text>
+                    </View>
+                  );
+                })}
+                {totalAmount ? (
+                  <View style={styles.receiptFooterRow}>
+                    <Text style={styles.receiptFooterLabel}>TOTAL RECEIPT AMOUNT</Text>
+                    <Text style={styles.receiptFooterPrice}>
+                      {totalAmount.startsWith('$') ? totalAmount : `$${totalAmount}`}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          )}
+        </View>
+      ) : (item.notes || item.source_snippet) ? (
+        <View style={styles.snippetWrapper}>
+          <Ionicons name="document-text-outline" size={14} color="#818cf8" style={{ marginRight: 6, marginTop: 2 }} />
+          <Text style={styles.flyerSnippetText} numberOfLines={4}>
+            {item.notes || item.source_snippet}
+          </Text>
+        </View>
+      ) : null}
 
       {item.tab === 'informational' && onPromoteActionable && (
         <TouchableOpacity
@@ -659,5 +676,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  snippetWrapper: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#0f172a',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  flyerSnippetText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    lineHeight: 18,
+    flex: 1,
   },
 });

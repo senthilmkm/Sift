@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 interface TimeRollerPickerProps {
@@ -16,12 +16,19 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
 
   const hourScrollRef = useRef<ScrollView>(null);
   const minScrollRef = useRef<ScrollView>(null);
+  const lastEmittedValue = useRef<string>(value);
+  const isUserDraggingHour = useRef(false);
+  const isUserDraggingMin = useRef(false);
+  const isInitialized = useRef(false);
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1..12
   const minutes = Array.from({ length: 60 }, (_, i) => (i < 10 ? `0${i}` : `${i}`)); // 00..59
 
   useEffect(() => {
-    if (value) {
+    if (value && (!isInitialized.current || value !== lastEmittedValue.current)) {
+      lastEmittedValue.current = value;
+      isInitialized.current = true;
+
       const parts = value.split('_');
       const timePart = parts[0] || '19:00';
       const timingPart = parts[1] === 'sameday' ? 'sameday' : 'nightbefore';
@@ -39,7 +46,7 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
       setSelectedHour(h);
       setSelectedMinute(m);
 
-      // Scroll to position
+      // Scroll to position without triggering user drag events
       setTimeout(() => {
         hourScrollRef.current?.scrollTo({ y: (h - 1) * ITEM_HEIGHT, animated: false });
         minScrollRef.current?.scrollTo({ y: m * ITEM_HEIGHT, animated: false });
@@ -63,10 +70,13 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
     const storedVal = `${h24Str}:${mStr}_${dt}`;
     const displayLabel = `${h}:${mStr} ${ap} (${dt === 'nightbefore' ? 'Night Before' : 'Same Day'})`;
 
+    lastEmittedValue.current = storedVal;
     onSave(storedVal, displayLabel);
   };
 
   const onHourScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!isUserDraggingHour.current) return;
+    isUserDraggingHour.current = false;
     const y = e.nativeEvent.contentOffset.y;
     const index = Math.round(y / ITEM_HEIGHT);
     const newH = Math.max(1, Math.min(12, index + 1));
@@ -74,6 +84,8 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
   };
 
   const onMinScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!isUserDraggingMin.current) return;
+    isUserDraggingMin.current = false;
     const y = e.nativeEvent.contentOffset.y;
     const index = Math.round(y / ITEM_HEIGHT);
     const newM = Math.max(0, Math.min(59, index));
@@ -100,7 +112,9 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
               snapToInterval={ITEM_HEIGHT}
               decelerationRate="fast"
               showsVerticalScrollIndicator={false}
+              onScrollBeginDrag={() => { isUserDraggingHour.current = true; }}
               onMomentumScrollEnd={onHourScrollEnd}
+              onScrollEndDrag={onHourScrollEnd}
               contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }}
             >
               {hours.map((h) => (
@@ -108,6 +122,7 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
                   key={h}
                   style={styles.itemSlot}
                   onPress={() => {
+                    isUserDraggingHour.current = false;
                     hourScrollRef.current?.scrollTo({ y: (h - 1) * ITEM_HEIGHT, animated: true });
                     updateStateAndSave(h, selectedMinute, ampm, dayTiming);
                   }}
@@ -133,7 +148,9 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
               snapToInterval={ITEM_HEIGHT}
               decelerationRate="fast"
               showsVerticalScrollIndicator={false}
+              onScrollBeginDrag={() => { isUserDraggingMin.current = true; }}
               onMomentumScrollEnd={onMinScrollEnd}
+              onScrollEndDrag={onMinScrollEnd}
               contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }}
             >
               {minutes.map((mStr, idx) => (
@@ -141,6 +158,7 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
                   key={mStr}
                   style={styles.itemSlot}
                   onPress={() => {
+                    isUserDraggingMin.current = false;
                     minScrollRef.current?.scrollTo({ y: idx * ITEM_HEIGHT, animated: true });
                     updateStateAndSave(selectedHour, idx, ampm, dayTiming);
                   }}
@@ -153,6 +171,7 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
             </ScrollView>
           </View>
         </View>
+
 
         {/* AM / PM Toggle Pills */}
         <View style={styles.ampmContainer}>

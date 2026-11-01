@@ -80,8 +80,8 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleSaveReminderTime = async (val: string) => {
+    setPrefs((prev) => ({ ...prev, defaultReminderTime: val }));
     await updateUserPreferences({ defaultReminderTime: val });
-    await loadPrefs();
   };
 
   const handleSelectAutoDelete = async (period: AutoDeletePeriod) => {
