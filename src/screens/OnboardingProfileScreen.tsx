@@ -34,9 +34,16 @@ export const OnboardingProfileScreen: React.FC<OnboardingProfileScreenProps> = (
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerContainer}>
           <Text style={styles.badgeText}>⚡ WELCOME TO SIFT</Text>
-          <Text style={styles.title}>What paper headaches are you solving today?</Text>
+          <Text style={styles.title}>Choose Your Primary Profile</Text>
           <Text style={styles.subtitle}>
-            Sift tailors its AI document engine, reminder alerts, and database views to match your specific paperwork burden.
+            Select your main focus to start. Don't worry — all 5 Smart Profiles are included for free, and you can switch between them anytime in 1 tap!
+          </Text>
+        </View>
+
+        <View style={styles.allProfilesBanner}>
+          <Ionicons name="sparkles" size={16} color="#818cf8" style={{ marginRight: 8 }} />
+          <Text style={styles.allProfilesBannerText}>
+            All 5 profiles are included. Switch anytime from the top bar.
           </Text>
         </View>
 
@@ -62,11 +69,6 @@ export const OnboardingProfileScreen: React.FC<OnboardingProfileScreenProps> = (
                   <View style={styles.cardTextContainer}>
                     <View style={styles.nameRow}>
                       <Text style={styles.profileName}>{config.name}</Text>
-                      {config.badgeText && (
-                        <View style={[styles.badge, { backgroundColor: config.accentColor }]}>
-                          <Text style={styles.badgeLabel}>{config.badgeText}</Text>
-                        </View>
-                      )}
                     </View>
                     <Text style={styles.profileSubtitle}>{config.subtitle}</Text>
                   </View>
@@ -93,13 +95,13 @@ export const OnboardingProfileScreen: React.FC<OnboardingProfileScreenProps> = (
           ]}
         >
           <Text style={styles.continueButtonText}>
-            Continue with {PROFILE_CONFIGS[selectedProfile].name}
+            Start with {PROFILE_CONFIGS[selectedProfile].name}
           </Text>
           <Ionicons name="arrow-forward" size={20} color="#ffffff" />
         </TouchableOpacity>
 
         <Text style={styles.footerNote}>
-          🔒 Private & Local. Scanned images are processed securely and never stored on any cloud server. You can switch profiles anytime in Settings.
+          🔒 100% Private & Local. Scanned images are processed securely and never stored on any cloud server. You can switch profiles anytime in 1 tap from the top bar.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -137,6 +139,23 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontSize: 15,
     lineHeight: 22,
+  },
+  allProfilesBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.3)',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 20,
+  },
+  allProfilesBannerText: {
+    color: '#c7d2fe',
+    fontSize: 13,
+    fontWeight: '600',
+    flex: 1,
   },
   profileList: {
     gap: 12,

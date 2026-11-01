@@ -8,7 +8,7 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
     icon: 'school-outline',
     accentColor: '#6366f1', // Indigo
     secondaryColor: '#f59e0b', // Amber
-    badgeText: 'DEFAULT',
+    badgeText: '',
     emptyStateText: 'No pending school flyers! Enjoy your quiet fridge.',
     tab1Name: '📋 Actionable',
     tab2Name: 'ℹ️ Informational',
@@ -20,7 +20,7 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
     icon: 'medical-outline',
     accentColor: '#0d9488', // Teal
     secondaryColor: '#f43f5e', // Rose
-    badgeText: 'POPULAR',
+    badgeText: '',
     emptyStateText: 'All care directives & doctor preps are organized.',
     tab1Name: '🩺 Directives & Preps',
     tab2Name: '💊 Rx & Records',
@@ -32,7 +32,7 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
     icon: 'receipt-outline',
     accentColor: '#10b981', // Emerald
     secondaryColor: '#334155', // Slate
-    badgeText: 'EXPENSES',
+    badgeText: '',
     emptyStateText: 'No unpaid invoices or expiring permits found!',
     tab1Name: '💳 Unpaid Invoices',
     tab2Name: '📄 Permits & Receipts',
@@ -44,7 +44,7 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
     icon: 'home-outline',
     accentColor: '#06b6d4', // Cyan
     secondaryColor: '#8b5cf6', // Violet
-    badgeText: 'NEW',
+    badgeText: '',
     emptyStateText: 'Property notices and tenant quotes up to date.',
     tab1Name: '⚠️ Pending Actions',
     tab2Name: '📝 Notices & Quotes',
@@ -56,7 +56,7 @@ export const PROFILE_CONFIGS: Record<ProfileId, ProfileTheme> = {
     icon: 'scale-outline',
     accentColor: '#7c3aed', // Purple
     secondaryColor: '#dc2626', // Red
-    badgeText: 'CRITICAL',
+    badgeText: '',
     emptyStateText: 'No urgent court dates or USCIS notices pending.',
     tab1Name: '⚖️ Court & Hearings',
     tab2Name: '📄 Filings & Notices',

@@ -60,7 +60,7 @@
 
     <div class="content-card">
       <h2>1. Overview & Core Philosophy</h2>
-      <p>Sift ("we", "our", or "us") is dedicated to simplifying paperwork management across 5 Smart Profiles (School & Family, Elder Care & Health, Trade Contractors, Property & HOA, and Legal & Immigration). Sift turns physical notices, forms, receipts, and digital PDFs into actionable items while enforcing zero cloud data retention.</p>
+      <p>Sift ("we", "our", or "us") is dedicated to simplifying paperwork management across 5 Smart Profiles (School & Family, Elder Care & Health, Receipts & Small Business, Property & HOA, and Legal & Immigration). Sift turns physical notices, forms, receipts, and digital PDFs into actionable items while enforcing zero cloud data retention.</p>
 
       <h2>2. On-Device Local PII Redaction Engine</h2>
       <p>To protect your sensitive financial, personal, and healthcare identifiers, Sift runs a local <strong>On-Device PII Redaction Engine</strong> directly on your iOS device before any image or text is transmitted to AI services:</p>
@@ -83,11 +83,12 @@
       <h2>4. Local SQLite Database Storage</h2>
       <p>All parsed action items, profile preferences, custom notes, and app settings are stored locally on your device in an encrypted SQLite database (`sift_v2.db`). Your data is backed up only via your personal iOS iCloud backup settings.</p>
 
-      <h2>5. iOS Permissions & Critical Alerts</h2>
+      <h2>5. iOS Permissions & Deadline Reminders</h2>
       <p>Sift requests minimal iOS permissions:</p>
       <ul>
         <li><strong>Camera & Photo Library:</strong> Used strictly to select or photograph documents within the app.</li>
-        <li><strong>Notifications & Critical Alerts:</strong> Used locally to schedule reminder alarms for deadlines. Critical Alerts allow urgent healthcare or court notifications to play even when the phone is on Silent.</li>
+        <li><strong>Notifications & Reminders:</strong> Used locally to schedule reminder alarms for deadlines. Urgent healthcare directives or court deadlines use iOS Time-Sensitive notifications to ensure critical alerts are not missed.</li>
+        <li><strong>Face ID / Touch ID (Local Authentication):</strong> Used strictly on-device to lock and unlock the app. Biometric data never leaves Apple's Secure Enclave.</li>
       </ul>
 
       <h2>6. Children's Privacy (COPPA)</h2>
