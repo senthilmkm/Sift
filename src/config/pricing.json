@@ -1,7 +1,7 @@
 {
   "version": "2.0.0",
   "paywallTitle": "Unlock Unlimited Sift Pro",
-  "paywallSubtitle": "Scan unlimited paperwork with Gemini AI across all 5 Smart Profiles (School, Health, Trades, Property & Legal).",
+  "paywallSubtitle": "Scan unlimited paperwork with Gemini AI across all 5 Smart Profiles (School, Elder Care, Receipts & Business, Property & Legal).",
   "promotionalBanner": {
     "enabled": true,
     "bannerText": "⚡ Special Launch Pass — Unlock All 5 Smart Profiles",
@@ -14,7 +14,7 @@
     "freeTierDisclaimer": "Free tier includes 5 document scans per month total across all 5 Smart Profiles combined.",
     "allProfilesUnlocked": true,
     "hasUrgentAlarms": true,
-    "hasExport": false
+    "hasExport": true
   },
   "plans": [
     {
@@ -32,10 +32,11 @@
       "features": [
         "Unlock All 5 Smart Profiles",
         "Unlimited Gemini AI Paperwork Scans",
-        "Excel (.CSV) Tax & CPA Receipt Export",
+        "Itemized Grocery & Receipt Line Items",
+        "Excel (.CSV) & PDF Tax & CPA Receipt Export",
         "On-Device PII Redaction Engine",
-        "Urgent Alarms & Same-Day Alerts",
-        "Multi-Page Camera Carousel Scanner"
+        "Time-Sensitive Reminders & Urgent Alarms",
+        "Multi-Page Camera Scanner"
       ]
     },
     {

@@ -45,12 +45,13 @@ export const SIFT_PAYWALL_CONFIG: PaywallConfig = {
     }
   ],
   features: [
-    'Unlock All 5 Smart Profiles (School, Elder Care, Small Business, Property, Legal)',
+    'Unlock All 5 Smart Profiles (School, Elder Care, Receipts & Business, Property, Legal)',
     'Unlimited Gemini AI Document Scans',
-    'Excel (.CSV) Tax & CPA Receipt Export (Vendor, Amount, Category & Notes)',
+    'Itemized Receipt Breakdown & Grocery Line Items',
+    'Excel (.CSV) & PDF Tax & CPA Receipt Export',
     'On-Device PII Redaction Engine',
     'Time-Sensitive Urgent Reminders & Lockscreen Alarms',
-    'Multi-Page Document Camera Carousel Scanner'
+    'Multi-Page Document Camera Scanner'
   ],
   profitabilityMetrics: {
     avgCostPerScanUSD: 0.00015,

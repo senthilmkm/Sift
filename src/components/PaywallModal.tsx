@@ -124,13 +124,21 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
             </View>
             <View style={styles.featureRow}>
               <Ionicons name="checkmark-circle" size={20} color="#10b981" />
-              <Text style={styles.featureText}>1-Tap Urgent Alarms & Same-Day Alerts</Text>
+              <Text style={styles.featureText}>Itemized Grocery & Receipt Line Items</Text>
             </View>
             <View style={styles.featureRow}>
               <Ionicons name="checkmark-circle" size={20} color="#10b981" />
-              <Text style={styles.featureText}>Export Tasks to Excel CSV & Share Details</Text>
+              <Text style={styles.featureText}>1-Tap Excel (.CSV) & PDF CPA Tax Exports</Text>
+            </View>
+            <View style={styles.featureRow}>
+              <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+              <Text style={styles.featureText}>Time-Sensitive Urgent Reminders & Alarms</Text>
             </View>
           </View>
+
+          <Text style={styles.freeTierNote}>
+            Free tier includes 5 scans/month across all 5 profiles. Upgrade to Pro for unlimited scans.
+          </Text>
 
           {pricingData.plans
             .filter((plan) => plan.enabled !== false)
@@ -143,7 +151,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
               >
                 {plan.isPopular && (
                   <View style={styles.popularBadge}>
-                    <Text style={styles.popularBadgeText}>BEST VALUE - 50% OFF</Text>
+                    <Text style={styles.popularBadgeText}>BEST VALUE - SAVE 33%</Text>
                   </View>
                 )}
                 <Text style={styles.planName}>{plan.name}</Text>
@@ -237,7 +245,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e293b',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  freeTierNote: {
+    color: '#94a3b8',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 10,
+    lineHeight: 16,
   },
   featureRow: {
     flexDirection: 'row',
