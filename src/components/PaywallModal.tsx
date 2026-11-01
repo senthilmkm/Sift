@@ -190,7 +190,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
               <Text style={styles.footerLinkText}>Terms of Use</Text>
             </TouchableOpacity>
             <Text style={styles.dot}>•</Text>
-            <TouchableOpacity onPress={() => Linking.openURL('mailto:senthil930@gmail.com')}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://senthilmkm.github.io/Sift/support.html')}>
               <Text style={styles.footerLinkText}>Support</Text>
             </TouchableOpacity>
           </View>
