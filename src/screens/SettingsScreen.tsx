@@ -145,7 +145,12 @@ export const SettingsScreen: React.FC = () => {
             </Text>
           </View>
 
-          {!prefs.isSubscribed && (
+          {prefs.isSubscribed ? (
+            <TouchableOpacity style={styles.heroUpgradePill} onPress={() => setShowPaywall(true)}>
+              <Ionicons name="eye-outline" size={14} color="#fff" />
+              <Text style={styles.heroUpgradePillText}>Preview Paywall</Text>
+            </TouchableOpacity>
+          ) : (
             <TouchableOpacity style={styles.heroUpgradePill} onPress={() => setShowPaywall(true)}>
               <Ionicons name="sparkles" size={14} color="#fff" />
               <Text style={styles.heroUpgradePillText}>Upgrade</Text>
