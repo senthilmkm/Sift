@@ -17,6 +17,7 @@ import { ProfileId } from './src/models/types';
 import { PROFILE_CONFIGS } from './src/config/profiles';
 import { initializePurchases, checkSubscriptionStatus } from './src/services/purchaseService';
 import { isBiometricAuthInProgress } from './src/services/biometricService';
+import * as Notifications from 'expo-notifications';
 
 const Tab = createBottomTabNavigator();
 
@@ -65,8 +66,16 @@ export default function App() {
       }
     });
 
+    const notifSub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      if (data?.profileId) {
+        handleSelectProfile(data.profileId as ProfileId);
+      }
+    });
+
     return () => {
       subscription.remove();
+      notifSub.remove();
     };
   }, []);
 

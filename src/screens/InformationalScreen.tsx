@@ -2,12 +2,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text, RefreshControl, Alert, DeviceEventEmitter } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SiftItem, FilterOptions, ItemTab, ProfileId } from '../models/types';
-import { getItems, updateItemStatus, promoteToActionable, archiveItem, updateItemDetails, getUserPreferences } from '../database/db';
+import { getItems, updateItemStatus, promoteToActionable, archiveItem, updateItemDetails, getUserPreferences, updateItemNotificationId } from '../database/db';
 import { ItemCard } from '../components/ItemCard';
 import { FilterBar } from '../components/FilterBar';
 import { EditItemModal } from '../components/EditItemModal';
 import { shareTaskDetails } from '../services/shareService';
 import { PROFILE_CONFIGS } from '../config/profiles';
+import { scheduleItemNotification, cancelNotification } from '../services/notificationService';
 
 export const InformationalScreen: React.FC = () => {
   const [items, setItems] = useState<SiftItem[]>([]);
@@ -77,6 +78,11 @@ export const InformationalScreen: React.FC = () => {
           text: 'Archive',
           style: 'destructive',
           onPress: async () => {
+            const targetItem = items.find((i) => i.id === id);
+            if (targetItem?.notification_id) {
+              await cancelNotification(targetItem.notification_id);
+              await updateItemNotificationId(id, null);
+            }
             await archiveItem(id);
             await loadItems();
           },
@@ -88,6 +94,21 @@ export const InformationalScreen: React.FC = () => {
   const handlePromoteActionable = async (id: string) => {
     const defaultDueDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     await promoteToActionable(id, defaultDueDate);
+
+    const targetItem = items.find((i) => i.id === id);
+    const prefs = await getUserPreferences();
+    if (prefs.enableNotifications && targetItem) {
+      const promotedItem: SiftItem = {
+        ...targetItem,
+        tab: 'actionable',
+        due_at: defaultDueDate,
+      };
+      const notifId = await scheduleItemNotification(promotedItem, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+      if (notifId) {
+        await updateItemNotificationId(id, notifId);
+      }
+    }
+
     Alert.alert('Promoted to Actionable', `Item moved to Actionable tab with due date set to ${defaultDueDate}.`);
     await loadItems();
   };
@@ -99,7 +120,30 @@ export const InformationalScreen: React.FC = () => {
     dueAt: string | null,
     tab: ItemTab
   ) => {
+    const targetItem = items.find((i) => i.id === id);
+    if (targetItem?.notification_id) {
+      await cancelNotification(targetItem.notification_id);
+      await updateItemNotificationId(id, null);
+    }
+
     await updateItemDetails(id, title, notes, dueAt, tab);
+
+    const prefs = await getUserPreferences();
+    if (tab === 'actionable' && prefs.enableNotifications) {
+      const updatedItem: SiftItem = {
+        ...(targetItem || ({} as any)),
+        id,
+        title,
+        notes,
+        due_at: dueAt,
+        tab,
+      };
+      const notifId = await scheduleItemNotification(updatedItem, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+      if (notifId) {
+        await updateItemNotificationId(id, notifId);
+      }
+    }
+
     await loadItems();
   };
 

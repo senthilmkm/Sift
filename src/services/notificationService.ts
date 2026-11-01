@@ -92,6 +92,10 @@ export async function scheduleItemNotification(
   let triggerInput: any;
 
   if (diffSeconds <= 0) {
+    // If the deadline was more than 24 hours ago and is not urgent, skip scheduling
+    if (diffSeconds < -86400 && !item.is_urgent) {
+      return null;
+    }
     triggerInput = {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 5,
@@ -100,7 +104,7 @@ export async function scheduleItemNotification(
   } else if (diffSeconds <= 600) {
     triggerInput = {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds: diffSeconds,
+      seconds: Math.max(5, diffSeconds),
       repeats: false,
     };
   } else {
@@ -139,7 +143,7 @@ export async function sendTestNotification(isCritical: boolean = false): Promise
       title: isCritical ? '⚡ Sift Urgent Test Alert' : '📋 Sift Test Reminder',
       body: isCritical
         ? 'Time-sensitive alert sound test.'
-        : 'Your Sift notifications are working perfectly!',
+        : 'Your Sift reminders are active and working perfectly!',
       sound: true,
       interruptionLevel: isCritical ? 'timeSensitive' : 'active',
     },
@@ -156,5 +160,38 @@ export async function cancelNotification(notificationId: string): Promise<void> 
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   } catch (err) {
     console.warn('Error cancelling notification:', err);
+  }
+}
+
+export async function cancelAllScheduledNotifications(): Promise<void> {
+  try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  } catch (err) {
+    console.warn('Error cancelling all scheduled notifications:', err);
+  }
+}
+
+export async function rescheduleAllActiveNotifications(): Promise<void> {
+  try {
+    const { getUserPreferences, getActiveActionableItems, updateItemNotificationId } = await import('../database/db');
+    const prefs = await getUserPreferences();
+    const items = await getActiveActionableItems();
+
+    if (!prefs.enableNotifications) {
+      for (const item of items) {
+        if (item.notification_id) {
+          await cancelNotification(item.notification_id);
+          await updateItemNotificationId(item.id, null);
+        }
+      }
+      return;
+    }
+
+    for (const item of items) {
+      const notifId = await scheduleItemNotification(item, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+      await updateItemNotificationId(item.id, notifId);
+    }
+  } catch (err) {
+    console.warn('Error in rescheduleAllActiveNotifications:', err);
   }
 }

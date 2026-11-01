@@ -37,4 +37,17 @@ describe('Notification Date & Time Mathematical Calculations', () => {
     expect(trigger.getDate()).toBe(21);
     expect(trigger.getHours()).toBe(19);
   });
+
+  test('calculates correct time when due date is today and time is later today', () => {
+    const dueAt = '2026-10-20';
+    const now = new Date(2026, 9, 20, 10, 0, 0); // 10:00 AM today
+    const trigger = calculateNotificationTriggerDate(dueAt, '18:30_sameday', now);
+
+    expect(trigger.getFullYear()).toBe(2026);
+    expect(trigger.getMonth()).toBe(9);
+    expect(trigger.getDate()).toBe(20);
+    expect(trigger.getHours()).toBe(18);
+    expect(trigger.getMinutes()).toBe(30);
+  });
 });
+

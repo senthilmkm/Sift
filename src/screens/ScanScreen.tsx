@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { extractItemsFromDocument, generateContextualDocumentName } from '../services/geminiExtractor';
-import { saveDocumentAndItems, getUserPreferences, updateUserPreferences } from '../database/db';
+import { saveDocumentAndItems, getUserPreferences, updateUserPreferences, updateItemNotificationId } from '../database/db';
 import { canUserScan, recordSuccessfulScan } from '../services/secureUsageStore';
 import { CandidateItem, SiftDocument, ProfileId } from '../models/types';
 import { PROFILE_CONFIGS, ALL_PROFILES } from '../config/profiles';
@@ -210,7 +210,10 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({ onScanComplete }) => {
     if (prefs.enableNotifications) {
       for (const item of savedItems) {
         if (item.tab === 'actionable') {
-          await scheduleItemNotification(item, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+          const notifId = await scheduleItemNotification(item, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+          if (notifId) {
+            await updateItemNotificationId(item.id, notifId);
+          }
         }
       }
     }

@@ -4,7 +4,12 @@ import Constants from 'expo-constants';
 import { getUserPreferences, updateUserPreferences, autoDeleteOldItems, resetDatabase } from '../database/db';
 import { UserPreferences, AutoDeletePeriod } from '../models/types';
 import { TimeRollerPicker } from '../components/TimeRollerPicker';
-import { checkNotificationPermissionStatus, requestNotificationPermissions } from '../services/notificationService';
+import {
+  checkNotificationPermissionStatus,
+  requestNotificationPermissions,
+  sendTestNotification,
+  rescheduleAllActiveNotifications,
+} from '../services/notificationService';
 import { exportAllTasksToExcel, exportAllTasksToPDF } from '../services/shareService';
 import { authenticateBiometrics } from '../services/biometricService';
 import { PaywallModal } from '../components/PaywallModal';
@@ -54,11 +59,13 @@ export const SettingsScreen: React.FC = () => {
       }
     }
     await updateUserPreferences({ enableNotifications: val });
+    await rescheduleAllActiveNotifications();
     await loadPrefs();
   };
 
   const handleToggleCriticalAlerts = async (val: boolean) => {
     await updateUserPreferences({ enableCriticalAlerts: val });
+    await rescheduleAllActiveNotifications();
     await loadPrefs();
   };
 
@@ -82,6 +89,7 @@ export const SettingsScreen: React.FC = () => {
   const handleSaveReminderTime = async (val: string) => {
     setPrefs((prev) => ({ ...prev, defaultReminderTime: val }));
     await updateUserPreferences({ defaultReminderTime: val });
+    await rescheduleAllActiveNotifications();
   };
 
   const handleSelectAutoDelete = async (period: AutoDeletePeriod) => {
@@ -266,6 +274,28 @@ export const SettingsScreen: React.FC = () => {
               value={prefs.defaultReminderTime}
               onSave={handleSaveReminderTime}
             />
+
+            <TouchableOpacity
+              style={styles.testNotifBtn}
+              activeOpacity={0.7}
+              onPress={async () => {
+                const notifId = await sendTestNotification(prefs.enableCriticalAlerts);
+                if (notifId) {
+                  Alert.alert(
+                    'Test Reminder Scheduled 🔔',
+                    'Lock your screen or swipe down from top of screen in 5 seconds to view your Sift notification banner!'
+                  );
+                } else {
+                  Alert.alert(
+                    'Permission Required',
+                    'Notification permissions are currently disabled in iOS Settings. Please enable them to receive reminders.'
+                  );
+                }
+              }}
+            >
+              <Ionicons name="notifications-outline" size={17} color="#818cf8" style={{ marginRight: 8 }} />
+              <Text style={styles.testNotifBtnText}>Send Test Reminder (5s Delay)</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <Text style={styles.disabledText}>
@@ -520,6 +550,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#94a3b8',
     marginBottom: 10,
+  },
+  testNotifBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+    borderWidth: 1,
+    borderColor: '#6366f1',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginTop: 14,
+  },
+  testNotifBtnText: {
+    color: '#a5b4fc',
+    fontSize: 13,
+    fontWeight: '700',
   },
   disabledText: {
     fontSize: 13,

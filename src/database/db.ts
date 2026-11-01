@@ -280,6 +280,47 @@ export async function updateItemStatus(id: string, status: SiftItem['status']): 
   await database.runAsync(`UPDATE items SET status = ?, updated_at = ? WHERE id = ?`, [status, now, id]);
 }
 
+export async function updateItemNotificationId(id: string, notificationId: string | null): Promise<void> {
+  const database = await getDB();
+  const now = new Date().toISOString();
+  await database.runAsync(
+    `UPDATE items SET notification_id = ?, updated_at = ? WHERE id = ?`,
+    [notificationId, now, id]
+  );
+}
+
+export async function getActiveActionableItems(): Promise<SiftItem[]> {
+  const database = await getDB();
+  const rows = await database.getAllAsync<any>(
+    `SELECT items.*, documents.filename as doc_filename, documents.image_path as image_path 
+     FROM items 
+     LEFT JOIN documents ON items.document_id = documents.id 
+     WHERE items.tab = 'actionable' AND items.status = 'open'`
+  );
+
+  return rows.map((r) => ({
+    id: r.id,
+    document_id: r.document_id,
+    profile_id: r.profile_id || 'school',
+    doc_filename: r.doc_filename || 'Document Notice',
+    image_path: r.image_path,
+    tab: r.tab,
+    title: r.title,
+    notes: r.notes,
+    due_at: r.due_at,
+    source_snippet: r.source_snippet,
+    status: r.status,
+    is_urgent: r.is_urgent === 1,
+    urgency_reason: r.urgency_reason,
+    reminder_at: r.reminder_at,
+    notification_id: r.notification_id,
+    confidence: r.confidence,
+    metadata_json: r.metadata_json,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+  }));
+}
+
 export async function toggleItemUrgent(id: string, isUrgent: boolean): Promise<void> {
   const database = await getDB();
   const now = new Date().toISOString();

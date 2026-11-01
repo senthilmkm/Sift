@@ -2,12 +2,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text, RefreshControl, Alert, DeviceEventEmitter } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SiftItem, FilterOptions, ItemTab, ProfileId } from '../models/types';
-import { getItems, updateItemStatus, archiveItem, updateItemDetails, getUserPreferences } from '../database/db';
+import { getItems, updateItemStatus, archiveItem, updateItemDetails, getUserPreferences, updateItemNotificationId } from '../database/db';
 import { ItemCard } from '../components/ItemCard';
 import { FilterBar } from '../components/FilterBar';
 import { EditItemModal } from '../components/EditItemModal';
 import { shareTaskDetails } from '../services/shareService';
 import { PROFILE_CONFIGS } from '../config/profiles';
+import { scheduleItemNotification, cancelNotification } from '../services/notificationService';
 
 export const ActionableScreen: React.FC = () => {
   const [items, setItems] = useState<SiftItem[]>([]);
@@ -63,6 +64,21 @@ export const ActionableScreen: React.FC = () => {
 
   const handleToggleStatus = async (id: string, currentStatus: SiftItem['status']) => {
     const nextStatus = currentStatus === 'done' ? 'open' : 'done';
+    const targetItem = items.find((i) => i.id === id);
+
+    if (nextStatus === 'done' && targetItem?.notification_id) {
+      await cancelNotification(targetItem.notification_id);
+      await updateItemNotificationId(id, null);
+    } else if (nextStatus === 'open' && targetItem) {
+      const prefs = await getUserPreferences();
+      if (prefs.enableNotifications) {
+        const notifId = await scheduleItemNotification(targetItem, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+        if (notifId) {
+          await updateItemNotificationId(id, notifId);
+        }
+      }
+    }
+
     await updateItemStatus(id, nextStatus);
     await loadItems();
   };
@@ -77,6 +93,11 @@ export const ActionableScreen: React.FC = () => {
           text: 'Archive',
           style: 'destructive',
           onPress: async () => {
+            const targetItem = items.find((i) => i.id === id);
+            if (targetItem?.notification_id) {
+              await cancelNotification(targetItem.notification_id);
+              await updateItemNotificationId(id, null);
+            }
             await archiveItem(id);
             await loadItems();
           },
@@ -92,7 +113,30 @@ export const ActionableScreen: React.FC = () => {
     dueAt: string | null,
     tab: ItemTab
   ) => {
+    const targetItem = items.find((i) => i.id === id);
+    if (targetItem?.notification_id) {
+      await cancelNotification(targetItem.notification_id);
+      await updateItemNotificationId(id, null);
+    }
+
     await updateItemDetails(id, title, notes, dueAt, tab);
+
+    const prefs = await getUserPreferences();
+    if (tab === 'actionable' && prefs.enableNotifications) {
+      const updatedItem: SiftItem = {
+        ...(targetItem || ({} as any)),
+        id,
+        title,
+        notes,
+        due_at: dueAt,
+        tab,
+      };
+      const notifId = await scheduleItemNotification(updatedItem, prefs.defaultReminderTime, prefs.enableCriticalAlerts);
+      if (notifId) {
+        await updateItemNotificationId(id, notifId);
+      }
+    }
+
     await loadItems();
   };
 
