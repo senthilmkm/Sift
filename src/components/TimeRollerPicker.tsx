@@ -47,10 +47,11 @@ export const TimeRollerPicker: React.FC<TimeRollerPickerProps> = ({ value, onSav
       setSelectedMinute(m);
 
       // Scroll to position without triggering user drag events
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         hourScrollRef.current?.scrollTo({ y: (h - 1) * ITEM_HEIGHT, animated: false });
         minScrollRef.current?.scrollTo({ y: m * ITEM_HEIGHT, animated: false });
       }, 100);
+      return () => clearTimeout(timer);
     }
   }, [value]);
 
